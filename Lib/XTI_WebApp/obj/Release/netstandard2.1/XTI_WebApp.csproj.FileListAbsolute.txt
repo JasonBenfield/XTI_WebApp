@@ -1,9 +1,0 @@
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp\bin\Release\netstandard2.1\XTI_WebApp.deps.json
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp\bin\Release\netstandard2.1\XTI_WebApp.dll
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp\bin\Release\netstandard2.1\XTI_WebApp.pdb
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp\obj\Release\netstandard2.1\XTI_WebApp.csprojAssemblyReference.cache
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp\obj\Release\netstandard2.1\XTI_WebApp.AssemblyInfoInputs.cache
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp\obj\Release\netstandard2.1\XTI_WebApp.AssemblyInfo.cs
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp\obj\Release\netstandard2.1\XTI_WebApp.csproj.CoreCompileInputs.cache
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp\obj\Release\netstandard2.1\XTI_WebApp.dll
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp\obj\Release\netstandard2.1\XTI_WebApp.pdb

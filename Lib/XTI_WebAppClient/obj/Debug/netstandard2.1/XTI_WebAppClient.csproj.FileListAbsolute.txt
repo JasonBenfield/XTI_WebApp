@@ -1,9 +1,0 @@
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebAppClient\obj\Debug\netstandard2.1\XTI_WebAppClient.AssemblyInfoInputs.cache
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebAppClient\obj\Debug\netstandard2.1\XTI_WebAppClient.AssemblyInfo.cs
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebAppClient\obj\Debug\netstandard2.1\XTI_WebAppClient.csproj.CoreCompileInputs.cache
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebAppClient\bin\Debug\netstandard2.1\XTI_WebAppClient.deps.json
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebAppClient\bin\Debug\netstandard2.1\XTI_WebAppClient.dll
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebAppClient\bin\Debug\netstandard2.1\XTI_WebAppClient.pdb
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebAppClient\obj\Debug\netstandard2.1\XTI_WebAppClient.dll
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebAppClient\obj\Debug\netstandard2.1\XTI_WebAppClient.pdb
-C:\XTI\src\XTI_WebApp\Lib\XTI_WebAppClient\obj\Debug\netstandard2.1\XTI_WebAppClient.csprojAssemblyReference.cache

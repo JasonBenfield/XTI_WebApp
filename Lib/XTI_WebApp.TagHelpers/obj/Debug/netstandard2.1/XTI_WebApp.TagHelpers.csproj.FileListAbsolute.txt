@@ -1,4 +1,0 @@
-C:\Users\xarto\source\repos\XTI\XTI\Lib\XTI_WebApp.TagHelpers\obj\Debug\netstandard2.1\XTI_WebApp.TagHelpers.csprojAssemblyReference.cache
-C:\Users\xarto\source\repos\XTI\XTI\Lib\XTI_WebApp.TagHelpers\obj\Debug\netstandard2.1\XTI_WebApp.TagHelpers.AssemblyInfoInputs.cache
-C:\Users\xarto\source\repos\XTI\XTI\Lib\XTI_WebApp.TagHelpers\obj\Debug\netstandard2.1\XTI_WebApp.TagHelpers.AssemblyInfo.cs
-C:\Users\xarto\source\repos\XTI\XTI\Lib\XTI_WebApp.TagHelpers\obj\Debug\netstandard2.1\XTI_WebApp.TagHelpers.csproj.CoreCompileInputs.cache
