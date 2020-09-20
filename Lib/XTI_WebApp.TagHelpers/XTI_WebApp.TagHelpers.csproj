@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
+  </ItemGroup>
+  
+  <Import Project="..\\..\\Version.Targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\XTI_WebApp\XTI_WebApp.csproj" />
+  </ItemGroup>
+</Project>

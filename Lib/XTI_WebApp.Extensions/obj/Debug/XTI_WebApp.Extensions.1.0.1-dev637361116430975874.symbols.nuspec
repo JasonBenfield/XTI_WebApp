@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>XTI_WebApp.Extensions</id>
+    <version>1.0.1-dev637361116430975874</version>
+    <authors>XTI_WebApp.Extensions</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="XTI_App.EF" version="1.0.1-dev637361116430975874" exclude="Build,Analyzers" />
+        <dependency id="XTI_WebApp.Api" version="1.0.1-dev637361116430975874" exclude="Build,Analyzers" />
+        <dependency id="XTI_WebApp" version="1.0.1-dev637361116430975874" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Authentication" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="3.1.8" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="3.1.8" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.EnvironmentVariables" version="3.1.8" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Json" version="3.1.8" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="3.1.8" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="3.1.8" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkReferences>
+      <group targetFramework=".NETCoreApp3.1">
+        <frameworkReference name="Microsoft.AspNetCore.App" />
+      </group>
+    </frameworkReferences>
+  </metadata>
+  <files>
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\bin\Debug\netcoreapp3.1\XTI_WebApp.Extensions.pdb" target="lib\netcoreapp3.1\XTI_WebApp.Extensions.pdb" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\bin\Debug\netcoreapp3.1\XTI_WebApp.Extensions.dll" target="lib\netcoreapp3.1\XTI_WebApp.Extensions.dll" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\AnonClient.cs" target="src\XTI_WebApp.Extensions\AnonClient.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\CookieAndTokenAuthentication.cs" target="src\XTI_WebApp.Extensions\CookieAndTokenAuthentication.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\CurrentSession.cs" target="src\XTI_WebApp.Extensions\CurrentSession.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\JwtAuthTicketFormat.cs" target="src\XTI_WebApp.Extensions\JwtAuthTicketFormat.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\JwtOptions.cs" target="src\XTI_WebApp.Extensions\JwtOptions.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\WebAppExtensions.cs" target="src\XTI_WebApp.Extensions\WebAppExtensions.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\XtiClaimsCreator.cs" target="src\XTI_WebApp.Extensions\XtiClaimsCreator.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\XtiMiddleware.cs" target="src\XTI_WebApp.Extensions\XtiMiddleware.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\XtiMiddlewareExtensions.cs" target="src\XTI_WebApp.Extensions\XtiMiddlewareExtensions.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Extensions\XTI_WebApp.Extensions.csproj" target="src\XTI_WebApp.Extensions\XTI_WebApp.Extensions.csproj" />
+  </files>
+</package>

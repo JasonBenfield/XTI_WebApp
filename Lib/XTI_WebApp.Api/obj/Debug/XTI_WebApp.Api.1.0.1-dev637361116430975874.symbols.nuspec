@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>XTI_WebApp.Api</id>
+    <version>1.0.1-dev637361116430975874</version>
+    <authors>XTI_WebApp.Api</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="XTI_App" version="1.0.1-dev637361116430975874" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\bin\Debug\netstandard2.1\XTI_WebApp.Api.pdb" target="lib\netstandard2.1\XTI_WebApp.Api.pdb" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\bin\Debug\netstandard2.1\XTI_WebApp.Api.dll" target="lib\netstandard2.1\XTI_WebApp.Api.dll" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AccessDeniedException.cs" target="src\XTI_WebApp.Api\AccessDeniedException.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppAction.cs" target="src\XTI_WebApp.Api\AppAction.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppActionRedirectResult.cs" target="src\XTI_WebApp.Api\AppActionRedirectResult.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppActionValidation.cs" target="src\XTI_WebApp.Api\AppActionValidation.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppActionValidationNotRequired.cs" target="src\XTI_WebApp.Api\AppActionValidationNotRequired.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppActionViewResult.cs" target="src\XTI_WebApp.Api\AppActionViewResult.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppApi.cs" target="src\XTI_WebApp.Api\AppApi.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppApiAction.cs" target="src\XTI_WebApp.Api\AppApiAction.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppApiActionTemplate.cs" target="src\XTI_WebApp.Api\AppApiActionTemplate.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppApiGroup.cs" target="src\XTI_WebApp.Api\AppApiGroup.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppApiGroupTemplate.cs" target="src\XTI_WebApp.Api\AppApiGroupTemplate.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppApiTemplate.cs" target="src\XTI_WebApp.Api\AppApiTemplate.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\AppException.cs" target="src\XTI_WebApp.Api\AppException.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\DefaultViewAppAction.cs" target="src\XTI_WebApp.Api\DefaultViewAppAction.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\EmptyActionResult.cs" target="src\XTI_WebApp.Api\EmptyActionResult.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\EmptyAppAction.cs" target="src\XTI_WebApp.Api\EmptyAppAction.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\EmptyRequest.cs" target="src\XTI_WebApp.Api\EmptyRequest.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\ErrorList.cs" target="src\XTI_WebApp.Api\ErrorList.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\ErrorModel.cs" target="src\XTI_WebApp.Api\ErrorModel.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\FriendlyNameFromActionName.cs" target="src\XTI_WebApp.Api\FriendlyNameFromActionName.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\NameFromGroupClassName.cs" target="src\XTI_WebApp.Api\NameFromGroupClassName.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\ResourceAccess.cs" target="src\XTI_WebApp.Api\ResourceAccess.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\ResultContainer.cs" target="src\XTI_WebApp.Api\ResultContainer.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\ValidationFailedException.cs" target="src\XTI_WebApp.Api\ValidationFailedException.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\ValueTemplate.cs" target="src\XTI_WebApp.Api\ValueTemplate.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\ValueTemplateFromType.cs" target="src\XTI_WebApp.Api\ValueTemplateFromType.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\WebAppUser.cs" target="src\XTI_WebApp.Api\WebAppUser.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\WebAppUserAllowAll.cs" target="src\XTI_WebApp.Api\WebAppUserAllowAll.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\XTI_WebApp.Api.csproj" target="src\XTI_WebApp.Api\XTI_WebApp.Api.csproj" />
+  </files>
+</package>

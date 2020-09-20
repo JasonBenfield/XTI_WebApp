@@ -1,0 +1,76 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\XTI\\src\\XTI_WebApp\\Lib\\XTI_WebAppClient\\XTI_WebAppClient.csproj": {}
+  },
+  "projects": {
+    "C:\\XTI\\src\\XTI_WebApp\\Lib\\XTI_WebAppClient\\XTI_WebAppClient.csproj": {
+      "version": "1.0.4-dev1",
+      "restore": {
+        "projectUniqueName": "C:\\XTI\\src\\XTI_WebApp\\Lib\\XTI_WebAppClient\\XTI_WebAppClient.csproj",
+        "projectName": "XTI_WebAppClient",
+        "projectPath": "C:\\XTI\\src\\XTI_WebApp\\Lib\\XTI_WebAppClient\\XTI_WebAppClient.csproj",
+        "packagesPath": "C:\\Users\\xarto\\.nuget\\packages\\",
+        "outputPath": "C:\\XTI\\src\\XTI_WebApp\\Lib\\XTI_WebAppClient\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\xarto\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\ProgramData\\XTI\\Packages": {},
+          "C:\\Users\\xarto\\Documents\\GitHub\\NuGetPackages": {},
+          "C:\\XTI\\src\\XTI\\Packages": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "dependencies": {
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[3.1.8, )"
+            },
+            "System.Text.Json": {
+              "target": "Package",
+              "version": "[4.7.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

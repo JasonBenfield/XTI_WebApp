@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <Import Project="..\\..\\Version.Targets" />
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XTI_App.EF\XTI_App.EF.csproj" />
+    <ProjectReference Include="..\XTI_WebApp.Api\XTI_WebApp.Api.csproj" />
+  </ItemGroup>
+
+</Project>

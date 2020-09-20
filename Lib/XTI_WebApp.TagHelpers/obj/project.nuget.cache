@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "YQhqy/b/R9eGi/0yCFnxgoPJ/ZeIDNab8vlFtR92cwGKyR9dPfdWQp4C+i2kHxMaInM9NjdwU0tAIA/DZo0Jxw==",
+  "success": true,
+  "projectFilePath": "C:\\XTI\\src\\XTI_WebApp\\Lib\\XTI_WebApp.TagHelpers\\XTI_WebApp.TagHelpers.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\xarto\\.nuget\\packages\\system.text.json\\4.7.2\\system.text.json.4.7.2.nupkg.sha512"
+  ],
+  "logs": []
+}

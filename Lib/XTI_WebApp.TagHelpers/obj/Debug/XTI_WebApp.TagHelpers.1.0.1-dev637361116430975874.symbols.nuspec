@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>XTI_WebApp.TagHelpers</id>
+    <version>1.0.1-dev637361116430975874</version>
+    <authors>XTI_WebApp.TagHelpers</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="XTI_WebApp" version="1.0.1-dev637361116430975874" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkReferences>
+      <group targetFramework=".NETCoreApp3.1">
+        <frameworkReference name="Microsoft.AspNetCore.App" />
+      </group>
+    </frameworkReferences>
+  </metadata>
+  <files>
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.TagHelpers\bin\Debug\netcoreapp3.1\XTI_WebApp.TagHelpers.pdb" target="lib\netcoreapp3.1\XTI_WebApp.TagHelpers.pdb" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.TagHelpers\bin\Debug\netcoreapp3.1\XTI_WebApp.TagHelpers.dll" target="lib\netcoreapp3.1\XTI_WebApp.TagHelpers.dll" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.TagHelpers\MainScriptTagHelper.cs" target="src\XTI_WebApp.TagHelpers\MainScriptTagHelper.cs" />
+    <file src="C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.TagHelpers\XTI_WebApp.TagHelpers.csproj" target="src\XTI_WebApp.TagHelpers\XTI_WebApp.TagHelpers.csproj" />
+  </files>
+</package>

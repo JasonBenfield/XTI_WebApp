@@ -1,0 +1,9 @@
+C:\XTI\src\XTI_WebApp\Lib\XTI_Configuration.Extensions\bin\Release\netstandard2.1\XTI_Configuration.Extensions.deps.json
+C:\XTI\src\XTI_WebApp\Lib\XTI_Configuration.Extensions\bin\Release\netstandard2.1\XTI_Configuration.Extensions.dll
+C:\XTI\src\XTI_WebApp\Lib\XTI_Configuration.Extensions\bin\Release\netstandard2.1\XTI_Configuration.Extensions.pdb
+C:\XTI\src\XTI_WebApp\Lib\XTI_Configuration.Extensions\obj\Release\netstandard2.1\XTI_Configuration.Extensions.csprojAssemblyReference.cache
+C:\XTI\src\XTI_WebApp\Lib\XTI_Configuration.Extensions\obj\Release\netstandard2.1\XTI_Configuration.Extensions.AssemblyInfoInputs.cache
+C:\XTI\src\XTI_WebApp\Lib\XTI_Configuration.Extensions\obj\Release\netstandard2.1\XTI_Configuration.Extensions.AssemblyInfo.cs
+C:\XTI\src\XTI_WebApp\Lib\XTI_Configuration.Extensions\obj\Release\netstandard2.1\XTI_Configuration.Extensions.csproj.CoreCompileInputs.cache
+C:\XTI\src\XTI_WebApp\Lib\XTI_Configuration.Extensions\obj\Release\netstandard2.1\XTI_Configuration.Extensions.dll
+C:\XTI\src\XTI_WebApp\Lib\XTI_Configuration.Extensions\obj\Release\netstandard2.1\XTI_Configuration.Extensions.pdb

@@ -1,0 +1,12 @@
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\bin\Release\netstandard2.1\XTI_WebApp.Api.deps.json
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\bin\Release\netstandard2.1\XTI_WebApp.Api.dll
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\bin\Release\netstandard2.1\XTI_WebApp.Api.pdb
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\bin\Release\netstandard2.1\XTI_App.dll
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\bin\Release\netstandard2.1\XTI_App.pdb
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\obj\Release\netstandard2.1\XTI_WebApp.Api.csprojAssemblyReference.cache
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\obj\Release\netstandard2.1\XTI_WebApp.Api.AssemblyInfoInputs.cache
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\obj\Release\netstandard2.1\XTI_WebApp.Api.AssemblyInfo.cs
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\obj\Release\netstandard2.1\XTI_WebApp.Api.csproj.CoreCompileInputs.cache
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\obj\Release\netstandard2.1\XTI_WebApp.Api.csproj.CopyComplete
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\obj\Release\netstandard2.1\XTI_WebApp.Api.dll
+C:\XTI\src\XTI_WebApp\Lib\XTI_WebApp.Api\obj\Release\netstandard2.1\XTI_WebApp.Api.pdb

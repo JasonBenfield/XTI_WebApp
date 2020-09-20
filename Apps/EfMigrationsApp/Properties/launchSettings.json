@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EfMigrationsApp": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Test"
+      }
+    }
+  }
+}
