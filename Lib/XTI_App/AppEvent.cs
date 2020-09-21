@@ -6,7 +6,7 @@
 
         internal AppEvent(AppEventRecord record)
         {
-            this.record = record;
+            this.record = record ?? new AppEventRecord();
         }
 
         public int ID { get => record.ID; }

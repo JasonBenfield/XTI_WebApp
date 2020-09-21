@@ -4,7 +4,7 @@
     {
         internal AppUser(AppUserRecord record)
         {
-            this.record = record;
+            this.record = record ?? new AppUserRecord();
         }
 
         private readonly AppUserRecord record;
