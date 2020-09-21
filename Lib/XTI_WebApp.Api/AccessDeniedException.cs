@@ -4,12 +4,12 @@ namespace XTI_WebApp.Api
 {
     public sealed class AccessDeniedException : AppException
     {
-        public AccessDeniedException(AppResourceName resourceName)
+        public AccessDeniedException(XtiPath resourceName)
             : base($"Access denied to {resourceName}", "Access Denied")
         {
             ResourceName = resourceName;
         }
 
-        public AppResourceName ResourceName { get; }
+        public XtiPath ResourceName { get; }
     }
 }

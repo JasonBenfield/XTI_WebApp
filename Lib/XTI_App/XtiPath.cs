@@ -1,34 +1,38 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace XTI_App
 {
-    public sealed class AppResourceName : IEquatable<AppResourceName>, IEquatable<string>
+    public sealed class XtiPath : IEquatable<XtiPath>, IEquatable<string>
     {
-        public static AppResourceName Parse(string str)
+        public static readonly string CurrentVersion = "Current";
+
+        public static XtiPath Parse(string str)
         {
             var parts = (str ?? "").Split('/', StringSplitOptions.RemoveEmptyEntries);
-            var names = new List<string>(parts.Concat(Enumerable.Repeat("", 3 - parts.Length)));
-            return new AppResourceName(names[0], names[1], names[2]);
+            var names = new List<string>(parts.Concat(Enumerable.Repeat("", 4 - parts.Length)));
+            return new XtiPath(names[0], names[1], names[2]);
         }
 
-        public AppResourceName(string appKey) : this(appKey, null, null)
+        public XtiPath(string appKey, string version) : this(appKey, version, null, null)
         {
         }
 
-        public AppResourceName(string appKey, string group) : this(appKey, group, null)
+        public XtiPath(string appKey, string version, string group) : this(appKey, version, group, null)
         {
         }
 
-        public AppResourceName(string appKey, string group, string action)
+        public XtiPath(string appKey, string version, string group, string action)
         {
             if (string.IsNullOrWhiteSpace(appKey) && (!string.IsNullOrWhiteSpace(group) || !string.IsNullOrWhiteSpace(action))) { throw new ArgumentException($"{nameof(appKey)} is required"); }
             if (string.IsNullOrWhiteSpace(group) && !string.IsNullOrWhiteSpace(action)) { throw new ArgumentException($"{nameof(group)} is required when there is an action"); }
             App = appKey;
+            Version = string.IsNullOrWhiteSpace(version) ? CurrentVersion : version;
             Group = group;
             Action = action;
-            value = $"{App}/{Group}/{Action}".ToLower();
+            value = $"{App}/{Version}/{Group}/{Action}".ToLower();
             hashCode = value.GetHashCode();
         }
 
@@ -36,8 +40,12 @@ namespace XTI_App
         private readonly int hashCode;
 
         public string App { get; }
+        public string Version { get; }
         public string Group { get; }
         public string Action { get; }
+
+        public bool IsCurrentVersion() => Version == CurrentVersion;
+        public int VersionID() => IsCurrentVersion() ? 0 : int.Parse(Version.Substring(1));
 
         public void EnsureAppResource()
         {
@@ -63,16 +71,16 @@ namespace XTI_App
             }
         }
 
-        public AppResourceName WithGroup(string groupName)
+        public XtiPath WithGroup(string groupName)
         {
             if (!string.IsNullOrWhiteSpace(Group)) { throw new ArgumentException("Cannot create group for a group"); }
-            return new AppResourceName(App, groupName);
+            return new XtiPath(App, groupName);
         }
 
-        public AppResourceName WithAction(string actionName)
+        public XtiPath WithAction(string actionName)
         {
             if (!string.IsNullOrWhiteSpace(Action)) { throw new ArgumentException("Cannot create action for an action"); }
-            return new AppResourceName(App, Group, actionName);
+            return new XtiPath(App, Group, actionName);
         }
 
         public string Format()
@@ -89,10 +97,10 @@ namespace XTI_App
             {
                 return Equals(str);
             }
-            return Equals(obj as AppResourceName);
+            return Equals(obj as XtiPath);
         }
 
-        public bool Equals(AppResourceName other) => value == other?.value;
+        public bool Equals(XtiPath other) => value == other?.value;
 
         public bool Equals(string other) => value == other;
 
@@ -101,7 +109,7 @@ namespace XTI_App
         public override string ToString()
         {
             var str = string.IsNullOrWhiteSpace(App) ? "Empty" : Format();
-            return $"{nameof(AppResourceName)} {str}";
+            return $"{nameof(XtiPath)} {str}";
         }
 
     }

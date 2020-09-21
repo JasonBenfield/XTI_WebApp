@@ -41,11 +41,15 @@ namespace XTI_App.EF
             {
                 b.HasKey(r => r.ID);
                 b.Property(r => r.ID).ValueGeneratedOnAdd();
-                b.Property(s => s.ResourceName).HasMaxLength(100);
+                b.Property(s => s.Path).HasMaxLength(100);
                 b
                     .HasOne<AppSessionRecord>()
                     .WithMany()
                     .HasForeignKey(s => s.SessionID);
+                b
+                    .HasOne<AppVersionRecord>()
+                    .WithMany()
+                    .HasForeignKey(s => s.VersionID);
             });
             modelBuilder.Entity<AppEventRecord>(b =>
             {

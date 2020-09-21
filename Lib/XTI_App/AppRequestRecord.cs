@@ -6,7 +6,8 @@ namespace XTI_App
     {
         public int ID { get; set; }
         public int SessionID { get; set; }
-        public string ResourceName { get; set; }
+        public int VersionID { get; set; }
+        public string Path { get; set; }
         public DateTime TimeRequested { get; set; }
     }
 }

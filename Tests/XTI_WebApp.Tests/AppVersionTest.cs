@@ -31,7 +31,7 @@ namespace XTI_WebApp.Tests
             var setup = new AppSetup(factory);
             await setup.Run();
             var clock = (FakeClock)sp.GetService<Clock>();
-            var app = await factory.AppRepository().AddApp("Fake", clock.Now());
+            var app = await factory.AppRepository().AddApp(FakeAppApi.AppKey, clock.Now());
             return new TestInput(factory, clock, app);
         }
 

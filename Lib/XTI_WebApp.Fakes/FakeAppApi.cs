@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
+using XTI_App;
 using XTI_WebApp.Api;
 
 namespace XTI_WebApp.Fakes
 {
     public sealed class FakeAppApi : AppApi
     {
-        public static readonly string AppKey = "Fake";
+        public static readonly AppKey AppKey = new AppKey("Fake");
 
         public FakeAppApi(WebAppUser user, ResourceAccess access = null)
-            : base(AppKey, user, access)
+            : base(AppKey.Value, user, access)
         {
             Employee = AddGroup(u => new EmployeeGroup(this, u));
             Product = AddGroup(u => new ProductGroup(this, u));

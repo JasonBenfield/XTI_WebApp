@@ -34,6 +34,12 @@ namespace XTI_App
             return factory.CreateVersion(record);
         }
 
+        public async Task<AppVersion> Version(int versionID)
+        {
+            var record = await repo.Retrieve().FirstOrDefaultAsync(v => v.ID == versionID);
+            return factory.CreateVersion(record);
+        }
+
         internal async Task<IEnumerable<AppVersion>> VersionsByApp(App app)
         {
             var records = await repo.Retrieve().Where(v => v.AppID == app.ID).ToArrayAsync();
