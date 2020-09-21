@@ -130,7 +130,7 @@ namespace XTI_WebApp.AspTests
         public async Task ShouldLogExplicitVersionWithRequest()
         {
             var input = await setup();
-            var explicitVersion = await input.App.StartNewVersion(input.Clock.Now());
+            var explicitVersion = await input.App.StartNewPatch(input.Clock.Now());
             var uri = $"/Fake/v{explicitVersion.ID}/Controller1/Action1";
             await input.GetAsync(uri);
             var sessions = await retrieveSessionsForToday(input);
@@ -327,7 +327,7 @@ namespace XTI_WebApp.AspTests
             await setup.Run();
             var clock = host.Services.GetService<Clock>();
             var app = await factory.AppRepository().AddApp(FakeAppApi.AppKey, clock.Now());
-            var version = await app.StartNewVersion(clock.Now());
+            var version = await app.StartNewPatch(clock.Now());
             var input = new TestInput(host, app, version);
             await input.Factory.UserRepository().Add
             (

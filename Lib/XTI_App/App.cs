@@ -19,12 +19,22 @@ namespace XTI_App
 
         public int ID { get => record.ID; }
 
-        public Task<AppVersion> StartNewVersion(DateTime timeAdded)
+        public Task<AppVersion> StartNewPatch(DateTime timeAdded) =>
+            startNewVersion(timeAdded, AppVersionType.Patch);
+
+        public Task<AppVersion> StartNewMinorVersion(DateTime timeAdded) =>
+            startNewVersion(timeAdded, AppVersionType.Minor);
+
+        public Task<AppVersion> StartNewMajorVersion(DateTime timeAdded) =>
+            startNewVersion(timeAdded, AppVersionType.Major);
+
+        private Task<AppVersion> startNewVersion(DateTime timeAdded, AppVersionType type)
         {
-            return factory.VersionRepository().StartNewVersion(this, timeAdded);
+            return factory.VersionRepository().StartNewVersion(this, timeAdded, type);
         }
 
-        public async Task<AppVersion> CurrentVersion() => (await Versions()).First();
+        public Task<AppVersion> CurrentVersion() =>
+            factory.VersionRepository().CurrentVersion(ID);
 
         public async Task<AppVersion> Version(int id) => (await Versions()).First(v => v.ID == id);
 

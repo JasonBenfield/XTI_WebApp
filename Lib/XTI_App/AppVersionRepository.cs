@@ -17,7 +17,7 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        internal async Task<AppVersion> StartNewVersion(App app, DateTime timeAdded)
+        internal async Task<AppVersion> StartNewVersion(App app, DateTime timeAdded, AppVersionType type)
         {
             var record = new AppVersionRecord
             {
@@ -27,8 +27,8 @@ namespace XTI_App
                 Patch = 0,
                 TimeAdded = timeAdded,
                 Description = "",
-                Status = 0,
-                Type = 0
+                Status = AppVersionStatus.New.Value,
+                Type = type.Value
             };
             await repo.Create(record);
             return factory.CreateVersion(record);
@@ -44,6 +44,14 @@ namespace XTI_App
         {
             var records = await repo.Retrieve().Where(v => v.AppID == app.ID).ToArrayAsync();
             return records.Select(v => factory.CreateVersion(v));
+        }
+
+        internal async Task<AppVersion> CurrentVersion(int appID)
+        {
+            var record = await repo.Retrieve()
+                .Where(v => v.AppID == appID && v.Status == AppVersionStatus.Current.Value)
+                .FirstOrDefaultAsync();
+            return factory.CreateVersion(record);
         }
     }
 }
