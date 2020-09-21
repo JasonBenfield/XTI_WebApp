@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace XTI_App
@@ -22,6 +23,10 @@ namespace XTI_App
         {
             return factory.VersionRepository().StartNewVersion(this, timeAdded);
         }
+
+        public async Task<AppVersion> CurrentVersion() => (await Versions()).First();
+
+        public async Task<AppVersion> Version(int id) => (await Versions()).First(v => v.ID == id);
 
         public Task<IEnumerable<AppVersion>> Versions()
         {

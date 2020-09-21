@@ -22,10 +22,10 @@ namespace XTI_App
 
         public bool HasEnded() => !new Timestamp(record.TimeEnded).IsEmpty();
 
-        public Task<AppRequest> AddRequest(AppResourceName resourceName, DateTime timeRequested)
+        public Task<AppRequest> LogRequest(AppVersion version, string path, DateTime timeRequested)
         {
             var requestRepo = factory.RequestRepository();
-            return requestRepo.Add(this, resourceName, timeRequested);
+            return requestRepo.Add(this, version, path, timeRequested);
         }
 
         public Task Authenticate(AppUser user)

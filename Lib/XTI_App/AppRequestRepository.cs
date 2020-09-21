@@ -17,12 +17,13 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        internal async Task<AppRequest> Add(AppSession session, AppResourceName resourceName, DateTime timeRequested)
+        internal async Task<AppRequest> Add(AppSession session, AppVersion version, string path, DateTime timeRequested)
         {
             var record = new AppRequestRecord
             {
                 SessionID = session.ID,
-                ResourceName = resourceName.Value(),
+                VersionID = version.ID,
+                Path = path,
                 TimeRequested = timeRequested
             };
             await repo.Create(record);

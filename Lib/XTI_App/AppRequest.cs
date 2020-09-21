@@ -17,7 +17,12 @@ namespace XTI_App
         private readonly AppRequestRecord record;
 
         public int ID { get => record.ID; }
-        public AppResourceName ResourceName() => AppResourceName.Parse(record.ResourceName);
+        public XtiPath ResourceName() => XtiPath.Parse(record.Path);
+
+        public Task<AppVersion> Version()
+        {
+            return factory.VersionRepository().Version(record.VersionID);
+        }
 
         public Task<IEnumerable<AppEvent>> Events()
         {

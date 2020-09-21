@@ -6,7 +6,7 @@ namespace XTI_WebApp.Api
 {
     public interface AppApiAction
     {
-        AppResourceName Name { get; }
+        XtiPath Name { get; }
         string FriendlyName { get; }
         ResourceAccess Access { get; }
 
@@ -21,7 +21,7 @@ namespace XTI_WebApp.Api
     {
         public AppApiAction
         (
-            AppResourceName name,
+            XtiPath name,
             ResourceAccess access,
             WebAppUser user,
             Func<WebAppUser, AppActionValidation<TModel>> createValidation,
@@ -42,7 +42,7 @@ namespace XTI_WebApp.Api
         private readonly Func<WebAppUser, AppActionValidation<TModel>> createValidation;
         private readonly Func<WebAppUser, AppAction<TModel, TResult>> createExecution;
 
-        public AppResourceName Name { get; }
+        public XtiPath Name { get; }
         public string FriendlyName { get; }
         public ResourceAccess Access { get; }
 

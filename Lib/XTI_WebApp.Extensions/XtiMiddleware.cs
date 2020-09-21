@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
@@ -37,21 +35,43 @@ namespace XTI_WebApp.Extensions
             {
                 session = await anonSession(context, clock, appFactory, anonClient);
             }
-            var resourceName = new AppResourceName(context.Request.Path);
-            var request = await session.AddRequest(resourceName, clock.Now());
+            var xtiPath = XtiPath.Parse(context.Request.Path);
+            var version = await retrieveVersion(appFactory, xtiPath);
+            var request = await session.LogRequest(version, context.Request.Path, clock.Now());
             try
             {
                 await _next(context);
             }
             catch (Exception ex)
             {
-                await request.LogCriticalException(clock.Now(), ex, "An unexpected error occurred");
-                context.Response.StatusCode = getErrorStatusCode(ex);
-                context.Response.ContentType = "application/json";
-                var errors = getErrors(ex);
-                var serializedErrors = JsonSerializer.Serialize(errors);
-                await context.Response.WriteAsync(serializedErrors);
+                await handleError(context, clock, request, ex);
             }
+        }
+
+        private async Task handleError(HttpContext context, Clock clock, AppRequest request, Exception ex)
+        {
+            await request.LogCriticalException(clock.Now(), ex, "An unexpected error occurred");
+            context.Response.StatusCode = getErrorStatusCode(ex);
+            context.Response.ContentType = "application/json";
+            var errors = getErrors(ex);
+            var serializedErrors = JsonSerializer.Serialize(errors);
+            await context.Response.WriteAsync(serializedErrors);
+        }
+
+        private static async Task<AppVersion> retrieveVersion(AppFactory appFactory, XtiPath xtiPath)
+        {
+            var app = await appFactory.AppRepository().App(new AppKey(xtiPath.App));
+            AppVersion version;
+            if (xtiPath.IsCurrentVersion())
+            {
+                version = await app.CurrentVersion();
+            }
+            else
+            {
+                version = await app.Version(xtiPath.VersionID());
+            }
+
+            return version;
         }
 
         private int getErrorStatusCode(Exception ex)

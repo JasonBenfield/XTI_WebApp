@@ -18,7 +18,7 @@ namespace XTI_WebApp.Api
         private readonly WebAppUser user;
         private readonly Dictionary<string, AppApiAction> actions = new Dictionary<string, AppApiAction>();
 
-        public AppResourceName Name { get; }
+        public XtiPath Name { get; }
         public ResourceAccess Access { get; }
 
         public Task<bool> HasAccess() => user.HasAccess(Access);

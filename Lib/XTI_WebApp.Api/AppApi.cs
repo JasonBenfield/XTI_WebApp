@@ -15,7 +15,7 @@ namespace XTI_WebApp.Api
             ResourceAccess access = null
         )
         {
-            Name = new AppResourceName(appKey);
+            Name = new XtiPath(appKey, "");
             this.user = user;
             Access = access ?? ResourceAccess.AllowAnonymous();
         }
@@ -23,7 +23,7 @@ namespace XTI_WebApp.Api
         private readonly WebAppUser user;
         private readonly Dictionary<string, AppApiGroup> groups = new Dictionary<string, AppApiGroup>();
 
-        public AppResourceName Name { get; }
+        public XtiPath Name { get; }
 
         public ResourceAccess Access { get; }
 
