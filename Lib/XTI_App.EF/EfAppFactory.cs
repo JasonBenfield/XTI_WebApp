@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 
 namespace XTI_App.EF
 {
@@ -8,41 +9,23 @@ namespace XTI_App.EF
         public EfAppFactory(AppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
+            dbSetLookup = new Dictionary<Type, object>
+            {
+                { typeof(AppSessionRecord), appDbContext.Sessions },
+                { typeof(AppUserRecord), appDbContext.Users },
+                { typeof(AppRequestRecord), appDbContext.Requests },
+                { typeof(AppEventRecord), appDbContext.Events },
+                { typeof(AppRecord), appDbContext.Apps },
+                { typeof(AppVersionRecord), appDbContext.Versions }
+            };
         }
 
         private readonly AppDbContext appDbContext;
 
-        protected override DataRepository<T> CreateDataRepository<T>() where T : class
-        {
-            var dbSet = getDbSet<T>();
-            return new EfDataRepository<T>(appDbContext, dbSet);
-        }
+        private readonly Dictionary<Type, object> dbSetLookup;
 
-        private DbSet<T> getDbSet<T>() where T : class
-        {
-            object obj;
-            if (typeof(T) == typeof(AppSessionRecord))
-            {
-                obj = appDbContext.Sessions;
-            }
-            else if (typeof(T) == typeof(AppUserRecord))
-            {
-                obj = appDbContext.Users;
-            }
-            else if (typeof(T) == typeof(AppRequestRecord))
-            {
-                obj = appDbContext.Requests;
-            }
-            else if (typeof(T) == typeof(AppEventRecord))
-            {
-                obj = appDbContext.Events;
-            }
-            else
-            {
-                throw new ArgumentException($"DbSet not found for type {typeof(T)}");
-            }
-            var dbSet = (DbSet<T>)obj;
-            return dbSet;
-        }
+        protected override DataRepository<T> CreateDataRepository<T>()
+            where T : class =>
+                new EfDataRepository<T>(appDbContext, (DbSet<T>)dbSetLookup[typeof(T)]);
     }
 }

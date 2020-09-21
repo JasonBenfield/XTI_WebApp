@@ -11,6 +11,8 @@ namespace XTI_App.EF
             Sessions = Set<AppSessionRecord>();
             Requests = Set<AppRequestRecord>();
             Events = Set<AppEventRecord>();
+            Apps = Set<AppRecord>();
+            Versions = Set<AppVersionRecord>();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -57,6 +59,21 @@ namespace XTI_App.EF
                     .WithMany()
                     .HasForeignKey(e => e.RequestID);
             });
+            modelBuilder.Entity<AppRecord>(b =>
+            {
+                b.HasKey(a => a.ID);
+                b.Property(a => a.ID).ValueGeneratedOnAdd();
+                b.Property(a => a.Key).HasMaxLength(50);
+            });
+            modelBuilder.Entity<AppVersionRecord>(b =>
+            {
+                b.HasKey(v => v.ID);
+                b.Property(v => v.ID).ValueGeneratedOnAdd();
+                b
+                    .HasOne<AppRecord>()
+                    .WithMany()
+                    .HasForeignKey(v => v.AppID);
+            });
             base.OnModelCreating(modelBuilder);
         }
 
@@ -64,5 +81,7 @@ namespace XTI_App.EF
         public DbSet<AppSessionRecord> Sessions { get; }
         public DbSet<AppRequestRecord> Requests { get; }
         public DbSet<AppEventRecord> Events { get; }
+        public DbSet<AppRecord> Apps { get; }
+        public DbSet<AppVersionRecord> Versions { get; }
     }
 }

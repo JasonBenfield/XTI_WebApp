@@ -4,11 +4,9 @@ namespace XTI_App
 {
     public sealed class AppKey : IEquatable<AppKey>, IEquatable<string>
     {
-        public static readonly AppKey Common = new AppKey("*");
-
         public AppKey(string value)
         {
-            Value = value?.Trim().ToUpper() ?? "";
+            Value = value?.Trim().ToLower() ?? "";
             hashCode = Value.GetHashCode();
         }
 

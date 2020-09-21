@@ -14,7 +14,7 @@ namespace XTI_App
         {
             this.factory = factory;
             this.repo = repo;
-            this.record = record;
+            this.record = record ?? new AppSessionRecord();
         }
 
         public int ID { get => record.ID; }

@@ -10,7 +10,7 @@ namespace XTI_App
         internal AppRequest(AppFactory factory, AppRequestRecord record)
         {
             this.factory = factory;
-            this.record = record;
+            this.record = record ?? new AppRequestRecord();
         }
 
         private readonly AppFactory factory;

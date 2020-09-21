@@ -20,7 +20,7 @@ namespace XTI_App
         public async Task<AppSession> RetrieveByID(int id)
         {
             var record = await repo.Retrieve().FirstOrDefaultAsync(s => s.ID == id);
-            return factory.CreateAppSession(record ?? new AppSessionRecord());
+            return factory.CreateAppSession(record);
         }
 
         public async Task<IEnumerable<AppSession>> RetrieveByDateRange(DateTime startDate, DateTime endDate)

@@ -18,7 +18,7 @@ namespace XTI_App
         public async Task<AppUser> RetrieveByUserName(AppUserName userName)
         {
             var userRecord = await repo.Retrieve().FirstOrDefaultAsync(u => u.UserName == userName.Value());
-            return factory.CreateAppUser(userRecord ?? new AppUserRecord());
+            return factory.CreateAppUser(userRecord);
         }
 
         public async Task<AppUser> Add(AppUserName userName, IHashedPassword password, DateTime timeAdded)
