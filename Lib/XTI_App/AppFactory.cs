@@ -41,7 +41,7 @@ namespace XTI_App
         public AppVersionRepository VersionRepository() =>
             fetchRepo<AppVersionRecord, AppVersionRepository>(ref versionRepo, dataRepo =>
                 new AppVersionRepository(this, dataRepo));
-        internal AppVersion CreateVersion(AppVersionRecord record) => new AppVersion(record);
+        internal AppVersion CreateVersion(AppVersionRecord record) => new AppVersion(this, CreateDataRepository<AppVersionRecord>(), record);
 
         private TRepo fetchRepo<TRecord, TRepo>
         (
