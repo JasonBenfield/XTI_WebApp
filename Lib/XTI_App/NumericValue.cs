@@ -13,6 +13,12 @@ namespace XTI_App
             return (values ?? Enumerable.Empty<T>()).FirstOrDefault(v => v.Equals(value));
         }
 
+        protected static T FromDisplayText<T>(IEnumerable<T> values, string displayText)
+            where T : NumericValue
+        {
+            return (values ?? Enumerable.Empty<T>()).FirstOrDefault(v => v.DisplayText.Equals(displayText, StringComparison.OrdinalIgnoreCase));
+        }
+
         protected NumericValue(int value, string displayText)
         {
             Value = value;

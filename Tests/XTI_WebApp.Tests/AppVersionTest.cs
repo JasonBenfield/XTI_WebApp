@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FakeWebApp.Api;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System.Linq;
 using System.Threading.Tasks;
@@ -197,8 +198,9 @@ namespace XTI_WebApp.Tests
             var factory = sp.GetService<AppFactory>();
             var setup = new AppSetup(factory);
             await setup.Run();
-            var clock = (FakeClock)sp.GetService<Clock>();
-            var app = await factory.AppRepository().AddApp(FakeAppApi.AppKey, clock.Now());
+            await new FakeAppSetup(sp).Run();
+            var clock = sp.GetService<FakeClock>();
+            var app = await factory.AppRepository().App(FakeAppApi.AppKey);
             return new TestInput(factory, clock, app);
         }
 

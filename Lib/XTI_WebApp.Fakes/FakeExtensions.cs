@@ -26,12 +26,9 @@ namespace XTI_WebApp.Fakes
                 .SetApplicationName("XTI_WEB_APP");
             services.AddHttpContextAccessor();
             services.AddSingleton<Clock, FakeClock>();
+            services.AddSingleton(sp => (FakeClock)sp.GetService<Clock>());
             services.AddSingleton<AppFactory, EfAppFactory>();
-        }
-
-        public static void AddFakeAppApi(this IServiceCollection services)
-        {
-            services.AddSingleton<AppApi, FakeAppApi>();
+            services.AddSingleton<WebAppUser, SuperUser>();
         }
     }
 }
