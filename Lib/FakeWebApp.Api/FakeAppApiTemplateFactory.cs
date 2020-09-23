@@ -1,6 +1,6 @@
 ﻿using XTI_WebApp.Api;
 
-namespace XTI_WebApp.Fakes
+namespace FakeWebApp.Api
 {
     public sealed class FakeAppApiTemplateFactory
     {

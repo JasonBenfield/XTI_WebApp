@@ -7,17 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
     <PackageReference Include="nunit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.8" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Lib\FakeWebApp.Api\FakeWebApp.Api.csproj" />
-    <ProjectReference Include="..\..\Lib\XTI_App.EF\XTI_App.EF.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_Configuration.Extensions\XTI_Configuration.Extensions.csproj" />
+    <ProjectReference Include="..\..\Lib\XTI_Version.Octo\XTI_Version.Octo.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_WebApp.Extensions\XTI_WebApp.Extensions.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_WebApp.Fakes\XTI_WebApp.Fakes.csproj" />
   </ItemGroup>

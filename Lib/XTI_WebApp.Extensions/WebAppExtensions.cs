@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,6 +41,13 @@ namespace XTI_WebApp.Extensions
                 .SetApplicationName(appName);
             services.AddScoped(sp => createCacheBust(sp, assembly));
             services.AddScoped(createPageContext);
+            services.AddDbContext<AppDbContext>(optionsAction: (IServiceProvider sp, DbContextOptionsBuilder dbOptions) =>
+            {
+                var webAppOptions = sp.GetService<IOptions<WebAppOptions>>().Value;
+                dbOptions.UseSqlServer(webAppOptions.ConnectionString)
+                    .EnableSensitiveDataLogging();
+            });
+            services.AddSingleton<Clock, UtcClock>();
             services.AddScoped<AppFactory, EfAppFactory>();
         }
 

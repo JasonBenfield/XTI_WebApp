@@ -34,7 +34,7 @@ namespace XTI_App
 
         public async Task<App> App(AppKey key)
         {
-            var record = await repo.Retrieve().FirstOrDefaultAsync(a => key.Equals(a.Key));
+            var record = await repo.Retrieve().FirstOrDefaultAsync(a => a.Key == key.Value);
             return factory.CreateApp(record);
         }
     }

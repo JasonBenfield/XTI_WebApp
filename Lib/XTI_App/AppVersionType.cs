@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace XTI_App
 {
@@ -12,7 +10,12 @@ namespace XTI_App
         public static readonly AppVersionType Patch = new AppVersionType(3, "Patch");
 
         public static AppVersionType FromValue(int value) =>
-            FromValue(new[] { NotSet, Major, Minor, Patch }, value) ?? NotSet;
+            FromValue(All(), value) ?? NotSet;
+
+        public static AppVersionType Parse(string type) =>
+            FromDisplayText(All(), type) ?? NotSet;
+
+        private static AppVersionType[] All() => new[] { NotSet, Major, Minor, Patch };
 
         private AppVersionType(int value, string displayText) : base(value, displayText)
         {

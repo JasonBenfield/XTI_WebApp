@@ -25,6 +25,10 @@ namespace XTI_App
         public bool IsPublishing() => Status().Equals(AppVersionStatus.Publishing);
         public bool IsCurrent() => Status().Equals(AppVersionStatus.Current);
 
+        public bool IsPatch() => Type().Equals(AppVersionType.Patch);
+        public bool IsMinor() => Type().Equals(AppVersionType.Minor);
+        public bool IsMajor() => Type().Equals(AppVersionType.Major);
+
         private AppVersionStatus Status() => AppVersionStatus.FromValue(record.Status);
         private AppVersionType Type() => AppVersionType.FromValue(record.Type);
 
