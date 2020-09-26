@@ -19,6 +19,7 @@ namespace XTI_App
 
         public int ID { get => record.ID; }
         public AppKey Key() => new AppKey(record.Key);
+        public bool Exists() => ID > 0;
 
         public Task<AppVersion> StartNewPatch(DateTime timeAdded) =>
             startNewVersion(timeAdded, AppVersionType.Patch);

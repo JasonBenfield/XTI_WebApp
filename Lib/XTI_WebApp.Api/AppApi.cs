@@ -15,7 +15,7 @@ namespace XTI_WebApp.Api
             ResourceAccess access = null
         )
         {
-            Name = new XtiPath(appKey, "");
+            Name = new XtiPath(appKey, "Current");
             this.user = user;
             Access = access ?? ResourceAccess.AllowAnonymous();
         }

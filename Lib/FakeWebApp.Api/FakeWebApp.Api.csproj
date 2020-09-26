@@ -4,6 +4,8 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
+  <Import Project="..\\..\\Version.Targets" />
+  
   <ItemGroup>
     <ProjectReference Include="..\XTI_WebApp.Api\XTI_WebApp.Api.csproj" />
   </ItemGroup>

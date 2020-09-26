@@ -17,7 +17,7 @@ namespace XTI_WebApp.Extensions
     {
         public const string appName = "XTI_Web_Apps";
 
-        public static bool IsDevOrTest(this IWebHostEnvironment env) => env.IsDevelopment() || env.IsEnvironment("Test");
+        public static bool IsDevOrTest(this IHostEnvironment env) => env.IsDevelopment() || env.IsEnvironment("Test");
 
         public static void AddXtiServices(this IServiceCollection services, IConfiguration configuration, Assembly assembly)
         {
@@ -44,8 +44,12 @@ namespace XTI_WebApp.Extensions
             services.AddDbContext<AppDbContext>(optionsAction: (IServiceProvider sp, DbContextOptionsBuilder dbOptions) =>
             {
                 var webAppOptions = sp.GetService<IOptions<WebAppOptions>>().Value;
-                dbOptions.UseSqlServer(webAppOptions.ConnectionString)
-                    .EnableSensitiveDataLogging();
+                dbOptions.UseSqlServer(webAppOptions.ConnectionString);
+                var hostingEnv = sp.GetService<IWebHostEnvironment>();
+                if (hostingEnv.IsDevOrTest())
+                {
+                    dbOptions.EnableSensitiveDataLogging();
+                }
             });
             services.AddSingleton<Clock, UtcClock>();
             services.AddScoped<AppFactory, EfAppFactory>();

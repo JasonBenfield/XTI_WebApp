@@ -18,7 +18,12 @@ namespace FakeWebApp.Api
 
         public async Task Run()
         {
-            await factory.AppRepository().AddApp(FakeAppApi.AppKey, clock.Now());
+            var appRepo = factory.AppRepository();
+            var fakeApp = await appRepo.App(FakeAppApi.AppKey);
+            if (!fakeApp.Exists())
+            {
+                await appRepo.AddApp(FakeAppApi.AppKey, clock.Now());
+            }
         }
     }
 }
