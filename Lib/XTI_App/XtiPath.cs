@@ -74,13 +74,13 @@ namespace XTI_App
         public XtiPath WithGroup(string groupName)
         {
             if (!string.IsNullOrWhiteSpace(Group)) { throw new ArgumentException("Cannot create group for a group"); }
-            return new XtiPath(App, groupName);
+            return new XtiPath(App, Version, groupName);
         }
 
         public XtiPath WithAction(string actionName)
         {
             if (!string.IsNullOrWhiteSpace(Action)) { throw new ArgumentException("Cannot create action for an action"); }
-            return new XtiPath(App, Group, actionName);
+            return new XtiPath(App, Version, Group, actionName);
         }
 
         public string Format()

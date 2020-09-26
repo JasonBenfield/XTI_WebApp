@@ -7,10 +7,11 @@ namespace FakeWebApp.Api
 {
     public sealed class FakeAppApi : AppApi
     {
-        public static readonly AppKey AppKey = new AppKey("Fake");
+        private static readonly string AppKeyValue = "Fake";
+        public static readonly AppKey AppKey = new AppKey(AppKeyValue);
 
         public FakeAppApi(WebAppUser user, ResourceAccess access = null)
-            : base(AppKey.Value, user, access)
+            : base(AppKeyValue, user, access)
         {
             Employee = AddGroup(u => new EmployeeGroup(this, u));
             Product = AddGroup(u => new ProductGroup(this, u));
@@ -30,7 +31,7 @@ namespace FakeWebApp.Api
                   user
             )
         {
-            AddDefaultView();
+            Index = AddDefaultView();
             AddEmployee = AddAction
             (
                 "AddEmployee",
@@ -44,6 +45,7 @@ namespace FakeWebApp.Api
                 "Get Employee Information"
             );
         }
+        public AppApiAction<EmptyRequest, AppActionViewResult> Index { get; }
         public AppApiAction<AddEmployeeModel, int> AddEmployee { get; }
         public AppApiAction<int, Employee> Employee { get; }
     }
@@ -100,7 +102,7 @@ namespace FakeWebApp.Api
                 user
             )
         {
-            AddDefaultView();
+            Index = AddDefaultView();
             GetInfo = AddAction
             (
                 "GetInfo",
@@ -119,6 +121,7 @@ namespace FakeWebApp.Api
                 "Get Product Information"
             );
         }
+        public AppApiAction<EmptyRequest, AppActionViewResult> Index { get; }
         public AppApiAction<EmptyRequest, string> GetInfo { get; }
         public AppApiAction<AddProductModel, int> AddProduct { get; }
         public AppApiAction<int, Product> Product { get; }

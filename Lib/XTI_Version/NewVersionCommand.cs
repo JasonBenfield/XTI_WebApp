@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using System.Xml.Linq;
 using XTI_App;
 
 namespace XTI_Version
@@ -46,7 +45,7 @@ namespace XTI_Version
 
         private async Task createMilestoneIfNoneExists(GitHubXtiRepoClient repo, AppVersion version)
         {
-            var milestoneName = $"xti_major_version_{version.ID}";
+            var milestoneName = getMilestoneTitle(version);
             var exists = await repo.MilestoneExists(milestoneName);
             if (!exists)
             {
@@ -54,9 +53,31 @@ namespace XTI_Version
             }
         }
 
+        private static string getMilestoneTitle(AppVersion version)
+        {
+            string type;
+            if (version.IsMajor())
+            {
+                type = "major";
+            }
+            else if (version.IsMinor())
+            {
+                type = "minor";
+            }
+            else if (version.IsPatch())
+            {
+                type = "patch";
+            }
+            else
+            {
+                type = "";
+            }
+            return $"xti_{type}_version_{version.ID}";
+        }
+
         private async Task createBranchIfNoneExists(GitHubXtiRepoClient repo, AppVersion version)
         {
-            var branchName = $"xti/major/{version.ID}";
+            var branchName = new XtiVersionBranch(version).BranchName();
             var exists = await repo.BranchExists(branchName);
             if (!exists)
             {

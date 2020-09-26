@@ -30,6 +30,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6F10EC8F-FA71-477B-B658-28D01DD1A012}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		apigenerator.ps1 = apigenerator.ps1
+		CopyHub.ps1 = CopyHub.ps1
 		db_add_migrations.ps1 = db_add_migrations.ps1
 		db_update.ps1 = db_update.ps1
 		db_update_all.ps1 = db_update_all.ps1
@@ -37,6 +39,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		db_update_prod.ps1 = db_update_prod.ps1
 		db_update_staging.ps1 = db_update_staging.ps1
 		db_update_test.ps1 = db_update_test.ps1
+		newversion.ps1 = newversion.ps1
 		Version.Targets = Version.Targets
 	EndProjectSection
 EndProject
@@ -57,6 +60,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XTI_Version.Octo", "Lib\XTI_Version.Octo\XTI_Version.Octo.csproj", "{046FB6A6-BB5C-4316-AC63-71E5D23141DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FakeWebApp.Api", "Lib\FakeWebApp.Api\FakeWebApp.Api.csproj", "{F7786512-16F4-415A-8298-8E5A97F8318B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XTI_VersionApp", "Apps\XTI_VersionApp\XTI_VersionApp.csproj", "{429D87C3-BCE8-4820-B935-F10AE42E69EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -136,6 +141,10 @@ Global
 		{F7786512-16F4-415A-8298-8E5A97F8318B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7786512-16F4-415A-8298-8E5A97F8318B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7786512-16F4-415A-8298-8E5A97F8318B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{429D87C3-BCE8-4820-B935-F10AE42E69EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{429D87C3-BCE8-4820-B935-F10AE42E69EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{429D87C3-BCE8-4820-B935-F10AE42E69EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{429D87C3-BCE8-4820-B935-F10AE42E69EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,6 +168,7 @@ Global
 		{D3F9E91B-BE00-4C33-8866-D526D982621B} = {45100A1C-EEF2-4F7D-8275-00FADB311317}
 		{046FB6A6-BB5C-4316-AC63-71E5D23141DE} = {A1F1F235-4442-4F52-BE3F-CDE93211A15C}
 		{F7786512-16F4-415A-8298-8E5A97F8318B} = {A1F1F235-4442-4F52-BE3F-CDE93211A15C}
+		{429D87C3-BCE8-4820-B935-F10AE42E69EF} = {E6FF0AAE-2A5B-4ABA-9553-AEB622A0CC18}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {91B19DE7-0676-4D29-BEAA-DFB7C8C405AF}
