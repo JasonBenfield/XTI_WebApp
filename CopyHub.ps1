@@ -1,3 +1,0 @@
-robocopy ..\HubWebApp\Apps\HubWebApp\Scripts\Hub\ .\Apps\FakeWebApp\Scripts\Hub\ *.ts /e /purge /njh /njs /np /ns /nc /nfl /ndl /a+:R
-robocopy ..\HubWebApp\Apps\HubWebApp\Scripts\Hub\ .\Apps\FakeWebApp\Scripts\Hub\ /xf *.ts /e /purge /njh /njs /np /ns /nc /nfl /ndl /a-:R
-robocopy ..\HubWebApp\Apps\HubWebApp\Views\Exports\Hub\ .\Apps\FakeWebApp\Views\Exports\Hub\ /e /purge /njh /njs /np /ns /nc /nfl /ndl /a+:R

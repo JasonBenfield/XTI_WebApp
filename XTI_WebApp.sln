@@ -30,8 +30,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6F10EC8F-FA71-477B-B658-28D01DD1A012}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		apigenerator.ps1 = apigenerator.ps1
-		CopyHub.ps1 = CopyHub.ps1
 		db_add_migrations.ps1 = db_add_migrations.ps1
 		db_update.ps1 = db_update.ps1
 		db_update_all.ps1 = db_update_all.ps1
@@ -39,7 +37,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		db_update_prod.ps1 = db_update_prod.ps1
 		db_update_staging.ps1 = db_update_staging.ps1
 		db_update_test.ps1 = db_update_test.ps1
-		newversion.ps1 = newversion.ps1
 		Version.Targets = Version.Targets
 	EndProjectSection
 EndProject
