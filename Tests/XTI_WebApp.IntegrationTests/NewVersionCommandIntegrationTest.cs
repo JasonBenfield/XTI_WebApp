@@ -1,7 +1,6 @@
 ﻿using FakeWebApp.Api;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using System;
 using System.Diagnostics;
@@ -84,7 +83,6 @@ namespace XTI_WebApp.IntegrationTests
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.UseXtiConfiguration("Test", new string[] { });
             var configuration = configurationBuilder.Build();
-            services.Configure<NewVersionOptions>(configuration.GetSection(NewVersionOptions.NewVersion));
             services.Configure<GitHubOptions>(configuration.GetSection(GitHubOptions.GitHub));
             services.AddXtiServices(configuration, typeof(NewVersionCommandIntegrationTest).Assembly);
             services.AddScoped<GitHubXtiClient, OctoGithubXtiClient>();
@@ -96,7 +94,6 @@ namespace XTI_WebApp.IntegrationTests
                 return new NewVersionCommand(factory, clock, githubClient);
             }));
             var sp = services.BuildServiceProvider();
-            var options = sp.GetService<IOptions<NewVersionOptions>>().Value;
             var factory = sp.GetService<AppFactory>();
             await new AppSetup(factory).Run();
             await new FakeAppSetup(sp).Run();
