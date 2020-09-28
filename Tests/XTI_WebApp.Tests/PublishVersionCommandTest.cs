@@ -1,16 +1,21 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using XTI_App;
 using XTI_Version;
 
 namespace XTI_WebApp.Tests
 {
     public sealed class PublishVersionCommandTest
     {
+        [Test]
+        public async Task ShouldRequireValidBranchName()
+        {
+            var tester = await setup();
+            var newVersion = await tester.Command().Execute(tester.Options);
+            tester.Options.Command = "BeginPublish";
+            tester.Options.PublishVersion.Branch = $"something/whatever/{newVersion.ID}";
+            Assert.ThrowsAsync<InvalidBranchException>(() => tester.Execute());
+        }
+
         [Test]
         public async Task ShouldBeginPublishingTheVersion()
         {
