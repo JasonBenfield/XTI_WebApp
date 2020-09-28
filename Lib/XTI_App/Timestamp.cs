@@ -4,7 +4,8 @@ namespace XTI_App
 {
     public sealed class Timestamp : IEquatable<Timestamp>, IEquatable<DateTime>, IComparable<Timestamp>, IComparable<DateTime>
     {
-        public static readonly Timestamp Empty = new Timestamp(new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        public static readonly Timestamp MinValue = new Timestamp(new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        public static readonly Timestamp MaxValue = new Timestamp(new DateTime(3000, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
         public Timestamp(DateTime value)
         {
@@ -13,7 +14,11 @@ namespace XTI_App
 
         public DateTime Value { get; }
 
-        public bool IsEmpty() => CompareTo(Empty) <= 0;
+        public bool IsValid() => !IsMin() && !IsMax();
+
+        public bool IsMin() => CompareTo(MinValue) <= 0;
+
+        public bool IsMax() => CompareTo(MaxValue) >= 0;
 
         public int CompareTo(Timestamp other) => Value.CompareTo(other.Value);
 

@@ -12,6 +12,6 @@ namespace XTI_App
         public int Status { get; set; }
         public int Type { get; set; }
         public string Description { get; set; }
-        public DateTime TimeAdded { get; set; }
+        public DateTime TimeAdded { get; set; } = Timestamp.MaxValue.Value;
     }
 }

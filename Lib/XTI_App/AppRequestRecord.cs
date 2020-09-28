@@ -8,6 +8,6 @@ namespace XTI_App
         public int SessionID { get; set; }
         public int VersionID { get; set; }
         public string Path { get; set; }
-        public DateTime TimeRequested { get; set; }
+        public DateTime TimeRequested { get; set; } = Timestamp.MaxValue.Value;
     }
 }

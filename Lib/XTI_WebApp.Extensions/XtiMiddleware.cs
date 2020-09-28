@@ -129,7 +129,7 @@ namespace XTI_WebApp.Extensions
             anonClient.Load();
             var sessionRepo = appFactory.SessionRepository();
             var session = await sessionRepo.RetrieveByID(anonClient.SessionID);
-            if (session.IsNotFound() || session.HasEnded())
+            if (!session.HasStarted() || session.HasEnded())
             {
                 var userRepo = appFactory.UserRepository();
                 var anonUser = await userRepo.RetrieveByUserName(AppUserName.Anon);
