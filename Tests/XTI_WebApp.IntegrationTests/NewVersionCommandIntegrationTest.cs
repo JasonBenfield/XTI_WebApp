@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.EF;
 using XTI_Configuration.Extensions;
 using XTI_Version;
 using XTI_Version.Octo;
@@ -69,15 +69,6 @@ namespace XTI_WebApp.IntegrationTests
 
         private async Task<TestInput> setup()
         {
-            var process = Process.Start(new ProcessStartInfo("powershell", ".\\db_update_test.ps1")
-            {
-                WorkingDirectory = $"{TestContext.CurrentContext.TestDirectory}\\..\\..\\..\\..\\..\\",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            });
-            process.WaitForExit();
-            var output = process.StandardError.ReadToEnd();
-            Console.WriteLine(output);
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
             var services = new ServiceCollection();
             var configurationBuilder = new ConfigurationBuilder();
@@ -93,8 +84,11 @@ namespace XTI_WebApp.IntegrationTests
                 var githubClient = sp.GetService<GitHubXtiClient>();
                 return new NewVersionCommand(factory, clock, githubClient);
             }));
+            services.AddScoped<AppDbReset>();
             var sp = services.BuildServiceProvider();
             var factory = sp.GetService<AppFactory>();
+            var appDbReset = sp.GetService<AppDbReset>();
+            await appDbReset.Run();
             await new AppSetup(factory).Run();
             await new FakeAppSetup(sp).Run();
             var app = await sp.GetService<AppFactory>().AppRepository().App(FakeAppApi.AppKey);
