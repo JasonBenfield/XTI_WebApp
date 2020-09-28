@@ -7,6 +7,5 @@
         public string BaseUrl { get; set; }
         public string KeyFolder { get; set; }
         public string CacheBust { get; set; }
-        public string ConnectionString { get; set; }
     }
 }
