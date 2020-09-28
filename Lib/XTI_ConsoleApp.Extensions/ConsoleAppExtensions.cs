@@ -15,10 +15,11 @@ namespace XTI_ConsoleApp.Extensions
         public static void AddConsoleAppServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<ConsoleAppOptions>(configuration.GetSection(ConsoleAppOptions.ConsoleApp));
+            services.Configure<AppDbOptions>(configuration.GetSection(AppDbOptions.AppDb));
             services.AddDbContext<AppDbContext>((sp, options) =>
             {
-                var consoleAppOptions = sp.GetService<IOptions<ConsoleAppOptions>>().Value;
-                options.UseSqlServer(consoleAppOptions.ConnectionString);
+                var appDbOptions = sp.GetService<IOptions<AppDbOptions>>().Value;
+                options.UseSqlServer(appDbOptions.ConnectionString);
                 var hostEnvironment = sp.GetService<IHostEnvironment>();
                 if (hostEnvironment.IsDevOrTest())
                 {

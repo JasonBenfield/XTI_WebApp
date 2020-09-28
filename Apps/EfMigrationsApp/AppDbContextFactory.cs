@@ -16,12 +16,12 @@ namespace EfMigrationsApp
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             configBuilder.UseXtiConfiguration(environment, args);
             var config = configBuilder.Build();
-            var section = config.GetSection(WebAppOptions.WebApp);
-            var webAppOptions = section.Get<WebAppOptions>();
+            var section = config.GetSection(AppDbOptions.AppDb);
+            var appDbOptions = section.Get<AppDbOptions>();
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>()
                 .UseSqlServer
                 (
-                    webAppOptions.ConnectionString,
+                    appDbOptions.ConnectionString,
                     b => b.MigrationsAssembly("EfMigrationsApp")
                 )
                 .EnableSensitiveDataLogging();

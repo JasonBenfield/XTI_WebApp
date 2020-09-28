@@ -17,7 +17,7 @@ namespace XTI_WebApp.Extensions
     {
         public const string appName = "XTI_Web_Apps";
 
-        public static bool IsDevOrTest(this IHostEnvironment env) => env.IsDevelopment() || env.IsEnvironment("Test");
+        public static bool IsDevOrTest(this IHostEnvironment env) => env != null && (env.IsDevelopment() || env.IsEnvironment("Test"));
 
         public static void AddXtiServices(this IServiceCollection services, IConfiguration configuration, Assembly assembly)
         {
@@ -30,6 +30,7 @@ namespace XTI_WebApp.Extensions
             });
             services.AddHttpContextAccessor();
             services.Configure<WebAppOptions>(configuration.GetSection(WebAppOptions.WebApp));
+            services.Configure<AppDbOptions>(configuration.GetSection(AppDbOptions.AppDb));
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Jwt));
             var webAppOptions = services.BuildServiceProvider().GetService<IOptions<WebAppOptions>>().Value;
             services
@@ -41,14 +42,14 @@ namespace XTI_WebApp.Extensions
                 .SetApplicationName(appName);
             services.AddScoped(sp => createCacheBust(sp, assembly));
             services.AddScoped(createPageContext);
-            services.AddDbContext<AppDbContext>(optionsAction: (IServiceProvider sp, DbContextOptionsBuilder dbOptions) =>
+            services.AddDbContext<AppDbContext>(optionsAction: (sp, dbOptionsBuilder) =>
             {
-                var webAppOptions = sp.GetService<IOptions<WebAppOptions>>().Value;
-                dbOptions.UseSqlServer(webAppOptions.ConnectionString);
+                var appDbOptions = sp.GetService<IOptions<AppDbOptions>>().Value;
+                dbOptionsBuilder.UseSqlServer(appDbOptions.ConnectionString);
                 var hostingEnv = sp.GetService<IWebHostEnvironment>();
                 if (hostingEnv.IsDevOrTest())
                 {
-                    dbOptions.EnableSensitiveDataLogging();
+                    dbOptionsBuilder.EnableSensitiveDataLogging();
                 }
             });
             services.AddSingleton<Clock, UtcClock>();
