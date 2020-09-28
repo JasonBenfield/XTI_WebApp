@@ -18,9 +18,9 @@ namespace XTI_App
         }
 
         public int ID { get => record.ID; }
-        public bool IsNotFound() => ID <= 0;
 
-        public bool HasEnded() => !new Timestamp(record.TimeEnded).IsEmpty();
+        public bool HasStarted() => new Timestamp(record.TimeStarted).IsValid();
+        public bool HasEnded() => new Timestamp(record.TimeEnded).IsValid();
 
         public Task<AppRequest> LogRequest(AppVersion version, string path, DateTime timeRequested)
         {

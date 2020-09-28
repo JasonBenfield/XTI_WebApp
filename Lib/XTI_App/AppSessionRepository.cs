@@ -37,7 +37,7 @@ namespace XTI_App
             {
                 UserID = user.ID,
                 TimeStarted = timeStarted,
-                TimeEnded = Timestamp.Empty.Value,
+                TimeEnded = Timestamp.MaxValue.Value,
                 UserAgent = userAgent,
                 RemoteAddress = remoteAddress
             };
