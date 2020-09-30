@@ -5,6 +5,7 @@ using System;
 using XTI_App;
 using XTI_App.EF;
 using XTI_App.Api;
+using Microsoft.Extensions.Hosting;
 
 namespace XTI_WebApp.Fakes
 {
@@ -29,6 +30,7 @@ namespace XTI_WebApp.Fakes
             services.AddSingleton(sp => (FakeClock)sp.GetService<Clock>());
             services.AddSingleton<AppFactory, EfAppFactory>();
             services.AddSingleton<AppApiUser, AppApiSuperUser>();
+            services.AddSingleton<IHostEnvironment, FakeHostEnvironment>();
         }
     }
 }

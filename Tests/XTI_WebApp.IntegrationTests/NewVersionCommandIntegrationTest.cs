@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using XTI_Configuration.Extensions;
 using XTI_Version;
 using XTI_Version.Octo;
 using XTI_WebApp.Extensions;
+using XTI_WebApp.Fakes;
 
 namespace XTI_WebApp.IntegrationTests
 {
@@ -68,12 +70,14 @@ namespace XTI_WebApp.IntegrationTests
 
         private async Task<TestInput> setup()
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
+            var hostEnv = new FakeHostEnvironment { EnvironmentName = "Test" };
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", hostEnv.EnvironmentName);
             var services = new ServiceCollection();
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.UseXtiConfiguration("Test", new string[] { });
             var configuration = configurationBuilder.Build();
             services.Configure<GitHubOptions>(configuration.GetSection(GitHubOptions.GitHub));
+            services.AddScoped<IHostEnvironment>(sp => hostEnv);
             services.AddXtiServices(configuration, typeof(NewVersionCommandIntegrationTest).Assembly);
             services.AddScoped<GitHubXtiClient, OctoGithubXtiClient>();
             services.AddScoped((sp =>
