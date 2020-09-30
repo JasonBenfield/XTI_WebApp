@@ -1,14 +1,7 @@
-﻿using FakeWebApp.Api;
-using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using NUnit.Framework;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_Version;
-using XTI_Version.Fakes;
-using XTI_WebApp.Fakes;
 
 namespace XTI_WebApp.Tests
 {

@@ -1,5 +1,4 @@
-﻿using FakeWebApp.Api;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -326,9 +325,8 @@ namespace XTI_WebApp.AspTests
             var factory = host.Services.GetService<AppFactory>();
             var setup = new AppSetup(factory);
             await setup.Run();
-            await new FakeAppSetup(host.Services).Run();
             var clock = host.Services.GetService<Clock>();
-            var app = await factory.AppRepository().App(FakeAppApi.AppKey);
+            var app = await factory.AppRepository().AddApp(new AppKey("Fake"), clock.Now());
             var version = await app.StartNewPatch(clock.Now());
             await version.Publishing();
             await version.Published();
