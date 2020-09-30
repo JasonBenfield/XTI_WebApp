@@ -9,10 +9,10 @@ namespace XTI_WebAppClient
 
         protected XtiToken xtiToken;
 
-        protected AppClient(IHttpClientFactory httpClientFactory, string baseUrl, string appKey)
+        protected AppClient(IHttpClientFactory httpClientFactory, string baseUrl, string appKey, string version)
         {
             this.httpClientFactory = httpClientFactory;
-            url = $"{baseUrl}/{appKey}";
+            url = $"{baseUrl}/{appKey}/{version}";
         }
 
         public override string ToString() => $"{GetType().Name} {url}";

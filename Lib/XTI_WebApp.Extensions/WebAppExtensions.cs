@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,6 +55,12 @@ namespace XTI_WebApp.Extensions
             });
             services.AddSingleton<Clock, UtcClock>();
             services.AddScoped<AppFactory, EfAppFactory>();
+            services.AddScoped(sp =>
+            {
+                var dataProtector = sp.GetDataProtector(new[] { $"{appName}-Anon" });
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                return new AnonClient(dataProtector, httpContextAccessor);
+            });
         }
 
         private static CacheBust createCacheBust(IServiceProvider sp, Assembly assembly)
