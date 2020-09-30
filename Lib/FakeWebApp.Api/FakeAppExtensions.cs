@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using XTI_WebApp.Api;
+using XTI_App.Api;
 
 namespace FakeWebApp.Api
 {

@@ -4,14 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using XTI_App;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
     public class AppApi
     {
         protected AppApi
         (
             string appKey,
-            WebAppUser user,
+            AppApiUser user,
             ResourceAccess access = null
         )
         {
@@ -20,7 +20,7 @@ namespace XTI_WebApp.Api
             Access = access ?? ResourceAccess.AllowAnonymous();
         }
 
-        private readonly WebAppUser user;
+        private readonly AppApiUser user;
         private readonly Dictionary<string, AppApiGroup> groups = new Dictionary<string, AppApiGroup>();
 
         public XtiPath Name { get; }
@@ -38,7 +38,7 @@ namespace XTI_WebApp.Api
             }
         }
 
-        protected TGroup AddGroup<TGroup>(Func<WebAppUser, TGroup> createGroup)
+        protected TGroup AddGroup<TGroup>(Func<AppApiUser, TGroup> createGroup)
             where TGroup : AppApiGroup
         {
             var group = createGroup(user);

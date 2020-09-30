@@ -2,20 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using XTI_App;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
     public class AppApiGroup
     {
-        public AppApiGroup(AppApi api, string groupName, ResourceAccess access, WebAppUser user)
+        public AppApiGroup(AppApi api, string groupName, ResourceAccess access, AppApiUser user)
         {
             Name = api.Name.WithGroup(groupName);
             Access = access;
             this.user = user;
         }
 
-        private readonly WebAppUser user;
+        private readonly AppApiUser user;
         private readonly Dictionary<string, AppApiAction> actions = new Dictionary<string, AppApiAction>();
 
         public XtiPath Name { get; }
@@ -39,7 +38,7 @@ namespace XTI_WebApp.Api
 
         protected AppApiAction<TModel, AppActionViewResult> AddDefaultView<TModel>
         (
-            Func<WebAppUser, AppActionValidation<TModel>> createValidation
+            Func<AppApiUser, AppActionValidation<TModel>> createValidation
         )
         {
             return AddView
@@ -53,7 +52,7 @@ namespace XTI_WebApp.Api
         protected AppApiAction<TModel, AppActionViewResult> AddView<TModel>
         (
             string actionName,
-            Func<WebAppUser, AppAction<TModel, AppActionViewResult>> createAction
+            Func<AppApiUser, AppAction<TModel, AppActionViewResult>> createAction
         )
         {
             return AddView(actionName, null, createAction);
@@ -62,8 +61,8 @@ namespace XTI_WebApp.Api
         protected AppApiAction<TModel, AppActionViewResult> AddView<TModel>
         (
             string actionName,
-            Func<WebAppUser, AppActionValidation<TModel>> createValidation,
-            Func<WebAppUser, AppAction<TModel, AppActionViewResult>> createAction
+            Func<AppApiUser, AppActionValidation<TModel>> createValidation,
+            Func<AppApiUser, AppAction<TModel, AppActionViewResult>> createAction
         )
         {
             return AddView(actionName, Access, createValidation, createAction);
@@ -73,8 +72,8 @@ namespace XTI_WebApp.Api
         (
             string actionName,
             ResourceAccess access,
-            Func<WebAppUser, AppActionValidation<TModel>> createValidation,
-            Func<WebAppUser, AppAction<TModel, AppActionViewResult>> createAction
+            Func<AppApiUser, AppActionValidation<TModel>> createValidation,
+            Func<AppApiUser, AppAction<TModel, AppActionViewResult>> createAction
         )
         {
             return AddAction
@@ -90,7 +89,7 @@ namespace XTI_WebApp.Api
         protected AppApiAction<TModel, AppActionRedirectResult> AddRedirect<TModel>
         (
             string actionName,
-            Func<WebAppUser, AppAction<TModel, AppActionRedirectResult>> createAction
+            Func<AppApiUser, AppAction<TModel, AppActionRedirectResult>> createAction
         )
         {
             return AddRedirect(actionName, null, createAction);
@@ -99,8 +98,8 @@ namespace XTI_WebApp.Api
         protected AppApiAction<TModel, AppActionRedirectResult> AddRedirect<TModel>
         (
             string actionName,
-            Func<WebAppUser, AppActionValidation<TModel>> createValidation,
-            Func<WebAppUser, AppAction<TModel, AppActionRedirectResult>> createAction
+            Func<AppApiUser, AppActionValidation<TModel>> createValidation,
+            Func<AppApiUser, AppAction<TModel, AppActionRedirectResult>> createAction
         )
         {
             return AddRedirect(actionName, Access, createValidation, createAction);
@@ -110,8 +109,8 @@ namespace XTI_WebApp.Api
         (
             string actionName,
             ResourceAccess access,
-            Func<WebAppUser, AppActionValidation<TModel>> createValidation,
-            Func<WebAppUser, AppAction<TModel, AppActionRedirectResult>> createAction
+            Func<AppApiUser, AppActionValidation<TModel>> createValidation,
+            Func<AppApiUser, AppAction<TModel, AppActionRedirectResult>> createAction
         )
         {
             return AddAction
@@ -127,8 +126,8 @@ namespace XTI_WebApp.Api
         protected AppApiAction<TModel, TResult> AddAction<TModel, TResult>
         (
             string actionName,
-            Func<WebAppUser, AppActionValidation<TModel>> createValidation,
-            Func<WebAppUser, AppAction<TModel, TResult>> createExecution,
+            Func<AppApiUser, AppActionValidation<TModel>> createValidation,
+            Func<AppApiUser, AppAction<TModel, TResult>> createExecution,
             string friendlyName = null
         )
         {
@@ -138,7 +137,7 @@ namespace XTI_WebApp.Api
         protected AppApiAction<TModel, TResult> AddAction<TModel, TResult>
         (
             string actionName,
-            Func<WebAppUser, AppAction<TModel, TResult>> createExecution,
+            Func<AppApiUser, AppAction<TModel, TResult>> createExecution,
             string friendlyName = null
         )
         {
@@ -149,7 +148,7 @@ namespace XTI_WebApp.Api
         (
             string actionName,
             ResourceAccess access,
-            Func<WebAppUser, AppAction<TModel, TResult>> createExecution,
+            Func<AppApiUser, AppAction<TModel, TResult>> createExecution,
             string friendlyName = null
         )
         {
@@ -167,8 +166,8 @@ namespace XTI_WebApp.Api
         (
             string actionName,
             ResourceAccess access,
-            Func<WebAppUser, AppActionValidation<TModel>> createValidation,
-            Func<WebAppUser, AppAction<TModel, TResult>> createExecution,
+            Func<AppApiUser, AppActionValidation<TModel>> createValidation,
+            Func<AppApiUser, AppAction<TModel, TResult>> createExecution,
             string friendlyName = null
         )
         {

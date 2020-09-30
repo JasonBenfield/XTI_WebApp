@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\XTI_App.Api\XTI_App.Api.csproj" />
     <ProjectReference Include="..\XTI_App.EF\XTI_App.EF.csproj" />
-    <ProjectReference Include="..\XTI_WebApp.Api\XTI_WebApp.Api.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using XTI_App;
-using XTI_WebApp.Api;
+using XTI_App.Api;
 
 namespace FakeWebApp.Api
 {
@@ -10,7 +10,7 @@ namespace FakeWebApp.Api
         private static readonly string AppKeyValue = "Fake";
         public static readonly AppKey AppKey = new AppKey(AppKeyValue);
 
-        public FakeAppApi(WebAppUser user, ResourceAccess access = null)
+        public FakeAppApi(AppApiUser user, ResourceAccess access = null)
             : base(AppKeyValue, user, access)
         {
             Employee = AddGroup(u => new EmployeeGroup(this, u));
@@ -22,7 +22,7 @@ namespace FakeWebApp.Api
 
     public sealed class EmployeeGroup : AppApiGroup
     {
-        public EmployeeGroup(AppApi api, WebAppUser user)
+        public EmployeeGroup(AppApi api, AppApiUser user)
             : base
             (
                   api,
@@ -93,7 +93,7 @@ namespace FakeWebApp.Api
 
     public sealed class ProductGroup : AppApiGroup
     {
-        public ProductGroup(AppApi api, WebAppUser user)
+        public ProductGroup(AppApi api, AppApiUser user)
             : base
             (
                 api,

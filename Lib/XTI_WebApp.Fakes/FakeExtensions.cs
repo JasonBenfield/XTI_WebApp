@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using XTI_App;
 using XTI_App.EF;
-using XTI_WebApp.Api;
+using XTI_App.Api;
 
 namespace XTI_WebApp.Fakes
 {
@@ -28,7 +28,7 @@ namespace XTI_WebApp.Fakes
             services.AddSingleton<Clock, FakeClock>();
             services.AddSingleton(sp => (FakeClock)sp.GetService<Clock>());
             services.AddSingleton<AppFactory, EfAppFactory>();
-            services.AddSingleton<WebAppUser, SuperUser>();
+            services.AddSingleton<AppApiUser, AppApiSuperUser>();
         }
     }
 }

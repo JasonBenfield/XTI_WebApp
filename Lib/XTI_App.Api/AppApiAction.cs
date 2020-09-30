@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using XTI_App;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
     public interface AppApiAction
     {
@@ -23,9 +23,9 @@ namespace XTI_WebApp.Api
         (
             XtiPath name,
             ResourceAccess access,
-            WebAppUser user,
-            Func<WebAppUser, AppActionValidation<TModel>> createValidation,
-            Func<WebAppUser, AppAction<TModel, TResult>> createExecution,
+            AppApiUser user,
+            Func<AppApiUser, AppActionValidation<TModel>> createValidation,
+            Func<AppApiUser, AppAction<TModel, TResult>> createExecution,
             string friendlyName
         )
         {
@@ -38,9 +38,9 @@ namespace XTI_WebApp.Api
             this.createExecution = createExecution;
         }
 
-        private readonly WebAppUser user;
-        private readonly Func<WebAppUser, AppActionValidation<TModel>> createValidation;
-        private readonly Func<WebAppUser, AppAction<TModel, TResult>> createExecution;
+        private readonly AppApiUser user;
+        private readonly Func<AppApiUser, AppActionValidation<TModel>> createValidation;
+        private readonly Func<AppApiUser, AppAction<TModel, TResult>> createExecution;
 
         public XtiPath Name { get; }
         public string FriendlyName { get; }

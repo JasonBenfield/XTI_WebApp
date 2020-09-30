@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using XTI_App;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
     public sealed class ResourceAccess
     {

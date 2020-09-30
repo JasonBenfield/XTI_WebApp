@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.EF;
 using XTI_Configuration.Extensions;
-using XTI_WebApp.Api;
+using XTI_App.Api;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
 

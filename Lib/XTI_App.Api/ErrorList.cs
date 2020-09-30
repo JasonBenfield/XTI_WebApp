@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
     public sealed class ErrorList
     {

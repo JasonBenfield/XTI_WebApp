@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
     public interface ValueTemplate
     {

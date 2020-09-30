@@ -1,4 +1,4 @@
-﻿using XTI_WebApp.Api;
+﻿using XTI_App.Api;
 
 namespace FakeWebApp.Api
 {
@@ -6,7 +6,7 @@ namespace FakeWebApp.Api
     {
         public AppApiTemplate Create()
         {
-            var api = new FakeAppApi(new SuperUser());
+            var api = new FakeAppApi(new AppApiSuperUser());
             return api.Template();
         }
     }

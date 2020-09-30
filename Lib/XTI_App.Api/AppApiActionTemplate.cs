@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
     public sealed class AppApiActionTemplate
     {
@@ -27,8 +27,8 @@ namespace XTI_WebApp.Api
         public ValueTemplate ModelTemplate { get; }
         public ValueTemplate ResultTemplate { get; }
 
-        public bool IsView() => ResultTemplate.DataType == typeof(AppActionViewResult);
-        public bool IsRedirect() => ResultTemplate.DataType == typeof(AppActionRedirectResult);
+        public bool IsView() => ResultTemplate.DataType.Name == "AppActionViewResult";
+        public bool IsRedirect() => ResultTemplate.DataType.Name == "AppActionRedirectResult";
         public bool HasEmptyModel() => ModelTemplate.DataType == typeof(EmptyRequest);
 
         public IEnumerable<ObjectValueTemplate> ObjectTemplates() =>

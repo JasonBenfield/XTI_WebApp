@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
     public interface AppAction<TModel, TResult>
     {

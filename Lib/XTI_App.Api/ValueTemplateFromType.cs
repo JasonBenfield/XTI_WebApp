@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
     public class ValueTemplateFromType
     {

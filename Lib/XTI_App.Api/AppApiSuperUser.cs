@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
-    public sealed class SuperUser : WebAppUser
+    public sealed class AppApiSuperUser : AppApiUser
     {
         public Task<bool> HasAccess(ResourceAccess resourceAccess)
         {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XTI_WebApp.Api
+namespace XTI_App.Api
 {
     public sealed class NameFromGroupClassName
     {
