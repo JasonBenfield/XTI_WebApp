@@ -1,5 +1,4 @@
-﻿using FakeWebApp.Api;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
@@ -90,8 +89,7 @@ namespace XTI_WebApp.IntegrationTests
             var appDbReset = sp.GetService<AppDbReset>();
             await appDbReset.Run();
             await new AppSetup(factory).Run();
-            await new FakeAppSetup(sp).Run();
-            var app = await sp.GetService<AppFactory>().AppRepository().App(FakeAppApi.AppKey);
+            var app = await sp.GetService<AppFactory>().AppRepository().AddApp(new AppKey("Fake"), DateTime.UtcNow);
             var input = new TestInput(sp, app);
             return input;
         }
