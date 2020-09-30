@@ -43,8 +43,10 @@ namespace XTI_WebAppClient
             }
             else
             {
-                var errors = JsonSerializer.Deserialize<ErrorModel[]>(responseContent);
-                throw new AppClientException(url, response.StatusCode, null);
+                var errors = string.IsNullOrWhiteSpace(responseContent)
+                    ? new ErrorModel[] { }
+                    : JsonSerializer.Deserialize<ErrorModel[]>(responseContent);
+                throw new AppClientException(url, response.StatusCode, errors);
             }
             return result;
         }

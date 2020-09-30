@@ -132,7 +132,7 @@ namespace XTI_WebApp.AspTests
         {
             var input = await setup();
             var explicitVersion = await input.App.StartNewPatch(input.Clock.Now());
-            var uri = $"/Fake/v{explicitVersion.ID}/Controller1/Action1";
+            var uri = $"/Fake/V{explicitVersion.ID}/Controller1/Action1";
             await input.GetAsync(uri);
             var sessions = await retrieveSessionsForToday(input);
             var requests = (await sessions[0].Requests()).ToArray();

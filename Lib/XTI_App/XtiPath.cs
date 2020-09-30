@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,7 +12,7 @@ namespace XTI_App
         {
             var parts = (str ?? "").Split('/', StringSplitOptions.RemoveEmptyEntries);
             var names = new List<string>(parts.Concat(Enumerable.Repeat("", 4 - parts.Length)));
-            return new XtiPath(names[0], names[1], names[2]);
+            return new XtiPath(names[0], names[1], names[2], names[3]);
         }
 
         public XtiPath(string appKey, string version) : this(appKey, version, null, null)
@@ -85,7 +84,7 @@ namespace XTI_App
 
         public string Format()
         {
-            var parts = new string[] { App, Group, Action }.TakeWhile(str => !string.IsNullOrWhiteSpace(str));
+            var parts = new string[] { App, Version, Group, Action }.TakeWhile(str => !string.IsNullOrWhiteSpace(str));
             return string.Join("/", parts);
         }
 
