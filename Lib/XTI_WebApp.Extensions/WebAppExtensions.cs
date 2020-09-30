@@ -31,7 +31,7 @@ namespace XTI_WebApp.Extensions
             });
             services.AddHttpContextAccessor();
             services.Configure<WebAppOptions>(configuration.GetSection(WebAppOptions.WebApp));
-            services.Configure<AppDbOptions>(configuration.GetSection(AppDbOptions.AppDb));
+            services.Configure<DbOptions>(configuration.GetSection(DbOptions.DB));
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Jwt));
             var webAppOptions = services.BuildServiceProvider().GetService<IOptions<WebAppOptions>>().Value;
             services
@@ -45,9 +45,9 @@ namespace XTI_WebApp.Extensions
             services.AddScoped(createPageContext);
             services.AddDbContext<AppDbContext>(optionsAction: (sp, dbOptionsBuilder) =>
             {
-                var appDbOptions = sp.GetService<IOptions<AppDbOptions>>().Value;
-                dbOptionsBuilder.UseSqlServer(appDbOptions.ConnectionString);
-                var hostingEnv = sp.GetService<IWebHostEnvironment>();
+                var appDbOptions = sp.GetService<IOptions<DbOptions>>().Value;
+                var hostingEnv = sp.GetService<IHostEnvironment>();
+                dbOptionsBuilder.UseSqlServer(new AppConnectionString(appDbOptions, hostingEnv.EnvironmentName).Value());
                 if (hostingEnv.IsDevOrTest())
                 {
                     dbOptionsBuilder.EnableSensitiveDataLogging();

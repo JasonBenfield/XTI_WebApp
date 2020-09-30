@@ -1,12 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using System;
 using System.Threading.Tasks;
 using XTI_App;
-using XTI_App.EF;
 using XTI_Configuration.Extensions;
 using XTI_ConsoleApp.Extensions;
 using XTI_Version;

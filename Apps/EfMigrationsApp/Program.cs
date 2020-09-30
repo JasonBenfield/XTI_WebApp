@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Threading.Tasks;
-using XTI_WebApp;
-using XTI_Configuration.Extensions;
+﻿using System.Threading.Tasks;
 
 namespace EfMigrationsApp
 {

@@ -15,12 +15,12 @@ namespace XTI_ConsoleApp.Extensions
         public static void AddConsoleAppServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<ConsoleAppOptions>(configuration.GetSection(ConsoleAppOptions.ConsoleApp));
-            services.Configure<AppDbOptions>(configuration.GetSection(AppDbOptions.AppDb));
+            services.Configure<DbOptions>(configuration.GetSection(DbOptions.DB));
             services.AddDbContext<AppDbContext>((sp, options) =>
             {
-                var appDbOptions = sp.GetService<IOptions<AppDbOptions>>().Value;
-                options.UseSqlServer(appDbOptions.ConnectionString);
+                var appDbOptions = sp.GetService<IOptions<DbOptions>>().Value;
                 var hostEnvironment = sp.GetService<IHostEnvironment>();
+                options.UseSqlServer(new AppConnectionString(appDbOptions, hostEnvironment.EnvironmentName).Value());
                 if (hostEnvironment.IsDevOrTest())
                 {
                     options.EnableSensitiveDataLogging();
@@ -30,8 +30,8 @@ namespace XTI_ConsoleApp.Extensions
                     options.EnableSensitiveDataLogging(false);
                 }
             });
-            services.AddSingleton<AppFactory, EfAppFactory>();
-            services.AddSingleton<Clock, UtcClock>();
+            services.AddScoped<AppFactory, EfAppFactory>();
+            services.AddScoped<Clock, UtcClock>();
         }
     }
 }

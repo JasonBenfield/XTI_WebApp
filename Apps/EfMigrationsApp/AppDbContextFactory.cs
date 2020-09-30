@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using System;
 using XTI_App.EF;
 using XTI_Configuration.Extensions;
-using XTI_WebApp;
 
 namespace EfMigrationsApp
 {
@@ -16,12 +15,12 @@ namespace EfMigrationsApp
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             configBuilder.UseXtiConfiguration(environment, args);
             var config = configBuilder.Build();
-            var section = config.GetSection(AppDbOptions.AppDb);
-            var appDbOptions = section.Get<AppDbOptions>();
+            var section = config.GetSection(DbOptions.DB);
+            var appDbOptions = section.Get<DbOptions>();
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>()
                 .UseSqlServer
                 (
-                    appDbOptions.ConnectionString,
+                    new AppConnectionString(appDbOptions, environment).Value(),
                     b => b.MigrationsAssembly("EfMigrationsApp")
                 )
                 .EnableSensitiveDataLogging();
