@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace XTI_WebApp.Extensions
             {
                 session = await anonSession(context, clock, appFactory, anonClient);
             }
-            var xtiPath = XtiPath.Parse(context.Request.Path);
+            var xtiPath = XtiPath.Parse($"{context.Request.PathBase}{context.Request.Path}");
             var version = await retrieveVersion(appFactory, xtiPath);
             var request = await session.LogRequest(version, context.Request.Path, clock.Now());
             try
@@ -68,9 +69,15 @@ namespace XTI_WebApp.Extensions
             }
             else
             {
-                version = await app.Version(xtiPath.VersionID());
+                try
+                {
+                    version = await app.Version(xtiPath.VersionID());
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Version: {xtiPath.Version}, Full: {xtiPath.Value()}", ex);
+                }
             }
-
             return version;
         }
 
