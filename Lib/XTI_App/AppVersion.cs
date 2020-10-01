@@ -1,10 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace XTI_App
 {
-    public sealed class AppVersion
+    public sealed class AppVersion : IAppVersion
     {
         private readonly AppFactory factory;
         private readonly DataRepository<AppVersionRecord> repo;
@@ -35,7 +33,8 @@ namespace XTI_App
 
         public async Task Publishing()
         {
-            var current = await factory.VersionRepository().CurrentVersion(record.AppID);
+            var app = await factory.AppRepository().App(record.AppID);
+            var current = await app.CurrentVersion();
             await repo.Update(record, r =>
             {
                 r.Status = AppVersionStatus.Publishing.Value;
@@ -60,7 +59,8 @@ namespace XTI_App
 
         public async Task Published()
         {
-            var current = await factory.VersionRepository().CurrentVersion(record.AppID);
+            var app = await factory.AppRepository().App(record.AppID);
+            var current = await app.CurrentVersion();
             if (current.IsCurrent())
             {
                 await current.Archive();

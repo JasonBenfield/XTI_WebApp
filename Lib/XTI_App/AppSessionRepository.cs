@@ -17,13 +17,13 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        public async Task<AppSession> RetrieveByID(int id)
+        public async Task<AppSession> Session(int id)
         {
             var record = await repo.Retrieve().FirstOrDefaultAsync(s => s.ID == id);
             return factory.CreateAppSession(record);
         }
 
-        public async Task<IEnumerable<AppSession>> RetrieveByTimeRange(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<AppSession>> SessionsByTimeRange(DateTime startDate, DateTime endDate)
         {
             var records = await repo.Retrieve()
                 .Where(s => s.TimeStarted >= startDate && s.TimeStarted < endDate)

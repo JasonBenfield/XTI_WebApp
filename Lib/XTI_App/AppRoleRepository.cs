@@ -35,9 +35,19 @@ namespace XTI_App
             return records.Select(r => factory.CreateAppRole(r));
         }
 
-        internal IQueryable<int> RoleIDsForApp(App app)
+        internal async Task<AppRole> Role(App app, AppRoleName roleName)
         {
-            return repo.Retrieve().Where(r => r.AppID == app.ID).Select(r => r.ID);
+            var record = await repo.Retrieve()
+                .Where(r => r.AppID == app.ID && r.Name == roleName.Value)
+                .FirstOrDefaultAsync();
+            return factory.CreateAppRole(record);
+        }
+
+        internal IQueryable<int> RoleIDsForApp(IApp app)
+        {
+            return repo.Retrieve()
+                .Where(r => r.AppID == app.ID)
+                .Select(r => r.ID);
         }
     }
 }

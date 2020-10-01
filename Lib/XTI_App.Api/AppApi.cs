@@ -11,7 +11,7 @@ namespace XTI_App.Api
         protected AppApi
         (
             string appKey,
-            AppApiUser user,
+            IAppApiUser user,
             ResourceAccess access = null
         )
         {
@@ -20,7 +20,7 @@ namespace XTI_App.Api
             Access = access ?? ResourceAccess.AllowAnonymous();
         }
 
-        private readonly AppApiUser user;
+        private readonly IAppApiUser user;
         private readonly Dictionary<string, AppApiGroup> groups = new Dictionary<string, AppApiGroup>();
 
         public XtiPath Name { get; }
@@ -38,7 +38,7 @@ namespace XTI_App.Api
             }
         }
 
-        protected TGroup AddGroup<TGroup>(Func<AppApiUser, TGroup> createGroup)
+        protected TGroup AddGroup<TGroup>(Func<IAppApiUser, TGroup> createGroup)
             where TGroup : AppApiGroup
         {
             var group = createGroup(user);

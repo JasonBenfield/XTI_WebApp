@@ -1,6 +1,6 @@
 ﻿namespace XTI_App
 {
-    public sealed class AppUserRole
+    public sealed class AppUserRole : IAppUserRole
     {
         private readonly AppUserRoleRecord record;
 
@@ -9,7 +9,7 @@
             this.record = record ?? new AppUserRoleRecord();
         }
 
-        public bool IsRole(AppRole appRole) => appRole.ID == record.RoleID;
+        public bool IsRole(IAppRole appRole) => appRole.ID == record.RoleID;
 
         public override string ToString() => $"{nameof(AppUserRole)} {record.ID}";
     }

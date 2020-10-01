@@ -96,7 +96,7 @@ namespace XTI_WebApp.AspTests
             return
             (
                 await input.Factory.SessionRepository()
-                    .RetrieveByTimeRange(input.Clock.Now().AddDays(-1), input.Clock.Now().AddDays(1))
+                    .SessionsByTimeRange(input.Clock.Now().AddDays(-1), input.Clock.Now().AddDays(1))
             )
             .ToArray();
         }

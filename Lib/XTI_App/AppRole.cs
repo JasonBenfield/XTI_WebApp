@@ -1,6 +1,6 @@
 ﻿namespace XTI_App
 {
-    public sealed class AppRole
+    public sealed class AppRole : IAppRole
     {
         private readonly AppRoleRecord record;
 
