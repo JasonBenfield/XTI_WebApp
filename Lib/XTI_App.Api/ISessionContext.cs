@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace XTI_App.Api
 {
     public interface ISessionContext
     {
+        Task<IAppSession> Session();
         Task<IAppUser> User();
     }
 }

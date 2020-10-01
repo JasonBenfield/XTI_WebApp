@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace XTI_App
 {
-    public sealed class AppSession
+    public sealed class AppSession : IAppSession
     {
         private readonly AppFactory factory;
         private readonly DataRepository<AppSessionRecord> repo;
@@ -28,7 +28,7 @@ namespace XTI_App
             return requestRepo.Add(this, version, path, timeRequested);
         }
 
-        public Task Authenticate(AppUser user)
+        public Task Authenticate(IAppUser user)
         {
             return repo.Update(record, r =>
             {

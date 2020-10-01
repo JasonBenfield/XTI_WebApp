@@ -105,7 +105,7 @@ namespace XTI_WebApp.AspTests
         public async Task ShouldUseSessionForAuthenticatedUser()
         {
             var input = await setup();
-            var user = await input.Factory.UserRepository().RetrieveByUserName(new AppUserName("xartogg"));
+            var user = await input.Factory.UserRepository().User(new AppUserName("xartogg"));
             var session = await input.Factory.SessionRepository().Create(user, input.Clock.Now(), "", "", "");
             input.TestAuthOptions.IsEnabled = true;
             input.TestAuthOptions.Session = session;
@@ -122,7 +122,7 @@ namespace XTI_WebApp.AspTests
             var input = await setup();
             await input.GetAsync("/Fake/Current/Controller1/Action1");
             var sessions = await input.AppDbContext.Sessions.ToArrayAsync();
-            var anonUser = await input.Factory.UserRepository().RetrieveByUserName(AppUserName.Anon);
+            var anonUser = await input.Factory.UserRepository().User(AppUserName.Anon);
             Assert.That(sessions[0].UserID, Is.EqualTo(anonUser.ID), "Should create session with anonymous user");
         }
 
@@ -373,6 +373,8 @@ namespace XTI_WebApp.AspTests
                                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                                 return new AnonClient(protector, httpContextAccessor);
                             });
+                            services.AddScoped<IAppContext, WebAppContext>();
+                            services.AddScoped<ISessionContext, WebSessionContext>();
                         })
                         .Configure(app =>
                         {
