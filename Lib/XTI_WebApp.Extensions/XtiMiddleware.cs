@@ -57,14 +57,14 @@ namespace XTI_WebApp.Extensions
             var sessionRepo = appFactory.SessionRepository();
             var sessionIDClaim = context.User.Claims.First(c => c.Type == "SessionID");
             var sessionID = int.Parse(sessionIDClaim.Value);
-            return sessionRepo.RetrieveByID(sessionID);
+            return sessionRepo.Session(sessionID);
         }
 
         private static async Task<AppSession> anonSession(HttpContext context, Clock clock, AppFactory appFactory, AnonClient anonClient)
         {
             anonClient.Load();
             var sessionRepo = appFactory.SessionRepository();
-            var session = await sessionRepo.RetrieveByID(anonClient.SessionID);
+            var session = await sessionRepo.Session(anonClient.SessionID);
             if (!session.HasStarted() || session.HasEnded())
             {
                 var userRepo = appFactory.UserRepository();

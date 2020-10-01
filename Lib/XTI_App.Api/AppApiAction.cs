@@ -23,9 +23,9 @@ namespace XTI_App.Api
         (
             XtiPath name,
             ResourceAccess access,
-            AppApiUser user,
-            Func<AppApiUser, AppActionValidation<TModel>> createValidation,
-            Func<AppApiUser, AppAction<TModel, TResult>> createExecution,
+            IAppApiUser user,
+            Func<IAppApiUser, AppActionValidation<TModel>> createValidation,
+            Func<IAppApiUser, AppAction<TModel, TResult>> createExecution,
             string friendlyName
         )
         {
@@ -38,9 +38,9 @@ namespace XTI_App.Api
             this.createExecution = createExecution;
         }
 
-        private readonly AppApiUser user;
-        private readonly Func<AppApiUser, AppActionValidation<TModel>> createValidation;
-        private readonly Func<AppApiUser, AppAction<TModel, TResult>> createExecution;
+        private readonly IAppApiUser user;
+        private readonly Func<IAppApiUser, AppActionValidation<TModel>> createValidation;
+        private readonly Func<IAppApiUser, AppAction<TModel, TResult>> createExecution;
 
         public XtiPath Name { get; }
         public string FriendlyName { get; }

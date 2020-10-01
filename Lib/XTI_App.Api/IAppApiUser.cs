@@ -2,7 +2,7 @@
 
 namespace XTI_App.Api
 {
-    public interface AppApiUser
+    public interface IAppApiUser
     {
         Task<bool> HasAccess(ResourceAccess resourceAccess);
     }

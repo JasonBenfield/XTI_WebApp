@@ -27,11 +27,16 @@ namespace XTI_App
             return factory.CreateAppUserRole(record);
         }
 
-        internal async Task<IEnumerable<AppUserRole>> RolesForUser(AppUser user, App app)
+        internal async Task<IEnumerable<AppUserRole>> RolesForUser(IAppUser user, IApp app)
         {
             var roleRepo = factory.RoleRepository();
             var records = await repo.Retrieve()
-                .Where(ur => ur.UserID == user.ID && roleRepo.RoleIDsForApp(app).Any(id => id == ur.RoleID))
+                .Where
+                (
+                    ur =>
+                        ur.UserID == user.ID
+                        && roleRepo.RoleIDsForApp(app).Any(id => id == ur.RoleID)
+                )
                 .ToArrayAsync();
             return records.Select(ur => factory.CreateAppUserRole(ur));
         }
