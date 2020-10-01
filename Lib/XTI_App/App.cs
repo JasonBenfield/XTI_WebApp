@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace XTI_App
@@ -20,6 +19,18 @@ namespace XTI_App
         public int ID { get => record.ID; }
         public AppKey Key() => new AppKey(record.Key);
         public bool Exists() => ID > 0;
+
+        public Task<AppRole> AddRole(AppRoleName name)
+        {
+            var roleRepo = factory.AppRoleRepository();
+            return roleRepo.Add(this, name);
+        }
+
+        public Task<IEnumerable<AppRole>> Roles()
+        {
+            var roleRepo = factory.AppRoleRepository();
+            return roleRepo.RolesForApp(this);
+        }
 
         public Task<AppVersion> StartNewPatch(DateTime timeAdded) =>
             startNewVersion(timeAdded, AppVersionType.Patch);

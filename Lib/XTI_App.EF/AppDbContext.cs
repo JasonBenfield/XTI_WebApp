@@ -13,6 +13,7 @@ namespace XTI_App.EF
             Events = Set<AppEventRecord>();
             Apps = Set<AppRecord>();
             Versions = Set<AppVersionRecord>();
+            Roles = Set<AppRoleRecord>();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,6 +24,7 @@ namespace XTI_App.EF
             modelBuilder.ApplyConfiguration(new AppEventEntityConfiguration());
             modelBuilder.ApplyConfiguration(new AppEntityConfiguration());
             modelBuilder.ApplyConfiguration(new AppVersionEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new AppRoleEntityConfiguration());
             base.OnModelCreating(modelBuilder);
         }
 
@@ -32,5 +34,6 @@ namespace XTI_App.EF
         public DbSet<AppEventRecord> Events { get; }
         public DbSet<AppRecord> Apps { get; }
         public DbSet<AppVersionRecord> Versions { get; }
+        public DbSet<AppRoleRecord> Roles { get; }
     }
 }

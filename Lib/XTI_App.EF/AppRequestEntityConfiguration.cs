@@ -9,15 +9,15 @@ namespace XTI_App.EF
         {
             builder.HasKey(r => r.ID);
             builder.Property(r => r.ID).ValueGeneratedOnAdd();
-            builder.Property(s => s.Path).HasMaxLength(100);
+            builder.Property(r => r.Path).HasMaxLength(100);
             builder
                 .HasOne<AppSessionRecord>()
                 .WithMany()
-                .HasForeignKey(s => s.SessionID);
+                .HasForeignKey(r => r.SessionID);
             builder
                 .HasOne<AppVersionRecord>()
                 .WithMany()
-                .HasForeignKey(s => s.VersionID);
+                .HasForeignKey(r => r.VersionID);
         }
     }
 }
