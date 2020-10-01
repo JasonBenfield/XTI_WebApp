@@ -6,17 +6,20 @@ namespace XTI_App
 {
     public sealed class AppRequest
     {
-        internal AppRequest(AppFactory factory, AppRequestRecord record)
+        internal AppRequest(AppFactory factory, DataRepository<AppRequestRecord> repo, AppRequestRecord record)
         {
+            this.repo = repo;
             this.factory = factory;
             this.record = record ?? new AppRequestRecord();
         }
 
         private readonly AppFactory factory;
+        private readonly DataRepository<AppRequestRecord> repo;
         private readonly AppRequestRecord record;
 
         public int ID { get => record.ID; }
         public XtiPath ResourceName() => XtiPath.Parse(record.Path);
+        public bool HasEnded() => new Timestamp(record.TimeEnded).IsValid();
 
         public Task<AppVersion> Version()
         {
@@ -36,6 +39,14 @@ namespace XTI_App
             (
                 this, timeOccurred, AppEventSeverity.CriticalError, caption, ex.Message, ex.StackTrace
             );
+        }
+
+        public Task End(DateTime timeEnded)
+        {
+            return repo.Update(record, r =>
+            {
+                r.TimeEnded = timeEnded;
+            });
         }
 
         public override string ToString() => $"{nameof(AppRequest)} {ID}";

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using XTI_App.EF;
 
 namespace EfMigrationsApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AuthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201001021554_RequestTime")]
+    partial class RequestTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,7 +89,10 @@ namespace EfMigrationsApp.Migrations
                     b.Property<int>("SessionID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("TimeRequested")
+                    b.Property<DateTime>("TimeEnded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("TimeStarted")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("VersionID")

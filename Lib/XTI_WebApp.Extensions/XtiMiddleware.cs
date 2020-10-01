@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -46,6 +45,10 @@ namespace XTI_WebApp.Extensions
             catch (Exception ex)
             {
                 await handleError(context, clock, request, ex);
+            }
+            finally
+            {
+                await request.End(clock.Now());
             }
         }
 
