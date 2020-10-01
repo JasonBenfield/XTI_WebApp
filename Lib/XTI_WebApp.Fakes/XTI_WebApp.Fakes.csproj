@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <Import Project="..\\..\\Version.Targets" />
@@ -13,10 +13,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.8" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <ProjectReference Include="..\XTI_App.Api\XTI_App.Api.csproj" />
-    <ProjectReference Include="..\XTI_App.EF\XTI_App.EF.csproj" />
+    <ProjectReference Include="..\XTI_WebApp.Extensions\XTI_WebApp.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -24,7 +24,8 @@ namespace XTI_WebApp.Extensions
             HttpContext context,
             Clock clock,
             AppFactory appFactory,
-            AnonClient anonClient
+            AnonClient anonClient,
+            XtiPath xtiPath
         )
         {
             AppSession session;
@@ -36,7 +37,6 @@ namespace XTI_WebApp.Extensions
             {
                 session = await anonSession(context, clock, appFactory, anonClient);
             }
-            var xtiPath = XtiPath.Parse($"{context.Request.PathBase}{context.Request.Path}");
             var version = await retrieveVersion(appFactory, xtiPath);
             var request = await session.LogRequest(version, context.Request.Path, clock.Now());
             try

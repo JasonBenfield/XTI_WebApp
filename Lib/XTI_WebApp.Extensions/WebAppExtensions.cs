@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.EF;
 
@@ -41,8 +42,8 @@ namespace XTI_WebApp.Extensions
                 )
                 .PersistKeysToFileSystem(new DirectoryInfo(webAppOptions.KeyFolder))
                 .SetApplicationName(appName);
-            services.AddScoped(sp => createCacheBust(sp, assembly));
-            services.AddScoped(createPageContext);
+            services.AddScoped<CacheBust>();
+            services.AddScoped<PageContext>();
             services.AddDbContext<AppDbContext>(optionsAction: (sp, dbOptionsBuilder) =>
             {
                 var appDbOptions = sp.GetService<IOptions<DbOptions>>().Value;
@@ -61,42 +62,12 @@ namespace XTI_WebApp.Extensions
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 return new AnonClient(dataProtector, httpContextAccessor);
             });
-        }
-
-        private static CacheBust createCacheBust(IServiceProvider sp, Assembly assembly)
-        {
-            string cacheBust;
-            var options = sp.GetService<IOptions<WebAppOptions>>().Value;
-            if (string.IsNullOrWhiteSpace(options.CacheBust))
+            services.AddScoped(sp =>
             {
-                var hostingEnv = sp.GetService<IWebHostEnvironment>();
-                if (hostingEnv.IsDevOrTest())
-                {
-                    cacheBust = Guid.NewGuid().ToString("N");
-                }
-                else
-                {
-                    var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
-                    cacheBust = version;
-                }
-            }
-            else
-            {
-                cacheBust = options.CacheBust;
-            }
-            return new CacheBust(cacheBust);
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                var request = httpContextAccessor.HttpContext.Request;
+                return XtiPath.Parse($"{request.PathBase}{request.Path}");
+            });
         }
-
-        private static PageContext createPageContext(IServiceProvider sp)
-        {
-            var options = sp.GetService<IOptions<WebAppOptions>>().Value;
-            var cacheBust = sp.GetService<CacheBust>();
-            return new PageContext
-            {
-                BaseUrl = string.IsNullOrWhiteSpace(options.BaseUrl) ? "/" : options.BaseUrl,
-                CacheBust = cacheBust.Value
-            };
-        }
-
     }
 }

@@ -11,6 +11,7 @@
   <Import Project="..\\..\\Version.Targets" />
 
   <ItemGroup>
+    <ProjectReference Include="..\XTI_WebApp.Extensions\XTI_WebApp.Extensions.csproj" />
     <ProjectReference Include="..\XTI_WebApp\XTI_WebApp.csproj" />
   </ItemGroup>
 </Project>
