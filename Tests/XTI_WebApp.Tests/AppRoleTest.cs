@@ -23,6 +23,22 @@ namespace XTI_WebApp.Tests
             Assert.That(roles[0].Name(), Is.EqualTo(adminRoleName), "Should add role to app");
         }
 
+        [Test]
+        public async Task ShouldAddRoleToUser()
+        {
+            var input = await setup();
+            var adminRoleName = new AppRoleName("Admin");
+            var adminRole = await input.App.AddRole(adminRoleName);
+            var user = await input.Factory.UserRepository().Add
+            (
+                new AppUserName("someone"), new FakeHashedPassword("Password"), input.Clock.Now()
+            );
+            await user.AddRole(adminRole);
+            var userRoles = (await user.RolesForApp(input.App)).ToArray();
+            Assert.That(userRoles.Length, Is.EqualTo(1), "Should add role to user");
+            Assert.That(userRoles[0].IsRole(adminRole), Is.True, "Should add role to user");
+        }
+
         private async Task<TestInput> setup()
         {
             var services = new ServiceCollection();
@@ -33,18 +49,20 @@ namespace XTI_WebApp.Tests
             await setup.Run();
             var clock = sp.GetService<FakeClock>();
             var app = await factory.AppRepository().AddApp(new AppKey("Fake"), clock.Now());
-            return new TestInput(factory, app);
+            return new TestInput(sp, app);
         }
 
         private sealed class TestInput
         {
-            public TestInput(AppFactory factory, App app)
+            public TestInput(ServiceProvider sp, App app)
             {
-                Factory = factory;
+                Factory = sp.GetService<AppFactory>();
+                Clock = sp.GetService<FakeClock>();
                 App = app;
             }
 
             public AppFactory Factory { get; }
+            public FakeClock Clock { get; }
             public App App { get; }
         }
     }

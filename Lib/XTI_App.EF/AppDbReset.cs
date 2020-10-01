@@ -18,7 +18,8 @@ namespace XTI_App.EF
             await appDbContext.Database.ExecuteSqlRawAsync("delete from Requests");
             await appDbContext.Database.ExecuteSqlRawAsync("delete from Versions");
             await appDbContext.Database.ExecuteSqlRawAsync("delete from Sessions");
-            await appDbContext.Database.ExecuteSqlRawAsync("delete from AppRoles");
+            await appDbContext.Database.ExecuteSqlRawAsync("delete from Roles");
+            await appDbContext.Database.ExecuteSqlRawAsync("delete from UserRoles");
             await appDbContext.Database.ExecuteSqlRawAsync("delete from Users");
             await appDbContext.Database.ExecuteSqlRawAsync("delete from Apps");
         }

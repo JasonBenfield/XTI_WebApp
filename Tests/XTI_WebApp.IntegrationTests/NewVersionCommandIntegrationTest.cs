@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.EF;
@@ -93,7 +94,7 @@ namespace XTI_WebApp.IntegrationTests
             var appDbReset = sp.GetService<AppDbReset>();
             await appDbReset.Run();
             await new AppSetup(factory).Run();
-            var app = await sp.GetService<AppFactory>().AppRepository().AddApp(new AppKey("Fake"), DateTime.UtcNow);
+            var app = await factory.AppRepository().AddApp(new AppKey("Fake"), DateTime.UtcNow);
             var input = new TestInput(sp, app);
             return input;
         }

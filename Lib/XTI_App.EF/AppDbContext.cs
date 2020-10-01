@@ -14,6 +14,7 @@ namespace XTI_App.EF
             Apps = Set<AppRecord>();
             Versions = Set<AppVersionRecord>();
             Roles = Set<AppRoleRecord>();
+            UserRoles = Set<AppUserRoleRecord>();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -25,6 +26,7 @@ namespace XTI_App.EF
             modelBuilder.ApplyConfiguration(new AppEntityConfiguration());
             modelBuilder.ApplyConfiguration(new AppVersionEntityConfiguration());
             modelBuilder.ApplyConfiguration(new AppRoleEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new AppUserRoleEntityConfiguration());
             base.OnModelCreating(modelBuilder);
         }
 
@@ -35,5 +37,6 @@ namespace XTI_App.EF
         public DbSet<AppRecord> Apps { get; }
         public DbSet<AppVersionRecord> Versions { get; }
         public DbSet<AppRoleRecord> Roles { get; }
+        public DbSet<AppUserRoleRecord> UserRoles { get; }
     }
 }
