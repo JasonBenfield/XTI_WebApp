@@ -49,14 +49,34 @@ namespace XTI_WebApp.Extensions
             }
         }
 
-        private async Task handleError(HttpContext context, Clock clock, AppRequest request, Exception ex)
+        private static Task<AppSession> authenticatedSession(HttpContext context, AppFactory appFactory)
         {
-            await request.LogCriticalException(clock.Now(), ex, "An unexpected error occurred");
-            context.Response.StatusCode = getErrorStatusCode(ex);
-            context.Response.ContentType = "application/json";
-            var errors = getErrors(ex);
-            var serializedErrors = JsonSerializer.Serialize(errors);
-            await context.Response.WriteAsync(serializedErrors);
+            var sessionRepo = appFactory.SessionRepository();
+            var sessionIDClaim = context.User.Claims.First(c => c.Type == "SessionID");
+            var sessionID = int.Parse(sessionIDClaim.Value);
+            return sessionRepo.RetrieveByID(sessionID);
+        }
+
+        private static async Task<AppSession> anonSession(HttpContext context, Clock clock, AppFactory appFactory, AnonClient anonClient)
+        {
+            anonClient.Load();
+            var sessionRepo = appFactory.SessionRepository();
+            var session = await sessionRepo.RetrieveByID(anonClient.SessionID);
+            if (!session.HasStarted() || session.HasEnded())
+            {
+                var userRepo = appFactory.UserRepository();
+                var anonUser = await userRepo.RetrieveByUserName(AppUserName.Anon);
+                var requesterKey = anonClient.RequesterKey;
+                if (string.IsNullOrWhiteSpace(requesterKey))
+                {
+                    requesterKey = Guid.NewGuid().ToString("N");
+                }
+                var userAgent = context.Request.Headers["User-Agent"].ToString();
+                var remoteAddress = context.Connection.RemoteIpAddress?.ToString();
+                session = await sessionRepo.Create(anonUser, clock.Now(), requesterKey, userAgent, remoteAddress);
+                anonClient.Persist(session.ID, requesterKey);
+            }
+            return session;
         }
 
         private static async Task<AppVersion> retrieveVersion(AppFactory appFactory, XtiPath xtiPath)
@@ -69,16 +89,19 @@ namespace XTI_WebApp.Extensions
             }
             else
             {
-                try
-                {
-                    version = await app.Version(xtiPath.VersionID());
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Version: {xtiPath.Version}, Full: {xtiPath.Value()}", ex);
-                }
+                version = await app.Version(xtiPath.VersionID());
             }
             return version;
+        }
+
+        private async Task handleError(HttpContext context, Clock clock, AppRequest request, Exception ex)
+        {
+            await request.LogCriticalException(clock.Now(), ex, "An unexpected error occurred");
+            context.Response.StatusCode = getErrorStatusCode(ex);
+            context.Response.ContentType = "application/json";
+            var errors = getErrors(ex);
+            var serializedErrors = JsonSerializer.Serialize(errors);
+            await context.Response.WriteAsync(serializedErrors);
         }
 
         private int getErrorStatusCode(Exception ex)
@@ -123,29 +146,5 @@ namespace XTI_WebApp.Extensions
             return errors;
         }
 
-        private static Task<AppSession> authenticatedSession(HttpContext context, AppFactory appFactory)
-        {
-            var sessionRepo = appFactory.SessionRepository();
-            var sessionIDClaim = context.User.Claims.First(c => c.Type == "SessionID");
-            var sessionID = int.Parse(sessionIDClaim.Value);
-            return sessionRepo.RetrieveByID(sessionID);
-        }
-
-        private static async Task<AppSession> anonSession(HttpContext context, Clock clock, AppFactory appFactory, AnonClient anonClient)
-        {
-            anonClient.Load();
-            var sessionRepo = appFactory.SessionRepository();
-            var session = await sessionRepo.RetrieveByID(anonClient.SessionID);
-            if (!session.HasStarted() || session.HasEnded())
-            {
-                var userRepo = appFactory.UserRepository();
-                var anonUser = await userRepo.RetrieveByUserName(AppUserName.Anon);
-                var userAgent = context.Request.Headers["User-Agent"].ToString();
-                var remoteAddress = context.Connection.RemoteIpAddress?.ToString() ?? "";
-                session = await sessionRepo.Create(anonUser, clock.Now(), userAgent, remoteAddress);
-                anonClient.Persist(session.ID);
-            }
-            return session;
-        }
     }
 }

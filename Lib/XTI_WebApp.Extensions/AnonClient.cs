@@ -20,6 +20,7 @@ namespace XTI_WebApp.Extensions
         }
 
         public int SessionID { get; private set; }
+        public string RequesterKey { get; private set; }
 
         public void Load()
         {
@@ -35,12 +36,17 @@ namespace XTI_WebApp.Extensions
                 var unprotectedText = UTF8Encoding.UTF8.GetString(unprotectedBytes);
                 var info = JsonSerializer.Deserialize<AnonInfo>(unprotectedText);
                 SessionID = info.SessionID;
+                RequesterKey = info.RequesterKey;
             }
         }
 
-        public void Persist(int sessionID)
+        public void Persist(int sessionID, string requesterKey)
         {
-            var cookieText = JsonSerializer.Serialize(new AnonInfo { SessionID = sessionID });
+            var cookieText = JsonSerializer.Serialize(new AnonInfo
+            {
+                SessionID = sessionID,
+                RequesterKey = requesterKey
+            });
             var unprotectedBytes = Encoding.Default.GetBytes(cookieText);
             var protectedBytes = protector.Protect(unprotectedBytes);
             var protectedText = Convert.ToBase64String(protectedBytes);
@@ -57,6 +63,7 @@ namespace XTI_WebApp.Extensions
         private class AnonInfo
         {
             public int SessionID { get; set; }
+            public string RequesterKey { get; set; }
         }
     }
 }
