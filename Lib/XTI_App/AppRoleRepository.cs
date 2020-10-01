@@ -7,10 +7,12 @@ namespace XTI_App
 {
     public sealed class AppRoleRepository
     {
+        private readonly AppFactory factory;
         private readonly DataRepository<AppRoleRecord> repo;
 
-        internal AppRoleRepository(DataRepository<AppRoleRecord> repo)
+        internal AppRoleRepository(AppFactory factory, DataRepository<AppRoleRecord> repo)
         {
+            this.factory = factory;
             this.repo = repo;
         }
 
@@ -22,7 +24,7 @@ namespace XTI_App
                 Name = name.Value
             };
             await repo.Create(record);
-            return new AppRole(record);
+            return factory.CreateAppRole(record);
         }
 
         internal async Task<IEnumerable<AppRole>> RolesForApp(App app)
@@ -30,7 +32,12 @@ namespace XTI_App
             var records = await repo.Retrieve()
                 .Where(r => r.AppID == app.ID)
                 .ToArrayAsync();
-            return records.Select(r => new AppRole(r));
+            return records.Select(r => factory.CreateAppRole(r));
+        }
+
+        internal IQueryable<int> RoleIDsForApp(App app)
+        {
+            return repo.Retrieve().Where(r => r.AppID == app.ID).Select(r => r.ID);
         }
     }
 }

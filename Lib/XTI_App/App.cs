@@ -22,13 +22,13 @@ namespace XTI_App
 
         public Task<AppRole> AddRole(AppRoleName name)
         {
-            var roleRepo = factory.AppRoleRepository();
+            var roleRepo = factory.RoleRepository();
             return roleRepo.Add(this, name);
         }
 
         public Task<IEnumerable<AppRole>> Roles()
         {
-            var roleRepo = factory.AppRoleRepository();
+            var roleRepo = factory.RoleRepository();
             return roleRepo.RolesForApp(this);
         }
 

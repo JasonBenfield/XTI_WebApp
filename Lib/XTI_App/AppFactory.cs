@@ -10,7 +10,7 @@ namespace XTI_App
         public AppUserRepository UserRepository() =>
             fetchRepo<AppUserRecord, AppUserRepository>(ref userRepo,
                 dataRepo => new AppUserRepository(this, dataRepo));
-        internal AppUser CreateAppUser(AppUserRecord record) => new AppUser(record);
+        internal AppUser CreateAppUser(AppUserRecord record) => new AppUser(this, record);
 
         private AppSessionRepository sessionRepo;
         public AppSessionRepository SessionRepository() =>
@@ -45,9 +45,17 @@ namespace XTI_App
         internal AppVersion CreateVersion(AppVersionRecord record) => new AppVersion(this, CreateDataRepository<AppVersionRecord>(), record);
 
         private AppRoleRepository appRoleRepo;
-        public AppRoleRepository AppRoleRepository() =>
-            fetchRepo<AppRoleRecord, AppRoleRepository>(ref appRoleRepo, dataRepo => new AppRoleRepository(dataRepo));
-        public AppRole CreateAppRole(AppRoleRecord record) => new AppRole(record);
+        internal AppRoleRepository RoleRepository() =>
+            fetchRepo<AppRoleRecord, AppRoleRepository>(ref appRoleRepo, dataRepo => new AppRoleRepository(this, dataRepo));
+        internal AppRole CreateAppRole(AppRoleRecord record) => new AppRole(record);
+
+        private AppUserRoleRepository userRoleRepo;
+        internal AppUserRoleRepository UserRoleRepository() =>
+            fetchRepo<AppUserRoleRecord, AppUserRoleRepository>
+            (
+                ref userRoleRepo, dataRepo => new AppUserRoleRepository(this, dataRepo)
+            );
+        internal AppUserRole CreateAppUserRole(AppUserRoleRecord record) => new AppUserRole(record);
 
         private TRepo fetchRepo<TRecord, TRepo>
         (

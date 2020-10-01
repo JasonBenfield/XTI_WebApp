@@ -17,7 +17,8 @@ namespace XTI_App.EF
                 { typeof(AppEventRecord), appDbContext.Events },
                 { typeof(AppRecord), appDbContext.Apps },
                 { typeof(AppVersionRecord), appDbContext.Versions },
-                { typeof(AppRoleRecord), appDbContext.Roles }
+                { typeof(AppRoleRecord), appDbContext.Roles },
+                { typeof(AppUserRoleRecord), appDbContext.UserRoles }
             };
         }
 
