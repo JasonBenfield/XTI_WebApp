@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 
 namespace XTI_App.Api
@@ -28,6 +25,11 @@ namespace XTI_App.Api
             if (userRoles.Any(ur => allowedRoles.Any(ar => ur.IsRole(ar))))
             {
                 hasAccess = true;
+            }
+            var deniedRoles = resourceAccess.Denied.Select(dr => roles.FirstOrDefault(r => r.Name().Equals(dr)));
+            if (userRoles.Any(ur => deniedRoles.Any(dr => ur.IsRole(dr))))
+            {
+                hasAccess = false;
             }
             return hasAccess;
         }

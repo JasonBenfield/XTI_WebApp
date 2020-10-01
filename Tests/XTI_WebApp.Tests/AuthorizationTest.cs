@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
@@ -13,7 +10,7 @@ namespace XTI_WebApp.Tests
     public sealed class AuthorizationTest
     {
         [Test]
-        public async Task ShouldHaveAccess_WhenUserIsMemberOfAnAllowedRole()
+        public async Task ShouldHaveAccess_WhenUserBelongsToAnAllowedRole()
         {
             var input = await setup();
             var adminRole = await input.App.Role(FakeRoles.Instance.Admin);
@@ -23,13 +20,35 @@ namespace XTI_WebApp.Tests
         }
 
         [Test]
-        public async Task ShouldNotHaveAccess_WhenUserIsNotAMemberOfAnAllowedRole()
+        public async Task ShouldNotHaveAccess_WhenUserDoesNoBelongToAnAllowedRole()
         {
             var input = await setup();
             var viewerRole = await input.App.Role(FakeRoles.Instance.Viewer);
             await input.User.AddRole(viewerRole);
             var hasAccess = await input.Api.Employee.AddEmployee.HasAccess();
             Assert.That(hasAccess, Is.False, "Should not have access when user does not belong to an allowed role");
+        }
+
+        [Test]
+        public async Task ShouldNotHaveAccess_WhenUserBelongsToADeniedRole()
+        {
+            var input = await setup();
+            var viewerRole = await input.App.Role(FakeRoles.Instance.Viewer);
+            await input.User.AddRole(viewerRole);
+            var hasAccess = await input.Api.Product.AddProduct.HasAccess();
+            Assert.That(hasAccess, Is.False, "Should not have access when user belongs to a denied role");
+        }
+
+        [Test]
+        public async Task ShouldNotHaveAccess_WhenUserBelongsToADeniedRoleEvenIfTheyBelongToAnAllowedRole()
+        {
+            var input = await setup();
+            var adminRole = await input.App.Role(FakeRoles.Instance.Admin);
+            await input.User.AddRole(adminRole);
+            var viewerRole = await input.App.Role(FakeRoles.Instance.Viewer);
+            await input.User.AddRole(viewerRole);
+            var hasAccess = await input.Api.Product.AddProduct.HasAccess();
+            Assert.That(hasAccess, Is.False, "Should not have access when user belongs to a denied role even if they belong to an allowed role");
         }
 
         private async Task<TestInput> setup()
@@ -52,8 +71,8 @@ namespace XTI_WebApp.Tests
             var input = new TestInput(sp, app, user);
             var appContext = (FakeAppContext)sp.GetService<IAppContext>();
             appContext.SetApp(app);
-            var userContext = (FakeSessionContext)sp.GetService<ISessionContext>();
-            userContext.SetUser(user);
+            var sessionContext = (FakeSessionContext)sp.GetService<ISessionContext>();
+            sessionContext.SetUser(user);
             return input;
         }
 
