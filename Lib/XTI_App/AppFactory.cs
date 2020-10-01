@@ -23,7 +23,8 @@ namespace XTI_App
         public AppRequestRepository RequestRepository() =>
             fetchRepo<AppRequestRecord, AppRequestRepository>(ref requestRepo,
                 dataRepo => new AppRequestRepository(this, dataRepo));
-        internal AppRequest CreateAppRequest(AppRequestRecord record) => new AppRequest(this, record);
+        internal AppRequest CreateAppRequest(AppRequestRecord record) =>
+            new AppRequest(this, CreateDataRepository<AppRequestRecord>(), record);
 
         private AppEventRepository eventRepo;
         public AppEventRepository EventRepository() =>

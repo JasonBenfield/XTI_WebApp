@@ -139,6 +139,17 @@ namespace XTI_WebApp.AspTests
         }
 
         [Test]
+        public async Task ShouldLogEndOfRequest()
+        {
+            var input = await setup();
+            var uri = "/Fake/Current/Controller1/Action1";
+            await input.GetAsync(uri);
+            var sessions = await retrieveSessionsForToday(input);
+            var requests = (await sessions[0].Requests()).ToArray();
+            Assert.That(requests[0].HasEnded(), Is.True, "Should log end of request");
+        }
+
+        [Test]
         public async Task ShouldLogCurrentVersionWithRequest()
         {
             var input = await setup();

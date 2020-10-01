@@ -24,7 +24,7 @@ namespace XTI_App
                 SessionID = session.ID,
                 VersionID = version.ID,
                 Path = path,
-                TimeRequested = timeRequested
+                TimeStarted = timeRequested
             };
             await repo.Create(record);
             return factory.CreateAppRequest(record);

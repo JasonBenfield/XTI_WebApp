@@ -5,7 +5,7 @@ using System;
 using XTI_App.EF;
 using XTI_Configuration.Extensions;
 
-namespace EfMigrationsApp
+namespace AppDbApp
 {
     public sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
@@ -21,7 +21,7 @@ namespace EfMigrationsApp
                 .UseSqlServer
                 (
                     new AppConnectionString(appDbOptions, environment).Value(),
-                    b => b.MigrationsAssembly("EfMigrationsApp")
+                    b => b.MigrationsAssembly("AppDbApp")
                 )
                 .EnableSensitiveDataLogging();
             return new AppDbContext(optionsBuilder.Options);

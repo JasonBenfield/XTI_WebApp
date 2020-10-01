@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace EfMigrationsApp
+namespace AppDbApp
 {
     class Program
     {
