@@ -15,9 +15,17 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        public async Task<AppUser> RetrieveByUserName(AppUserName userName)
+        public async Task<AppUser> User(int id)
         {
-            var userRecord = await repo.Retrieve().FirstOrDefaultAsync(u => u.UserName == userName.Value());
+            var userRecord = await repo.Retrieve()
+                .FirstOrDefaultAsync(u => u.ID == id);
+            return factory.CreateAppUser(userRecord);
+        }
+
+        public async Task<AppUser> User(AppUserName userName)
+        {
+            var userRecord = await repo.Retrieve()
+                .FirstOrDefaultAsync(u => u.UserName == userName.Value());
             return factory.CreateAppUser(userRecord);
         }
 

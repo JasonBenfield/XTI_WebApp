@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using XTI_App;
+using XTI_App.Api;
 using XTI_App.EF;
 
 namespace XTI_WebApp.Extensions
@@ -67,6 +68,8 @@ namespace XTI_WebApp.Extensions
                 var request = httpContextAccessor.HttpContext.Request;
                 return XtiPath.Parse($"{request.PathBase}{request.Path}");
             });
+            services.AddScoped<IAppContext, WebAppContext>();
+            services.AddScoped<ISessionContext, WebSessionContext>();
         }
     }
 }

@@ -11,5 +11,10 @@ namespace XTI_WebApp.Fakes
         public Task<IAppUser> User() => Task.FromResult(user);
 
         public void SetUser(IAppUser user) => this.user = user;
+
+        private IAppSession session;
+        public Task<IAppSession> Session() => Task.FromResult(session);
+
+        public void SetSession(IAppSession session) => this.session = session;
     }
 }

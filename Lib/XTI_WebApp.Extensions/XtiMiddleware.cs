@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
@@ -24,19 +23,13 @@ namespace XTI_WebApp.Extensions
             Clock clock,
             AppFactory appFactory,
             AnonClient anonClient,
+            IAppContext appContext,
+            ISessionContext sessionContext,
             XtiPath xtiPath
         )
         {
-            AppSession session;
-            if (context.User.Identity.IsAuthenticated)
-            {
-                session = await authenticatedSession(context, appFactory);
-            }
-            else
-            {
-                session = await anonSession(context, clock, appFactory, anonClient);
-            }
-            var version = await retrieveVersion(appFactory, xtiPath);
+            var session = await sessionContext.Session();
+            var version = await retrieveVersion(appContext, xtiPath);
             var request = await session.LogRequest(version, context.Request.Path, clock.Now());
             try
             {
@@ -52,40 +45,10 @@ namespace XTI_WebApp.Extensions
             }
         }
 
-        private static Task<AppSession> authenticatedSession(HttpContext context, AppFactory appFactory)
+        private static async Task<IAppVersion> retrieveVersion(IAppContext appContext, XtiPath xtiPath)
         {
-            var sessionRepo = appFactory.SessionRepository();
-            var sessionIDClaim = context.User.Claims.First(c => c.Type == "SessionID");
-            var sessionID = int.Parse(sessionIDClaim.Value);
-            return sessionRepo.Session(sessionID);
-        }
-
-        private static async Task<AppSession> anonSession(HttpContext context, Clock clock, AppFactory appFactory, AnonClient anonClient)
-        {
-            anonClient.Load();
-            var sessionRepo = appFactory.SessionRepository();
-            var session = await sessionRepo.Session(anonClient.SessionID);
-            if (!session.HasStarted() || session.HasEnded())
-            {
-                var userRepo = appFactory.UserRepository();
-                var anonUser = await userRepo.RetrieveByUserName(AppUserName.Anon);
-                var requesterKey = anonClient.RequesterKey;
-                if (string.IsNullOrWhiteSpace(requesterKey))
-                {
-                    requesterKey = Guid.NewGuid().ToString("N");
-                }
-                var userAgent = context.Request.Headers["User-Agent"].ToString();
-                var remoteAddress = context.Connection.RemoteIpAddress?.ToString();
-                session = await sessionRepo.Create(anonUser, clock.Now(), requesterKey, userAgent, remoteAddress);
-                anonClient.Persist(session.ID, requesterKey);
-            }
-            return session;
-        }
-
-        private static async Task<AppVersion> retrieveVersion(AppFactory appFactory, XtiPath xtiPath)
-        {
-            var app = await appFactory.AppRepository().App(new AppKey(xtiPath.App));
-            AppVersion version;
+            var app = await appContext.App();
+            IAppVersion version;
             if (xtiPath.IsCurrentVersion())
             {
                 version = await app.CurrentVersion();
