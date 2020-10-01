@@ -6,6 +6,8 @@ using XTI_App;
 using XTI_App.EF;
 using XTI_App.Api;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
+using XTI_WebApp.Extensions;
 
 namespace XTI_WebApp.Fakes
 {
@@ -31,6 +33,15 @@ namespace XTI_WebApp.Fakes
             services.AddSingleton<AppFactory, EfAppFactory>();
             services.AddSingleton<AppApiUser, AppApiSuperUser>();
             services.AddSingleton<IHostEnvironment, FakeHostEnvironment>();
+            services.AddScoped(sp =>
+            {
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                var request = httpContextAccessor.HttpContext?.Request;
+                return XtiPath.Parse($"{request?.PathBase}{request?.Path}");
+            });
+            services.AddScoped<CacheBust>();
+            services.AddScoped<PageContext>();
+            services.AddScoped<IHashedPasswordFactory, FakeHashedPasswordFactory>();
         }
     }
 }

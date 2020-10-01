@@ -262,6 +262,34 @@ namespace XTI_WebApp.AspTests
             Assert.That(result, Is.EqualTo(expectedResult), "Should return errors");
         }
 
+        [Test]
+        public async Task ShouldSetCacheBustToCurrentVersion()
+        {
+            PageContext pageContext = null;
+            var input = await setup(async (context) =>
+            {
+                pageContext = context.RequestServices.GetService<PageContext>();
+                await pageContext.Serialize();
+            });
+            var uri = "/Fake/Current/Controller1/Action1";
+            await input.GetAsync(uri);
+            Assert.That(pageContext?.CacheBust, Is.EqualTo($"V{input.CurrentVersion.ID}"), "Should set cacheBust to current version");
+        }
+
+        [Test]
+        public async Task ShouldNotSetCacheBust_WhenVersionIsNotCurrent()
+        {
+            PageContext pageContext = null;
+            var input = await setup(async (context) =>
+            {
+                pageContext = context.RequestServices.GetService<PageContext>();
+                await pageContext.Serialize();
+            });
+            var uri = $"/Fake/V{input.CurrentVersion.ID}/Controller1/Action1";
+            await input.GetAsync(uri);
+            Assert.That(pageContext?.CacheBust, Is.Null, "Should not set cacheBust when version is null");
+        }
+
         private sealed class TestAppException : AppException
         {
             public TestAppException() : base("Detailed message", "Message for user")
@@ -279,7 +307,8 @@ namespace XTI_WebApp.AspTests
                     return Task.CompletedTask;
                 };
             }
-            var host = await new HostBuilder()
+            var hostBuilder = new HostBuilder();
+            var host = await hostBuilder
                 .ConfigureWebHost(webBuilder =>
                 {
                     webBuilder
@@ -302,11 +331,12 @@ namespace XTI_WebApp.AspTests
                                         .Build();
                             });
                             services.AddFakesForXtiWebApp();
+                            services.AddHttpContextAccessor();
                             services.AddScoped(sp =>
                             {
                                 var protector = sp.GetDataProtector("XTI_WEB_APP");
-                                var httpClientAccessor = sp.GetService<IHttpContextAccessor>();
-                                return new AnonClient(protector, httpClientAccessor);
+                                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                                return new AnonClient(protector, httpContextAccessor);
                             });
                         })
                         .Configure(app =>
@@ -322,6 +352,8 @@ namespace XTI_WebApp.AspTests
                     (hostingContext, config) => config.UseXtiConfiguration(hostingContext.HostingEnvironment.EnvironmentName, new string[] { })
                 )
                 .StartAsync();
+            var hostEnvironment = (FakeHostEnvironment)host.Services.GetService<IHostEnvironment>();
+            hostEnvironment.EnvironmentName = "Production";
             var factory = host.Services.GetService<AppFactory>();
             var setup = new AppSetup(factory);
             await setup.Run();
@@ -330,7 +362,8 @@ namespace XTI_WebApp.AspTests
             var version = await app.StartNewPatch(clock.Now());
             await version.Publishing();
             await version.Published();
-            var input = new TestInput(host, app, version);
+            var currentVersion = await app.CurrentVersion();
+            var input = new TestInput(host, app, version, hostEnvironment);
             await input.Factory.UserRepository().Add
             (
                 new AppUserName("xartogg"), new FakeHashedPassword("password"), input.Clock.Now()
@@ -340,7 +373,7 @@ namespace XTI_WebApp.AspTests
 
         private sealed class TestInput
         {
-            public TestInput(IHost host, App app, AppVersion currentVersion)
+            public TestInput(IHost host, App app, AppVersion currentVersion, FakeHostEnvironment hostEnvironment)
             {
                 Host = host;
                 AppDbContext = host.Services.GetService<AppDbContext>();
@@ -350,6 +383,7 @@ namespace XTI_WebApp.AspTests
                 Cookies = new CookieContainer();
                 App = app;
                 CurrentVersion = currentVersion;
+                HostEnvironment = hostEnvironment;
             }
             public IHost Host { get; }
             public CookieContainer Cookies { get; }
@@ -359,6 +393,7 @@ namespace XTI_WebApp.AspTests
             public TestAuthOptions TestAuthOptions { get; }
             public App App { get; }
             public AppVersion CurrentVersion { get; }
+            public FakeHostEnvironment HostEnvironment { get; }
 
             public async Task<HttpResponseMessage> GetAsync(string relativeUrl)
             {
