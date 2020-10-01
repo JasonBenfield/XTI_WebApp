@@ -44,6 +44,30 @@ namespace XTI_WebApp.AspTests
         }
 
         [Test]
+        public async Task ShouldLogRequesterWithSession()
+        {
+            var input = await setup();
+            await input.GetAsync("/Fake/Current/Controller1/Action1");
+            var sessions = await input.AppDbContext.Sessions.ToArrayAsync();
+            Assert.That(string.IsNullOrWhiteSpace(sessions[0].RequesterKey), Is.False, "Should log requester with session");
+        }
+
+        [Test]
+        public async Task ShouldReuseRequesterKeyWithNewSession()
+        {
+            var input = await setup();
+            await input.GetAsync("/Fake/Current/Controller1/Action1");
+            var sessions = await retrieveSessionsForToday(input);
+            var session = sessions.First();
+            input.Clock.Add(TimeSpan.FromHours(1));
+            await session.End(input.Clock.Now());
+            await input.GetAsync("/Fake/Current/Controller1/Action1");
+            var sessionRecords = await input.AppDbContext.Sessions.ToArrayAsync();
+            Assert.That(sessionRecords[0].RequesterKey, Is.EqualTo(sessionRecords[1].RequesterKey), "Should reuse requester key with new session");
+
+        }
+
+        [Test]
         public async Task ShouldReuseSession()
         {
             var input = await setup();
@@ -72,7 +96,7 @@ namespace XTI_WebApp.AspTests
             return
             (
                 await input.Factory.SessionRepository()
-                            .RetrieveByDateRange(input.Clock.Today(), input.Clock.Today())
+                    .RetrieveByTimeRange(input.Clock.Now().AddDays(-1), input.Clock.Now().AddDays(1))
             )
             .ToArray();
         }
@@ -82,7 +106,7 @@ namespace XTI_WebApp.AspTests
         {
             var input = await setup();
             var user = await input.Factory.UserRepository().RetrieveByUserName(new AppUserName("xartogg"));
-            var session = await input.Factory.SessionRepository().Create(user, input.Clock.Now(), "", "");
+            var session = await input.Factory.SessionRepository().Create(user, input.Clock.Now(), "", "", "");
             input.TestAuthOptions.IsEnabled = true;
             input.TestAuthOptions.Session = session;
             input.TestAuthOptions.User = user;
