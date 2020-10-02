@@ -55,7 +55,8 @@ namespace XTI_App
             (
                 ref userRoleRepo, dataRepo => new AppUserRoleRepository(this, dataRepo)
             );
-        internal AppUserRole CreateAppUserRole(AppUserRoleRecord record) => new AppUserRole(record);
+        internal AppUserRole CreateAppUserRole(AppUserRoleRecord record) =>
+            new AppUserRole(CreateDataRepository<AppUserRoleRecord>(), record);
 
         private TRepo fetchRepo<TRecord, TRepo>
         (
