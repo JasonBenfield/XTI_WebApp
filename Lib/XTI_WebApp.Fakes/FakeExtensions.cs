@@ -8,6 +8,7 @@ using XTI_App.Api;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using XTI_WebApp.Extensions;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace XTI_WebApp.Fakes
 {
@@ -31,7 +32,7 @@ namespace XTI_WebApp.Fakes
             services.AddSingleton<Clock, FakeClock>();
             services.AddSingleton(sp => (FakeClock)sp.GetService<Clock>());
             services.AddSingleton<AppFactory, EfAppFactory>();
-            services.AddScoped<ISessionContext, FakeSessionContext>();
+            services.AddScoped<IUserContext, FakeSessionContext>();
             services.AddScoped<IAppContext, FakeAppContext>();
             services.AddSingleton<IAppApiUser, XtiAppApiUser>();
             services.AddSingleton<IHostEnvironment, FakeHostEnvironment>();

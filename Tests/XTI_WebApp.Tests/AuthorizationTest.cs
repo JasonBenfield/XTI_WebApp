@@ -71,7 +71,7 @@ namespace XTI_WebApp.Tests
             var input = new TestInput(sp, app, user);
             var appContext = (FakeAppContext)sp.GetService<IAppContext>();
             appContext.SetApp(app);
-            var sessionContext = (FakeSessionContext)sp.GetService<ISessionContext>();
+            var sessionContext = (FakeSessionContext)sp.GetService<IUserContext>();
             sessionContext.SetUser(user);
             return input;
         }

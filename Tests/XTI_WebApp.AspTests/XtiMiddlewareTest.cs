@@ -22,6 +22,9 @@ using XTI_Configuration.Extensions;
 using XTI_App.Api;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
+using Microsoft.Extensions.Caching.Memory;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace XTI_WebApp.AspTests
 {
@@ -325,6 +328,53 @@ namespace XTI_WebApp.AspTests
             Assert.That(pageContext?.CacheBust, Is.Null, "Should not set cacheBust when version is null");
         }
 
+        [Test]
+        public async Task ShouldCacheCurrentVersion()
+        {
+            IAppVersion versionFromContext = null;
+            var input = await setup(async (context) =>
+            {
+                var appContext = context.RequestServices.GetService<IAppContext>();
+                var app = await appContext.App();
+                versionFromContext = await app.CurrentVersion();
+            });
+            var uri = "/Fake/Current/Controller1/Action1";
+            await input.GetAsync(uri);
+            var version = await input.App.StartNewMajorVersion(DateTime.UtcNow);
+            await version.Publishing();
+            await version.Published();
+            await input.GetAsync(uri);
+            Assert.That(versionFromContext?.ID, Is.EqualTo(input.CurrentVersion.ID), "Should cache current version");
+        }
+
+        [Test]
+        public async Task ShouldCacheUserRoles()
+        {
+            IAppUserRole[] userRoles = new IAppUserRole[] { };
+            var input = await setup(async (context) =>
+            {
+                var userContext = context.RequestServices.GetService<IUserContext>();
+                var user = await userContext.User();
+                var appContext = context.RequestServices.GetService<IAppContext>();
+                var app = await appContext.App();
+                userRoles = (await user.RolesForApp(app)).ToArray();
+            });
+            var adminRole = await input.App.AddRole(new AppRoleName("Admin"));
+            var managerRole = await input.App.AddRole(new AppRoleName("Manager"));
+            var user = await input.Factory.UserRepository().User(new AppUserName("xartogg"));
+            var userAdminRole = await user.AddRole(adminRole);
+            await user.AddRole(managerRole);
+            var session = await input.Factory.SessionRepository().Create(user, input.Clock.Now(), "", "", "");
+            input.TestAuthOptions.IsEnabled = true;
+            input.TestAuthOptions.Session = session;
+            input.TestAuthOptions.User = user;
+            var uri = "/Fake/Current/Controller1/Action1";
+            await input.GetAsync(uri);
+            await user.RemoveRole(userAdminRole);
+            await input.GetAsync(uri);
+            Assert.That(userRoles.Length, Is.EqualTo(2), "Should cache user roles");
+        }
+
         private sealed class TestAppException : AppException
         {
             public TestAppException() : base("Detailed message", "Message for user")
@@ -350,6 +400,7 @@ namespace XTI_WebApp.AspTests
                         .UseTestServer()
                         .ConfigureServices((context, services) =>
                         {
+                            services.AddXtiAspServices();
                             services.AddSingleton<TestAuthOptions>();
                             services
                                 .AddAuthentication("Test")
@@ -367,17 +418,11 @@ namespace XTI_WebApp.AspTests
                             });
                             services.AddFakesForXtiWebApp();
                             services.AddHttpContextAccessor();
-                            services.AddScoped(sp =>
-                            {
-                                var protector = sp.GetDataProtector("XTI_WEB_APP");
-                                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
-                                return new AnonClient(protector, httpContextAccessor);
-                            });
-                            services.AddScoped<IAppContext, WebAppContext>();
-                            services.AddScoped<ISessionContext, WebSessionContext>();
+                            services.AddXtiContextServices();
                         })
                         .Configure(app =>
                         {
+                            app.UseSession();
                             app.UseAuthentication();
                             app.UseAuthorization();
                             app.UseXti();

@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
 using System.IO;
-using System.Reflection;
 using XTI_App;
 using XTI_App.Api;
 using XTI_App.EF;
@@ -21,16 +21,9 @@ namespace XTI_WebApp.Extensions
 
         public static bool IsDevOrTest(this IHostEnvironment env) => env != null && (env.IsDevelopment() || env.IsEnvironment("Test"));
 
-        public static void AddXtiServices(this IServiceCollection services, IConfiguration configuration, Assembly assembly)
+        public static void AddWebAppServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDistributedMemoryCache();
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
-            services.AddHttpContextAccessor();
+            services.AddXtiAspServices();
             services.Configure<WebAppOptions>(configuration.GetSection(WebAppOptions.WebApp));
             services.Configure<DbOptions>(configuration.GetSection(DbOptions.DB));
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Jwt));
@@ -42,8 +35,29 @@ namespace XTI_WebApp.Extensions
                 )
                 .PersistKeysToFileSystem(new DirectoryInfo(webAppOptions.KeyFolder))
                 .SetApplicationName(appName);
+            services.AddAppDbContext();
             services.AddScoped<CacheBust>();
             services.AddScoped<PageContext>();
+            services.AddSingleton<Clock, UtcClock>();
+            services.AddScoped<AppFactory, EfAppFactory>();
+            AddXtiContextServices(services);
+        }
+
+        public static void AddXtiAspServices(this IServiceCollection services)
+        {
+            services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+            services.AddHttpContextAccessor();
+        }
+
+        public static void AddAppDbContext(this IServiceCollection services)
+        {
             services.AddDbContext<AppDbContext>(optionsAction: (sp, dbOptionsBuilder) =>
             {
                 var appDbOptions = sp.GetService<IOptions<DbOptions>>().Value;
@@ -54,8 +68,10 @@ namespace XTI_WebApp.Extensions
                     dbOptionsBuilder.EnableSensitiveDataLogging();
                 }
             });
-            services.AddSingleton<Clock, UtcClock>();
-            services.AddScoped<AppFactory, EfAppFactory>();
+        }
+
+        public static void AddXtiContextServices(this IServiceCollection services)
+        {
             services.AddScoped(sp =>
             {
                 var dataProtector = sp.GetDataProtector(new[] { $"{appName}-Anon" });
@@ -68,8 +84,24 @@ namespace XTI_WebApp.Extensions
                 var request = httpContextAccessor.HttpContext.Request;
                 return XtiPath.Parse($"{request.PathBase}{request.Path}");
             });
-            services.AddScoped<IAppContext, WebAppContext>();
-            services.AddScoped<ISessionContext, WebSessionContext>();
+            services.AddScoped<IAppContext>(sp =>
+            {
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                var cache = sp.GetService<IMemoryCache>();
+                var appContext = sp.GetService<WebAppContext>();
+                return new CachedAppContext(httpContextAccessor, cache, appContext);
+            }); ;
+            services.AddScoped<WebAppContext>();
+            services.AddScoped<IUserContext>(sp =>
+            {
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                var cache = sp.GetService<IMemoryCache>();
+                var sessionContext = sp.GetService<WebUserContext>();
+                return new CachedUserContext(httpContextAccessor, cache, sessionContext);
+            });
+            services.AddScoped<WebUserContext>();
+            services.AddScoped<SessionLog>();
         }
+
     }
 }

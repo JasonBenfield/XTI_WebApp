@@ -4,17 +4,19 @@ using XTI_App.Api;
 
 namespace XTI_WebApp.Fakes
 {
-    public sealed class FakeSessionContext : ISessionContext
+    public sealed class FakeSessionContext : IUserContext
     {
         private IAppUser user;
 
         public Task<IAppUser> User() => Task.FromResult(user);
 
+        public Task<IAppUser> User(int id) => Task.FromResult<IAppUser>(null);
+
         public void SetUser(IAppUser user) => this.user = user;
 
-        private IAppSession session;
-        public Task<IAppSession> Session() => Task.FromResult(session);
+        public void RefreshUser(IAppUser user)
+        {
+        }
 
-        public void SetSession(IAppSession session) => this.session = session;
     }
 }

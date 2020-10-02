@@ -20,15 +20,13 @@ namespace XTI_WebApp.Extensions
         public async Task InvokeAsync
         (
             HttpContext context,
+            SessionLog sessionLog,
             Clock clock,
-            AppFactory appFactory,
-            AnonClient anonClient,
             IAppContext appContext,
-            ISessionContext sessionContext,
             XtiPath xtiPath
         )
         {
-            var session = await sessionContext.Session();
+            var session = await sessionLog.Session();
             var version = await retrieveVersion(appContext, xtiPath);
             var request = await session.LogRequest(version, context.Request.Path, clock.Now());
             try

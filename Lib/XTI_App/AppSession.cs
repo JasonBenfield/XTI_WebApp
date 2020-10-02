@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace XTI_App
 {
-    public sealed class AppSession : IAppSession
+    public sealed class AppSession
     {
         private readonly AppFactory factory;
         private readonly DataRepository<AppSessionRecord> repo;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace XTI_App
@@ -31,5 +32,7 @@ namespace XTI_App
 
         async Task<IEnumerable<IAppUserRole>> IAppUser.RolesForApp(IApp app) =>
             await factory.UserRoleRepository().RolesForUser(this, app);
+
+        public Task RemoveRole(AppUserRole userAdminRole) => userAdminRole.Delete();
     }
 }

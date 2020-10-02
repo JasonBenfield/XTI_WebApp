@@ -79,7 +79,7 @@ namespace XTI_WebApp.IntegrationTests
             var configuration = configurationBuilder.Build();
             services.Configure<GitHubOptions>(configuration.GetSection(GitHubOptions.GitHub));
             services.AddScoped<IHostEnvironment>(sp => hostEnv);
-            services.AddXtiServices(configuration, typeof(NewVersionCommandIntegrationTest).Assembly);
+            services.AddWebAppServices(configuration);
             services.AddScoped<GitHubXtiClient, OctoGithubXtiClient>();
             services.AddScoped((sp =>
             {

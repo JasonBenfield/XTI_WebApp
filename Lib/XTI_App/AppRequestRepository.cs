@@ -17,7 +17,7 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        internal async Task<AppRequest> Add(IAppSession session, IAppVersion version, string path, DateTime timeRequested)
+        internal async Task<AppRequest> Add(AppSession session, IAppVersion version, string path, DateTime timeRequested)
         {
             var record = new AppRequestRecord
             {

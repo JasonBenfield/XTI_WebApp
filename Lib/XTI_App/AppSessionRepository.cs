@@ -31,7 +31,7 @@ namespace XTI_App
             return records.Select(s => factory.CreateAppSession(s));
         }
 
-        public async Task<AppSession> Create(AppUser user, DateTime timeStarted, string requesterKey, string userAgent, string remoteAddress)
+        public async Task<AppSession> Create(IAppUser user, DateTime timeStarted, string requesterKey, string userAgent, string remoteAddress)
         {
             var record = new AppSessionRecord
             {

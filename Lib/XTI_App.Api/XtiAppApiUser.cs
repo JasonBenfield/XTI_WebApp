@@ -6,9 +6,9 @@ namespace XTI_App.Api
     public sealed class XtiAppApiUser : IAppApiUser
     {
         private readonly IAppContext appContext;
-        private readonly ISessionContext userContext;
+        private readonly IUserContext userContext;
 
-        public XtiAppApiUser(IAppContext appContext, ISessionContext userContext)
+        public XtiAppApiUser(IAppContext appContext, IUserContext userContext)
         {
             this.appContext = appContext;
             this.userContext = userContext;

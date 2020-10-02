@@ -73,7 +73,7 @@ namespace XTI_WebApp.IntegrationTests
             configurationBuilder.UseXtiConfiguration("Test", new string[] { });
             var configuration = configurationBuilder.Build();
             services.AddScoped<IHostEnvironment>(sp => hostEnv);
-            services.AddXtiServices(configuration, typeof(AppRoleIntegrationTest).Assembly);
+            services.AddWebAppServices(configuration);
             services.AddScoped<AppDbReset>();
             var sp = services.BuildServiceProvider();
             var factory = sp.GetService<AppFactory>();
