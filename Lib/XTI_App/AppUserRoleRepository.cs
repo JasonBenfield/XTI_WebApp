@@ -16,12 +16,13 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        internal async Task<AppUserRole> Add(AppUser user, AppRole role)
+        internal async Task<AppUserRole> Add(AppUser user, AppRole role, AccessModifier modifier)
         {
             var record = new AppUserRoleRecord
             {
                 UserID = user.ID,
-                RoleID = role.ID
+                RoleID = role.ID,
+                Modifier = modifier.Value
             };
             await repo.Create(record);
             return factory.CreateAppUserRole(record);

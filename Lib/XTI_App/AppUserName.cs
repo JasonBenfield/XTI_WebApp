@@ -2,36 +2,21 @@
 
 namespace XTI_App
 {
-    public sealed class AppUserName : IEquatable<AppUserName>, IEquatable<string>
+    public sealed class AppUserName : SemanticType<string>, IEquatable<AppUserName>
     {
         public static readonly AppUserName Unknown = new AppUserName("");
         public static readonly AppUserName Anon = new AppUserName("xti_anon");
 
         public AppUserName(string value)
+            : base(value?.Trim().ToLower() ?? "", value)
         {
-            this.value = value?.Trim().ToLower() ?? "";
-            hashCode = this.value.GetHashCode();
         }
 
-        private readonly string value;
-        private readonly int hashCode;
+        public override bool Equals(object obj) => base.Equals(obj);
 
-        public string Value() => value;
+        public bool Equals(AppUserName other) => _Equals(other);
 
-        public override bool Equals(object obj)
-        {
-            if (obj is string str)
-            {
-                return Equals(str);
-            }
-            return Equals(obj as AppKey);
-        }
+        public override int GetHashCode() => base.GetHashCode();
 
-        public override int GetHashCode() => hashCode;
-
-        public bool Equals(AppUserName other) => Equals(other?.value);
-        public bool Equals(string other) => value == other;
-
-        public override string ToString() => $"{nameof(AppUserName)} {value}";
     }
 }

@@ -7,20 +7,30 @@ namespace XTI_App.Api
 {
     public class AppApiGroup
     {
-        public AppApiGroup(AppApi api, string groupName, ResourceAccess access, IAppApiUser user)
+        public AppApiGroup
+        (
+            AppApi api,
+            string groupName,
+            bool hasModifier,
+            ResourceAccess access,
+            IAppApiUser user
+        )
         {
             Name = api.Name.WithGroup(groupName);
+            this.hasModifier = hasModifier;
             Access = access;
             this.user = user;
         }
 
+        private readonly bool hasModifier;
         private readonly IAppApiUser user;
         private readonly Dictionary<string, AppApiAction> actions = new Dictionary<string, AppApiAction>();
 
         public XtiPath Name { get; }
         public ResourceAccess Access { get; }
 
-        public Task<bool> HasAccess() => user.HasAccess(Access);
+        public Task<bool> HasAccess() => HasAccess(AccessModifier.Default);
+        public Task<bool> HasAccess(AccessModifier modifier) => user.HasAccess(Access, modifier);
 
         public async Task EnsureUserHasAccess()
         {
@@ -195,7 +205,7 @@ namespace XTI_App.Api
         public AppApiGroupTemplate Template()
         {
             var actionTemplates = Actions().Select(a => a.Template());
-            return new AppApiGroupTemplate(Name.Group, Access, actionTemplates);
+            return new AppApiGroupTemplate(Name.Group, hasModifier, Access, actionTemplates);
         }
     }
 }

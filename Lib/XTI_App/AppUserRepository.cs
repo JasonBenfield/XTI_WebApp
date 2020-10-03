@@ -25,7 +25,7 @@ namespace XTI_App
         public async Task<AppUser> User(AppUserName userName)
         {
             var userRecord = await repo.Retrieve()
-                .FirstOrDefaultAsync(u => u.UserName == userName.Value());
+                .FirstOrDefaultAsync(u => u.UserName == userName.Value);
             return factory.CreateAppUser(userRecord);
         }
 
@@ -33,7 +33,7 @@ namespace XTI_App
         {
             var newUser = new AppUserRecord
             {
-                UserName = userName.Value(),
+                UserName = userName.Value,
                 Password = password.Value(),
                 TimeAdded = timeAdded
             };

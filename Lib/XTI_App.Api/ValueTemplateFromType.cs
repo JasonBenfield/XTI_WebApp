@@ -7,7 +7,14 @@ namespace XTI_App.Api
     {
         public ValueTemplateFromType(Type source)
         {
-            this.source = source;
+            if (isDerivedFromSemanticType(source))
+            {
+                this.source = getSemanticTypeValueType(source);
+            }
+            else
+            {
+                this.source = source;
+            }
         }
 
         private readonly Type source;
@@ -63,5 +70,23 @@ namespace XTI_App.Api
             return targetType.IsGenericType && (typeof(IEnumerable<>)).IsAssignableFrom(targetType.GetGenericTypeDefinition());
         }
 
+        private static bool isDerivedFromSemanticType(Type objectType)
+        {
+            if (objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(SemanticType<>))
+            {
+                return true;
+            }
+            if (objectType.BaseType == null)
+            {
+                return false;
+            }
+            return isDerivedFromSemanticType(objectType.BaseType);
+        }
+
+        private static Type getSemanticTypeValueType(Type objectType)
+        {
+            var propertyInfo = objectType.GetProperty("Value");
+            return propertyInfo.PropertyType;
+        }
     }
 }

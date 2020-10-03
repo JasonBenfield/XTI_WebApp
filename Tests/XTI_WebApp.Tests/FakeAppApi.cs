@@ -34,6 +34,7 @@ namespace XTI_WebApp.Tests
             (
                   api,
                   new NameFromGroupClassName(nameof(EmployeeGroup)).Value,
+                  true,
                   api.Access
                     .WithAllowed(FakeRoleNames.Instance.Manager)
                     .WithDenied(FakeRoleNames.Instance.Viewer),
@@ -107,6 +108,7 @@ namespace XTI_WebApp.Tests
             (
                 api,
                 new NameFromGroupClassName(nameof(ProductGroup)).Value,
+                true,
                 api.Access
                     .WithDenied(FakeRoleNames.Instance.Viewer),
                 user

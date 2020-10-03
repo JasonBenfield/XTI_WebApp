@@ -25,7 +25,9 @@ namespace XTI_App
         public override string ToString() => $"{nameof(AppUser)} {ID}";
 
         public Task<AppUserRole> AddRole(AppRole role) =>
-            factory.UserRoleRepository().Add(this, role);
+            AddRole(role, AccessModifier.Default);
+        public Task<AppUserRole> AddRole(AppRole role, AccessModifier modifier) =>
+            factory.UserRoleRepository().Add(this, role, modifier);
 
         public Task<IEnumerable<AppUserRole>> RolesForApp(App app) =>
             factory.UserRoleRepository().RolesForUser(this, app);

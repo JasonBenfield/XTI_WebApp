@@ -22,7 +22,7 @@ namespace XTI_WebAppClient
             this.name = name;
         }
 
-        protected async Task<TResult> Post<TResult, TModel>(string action, TModel model)
+        protected async Task<TResult> Post<TResult, TModel>(string action, string modifier, TModel model)
         {
             using var client = httpClientFactory.CreateClient();
             if (!action.Equals("Authenticate", StringComparison.OrdinalIgnoreCase))
@@ -31,6 +31,10 @@ namespace XTI_WebAppClient
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
             var url = $"{baseUrl}/{name}/{action}";
+            if (!string.IsNullOrWhiteSpace(modifier))
+            {
+                url = $"{url}/{modifier}";
+            }
             var serialized = JsonSerializer.Serialize(model);
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(url, content);

@@ -37,7 +37,7 @@ namespace XTI_App
             var eventRepo = factory.EventRepository();
             return eventRepo.LogEvent
             (
-                this, timeOccurred, AppEventSeverity.CriticalError, caption, ex.Message, ex.StackTrace
+                this, timeOccurred, AppEventSeverity.Values.CriticalError, caption, ex.Message, ex.StackTrace
             );
         }
 

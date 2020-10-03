@@ -11,19 +11,29 @@ namespace XTI_App
         public static XtiPath Parse(string str)
         {
             var parts = (str ?? "").Split('/', StringSplitOptions.RemoveEmptyEntries);
-            var names = new List<string>(parts.Concat(Enumerable.Repeat("", 4 - parts.Length)));
-            return new XtiPath(names[0], names[1], names[2], names[3]);
+            var names = new List<string>(parts.Concat(Enumerable.Repeat("", 5 - parts.Length)));
+            return new XtiPath
+            (
+                names[0], names[1], names[2], names[3], AccessModifier.FromValue(names[4])
+            );
         }
 
-        public XtiPath(string appKey, string version) : this(appKey, version, null, null)
+        public XtiPath(string appKey, string version)
+            : this(appKey, version, "", "")
         {
         }
 
-        public XtiPath(string appKey, string version, string group) : this(appKey, version, group, null)
+        public XtiPath(string appKey, string version, string group)
+            : this(appKey, version, group, "")
         {
         }
 
         public XtiPath(string appKey, string version, string group, string action)
+            : this(appKey, version, group, action, AccessModifier.Default)
+        {
+        }
+
+        public XtiPath(string appKey, string version, string group, string action, AccessModifier modifier)
         {
             if (string.IsNullOrWhiteSpace(appKey) && (!string.IsNullOrWhiteSpace(group) || !string.IsNullOrWhiteSpace(action))) { throw new ArgumentException($"{nameof(appKey)} is required"); }
             if (string.IsNullOrWhiteSpace(group) && !string.IsNullOrWhiteSpace(action)) { throw new ArgumentException($"{nameof(group)} is required when there is an action"); }
@@ -31,7 +41,8 @@ namespace XTI_App
             Version = string.IsNullOrWhiteSpace(version) ? CurrentVersion : version;
             Group = group;
             Action = action;
-            value = $"{App}/{Version}/{Group}/{Action}".ToLower();
+            Modifier = modifier;
+            value = $"{App}/{Version}/{Group}/{Action}/{Modifier.Value}".ToLower();
             hashCode = value.GetHashCode();
         }
 
@@ -42,6 +53,7 @@ namespace XTI_App
         public string Version { get; }
         public string Group { get; }
         public string Action { get; }
+        public AccessModifier Modifier { get; }
 
         public bool IsCurrentVersion() => Version == CurrentVersion;
         public int VersionID() => IsCurrentVersion() ? 0 : int.Parse(Version.Substring(1));
@@ -73,18 +85,22 @@ namespace XTI_App
         public XtiPath WithGroup(string groupName)
         {
             if (!string.IsNullOrWhiteSpace(Group)) { throw new ArgumentException("Cannot create group for a group"); }
-            return new XtiPath(App, Version, groupName);
+            return new XtiPath(App, Version, groupName, "", Modifier);
         }
 
         public XtiPath WithAction(string actionName)
         {
             if (!string.IsNullOrWhiteSpace(Action)) { throw new ArgumentException("Cannot create action for an action"); }
-            return new XtiPath(App, Version, Group, actionName);
+            return new XtiPath(App, Version, Group, actionName, Modifier);
         }
 
         public string Format()
         {
-            var parts = new string[] { App, Version, Group, Action }.TakeWhile(str => !string.IsNullOrWhiteSpace(str));
+            var parts = new string[]
+            {
+                App, Version, Group, Action, Modifier.Value
+            }
+            .TakeWhile(str => !string.IsNullOrWhiteSpace(str));
             return string.Join("/", parts);
         }
 
