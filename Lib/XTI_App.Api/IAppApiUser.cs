@@ -4,6 +4,6 @@ namespace XTI_App.Api
 {
     public interface IAppApiUser
     {
-        Task<bool> HasAccess(ResourceAccess resourceAccess);
+        Task<bool> HasAccess(ResourceAccess resourceAccess, AccessModifier modifier);
     }
 }

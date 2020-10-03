@@ -4,5 +4,6 @@
     {
         int RoleID { get; }
         bool IsRole(IAppRole appRole);
+        AccessModifier Modifier();
     }
 }

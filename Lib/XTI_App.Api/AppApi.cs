@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using XTI_App;
 
 namespace XTI_App.Api
 {
@@ -27,7 +26,8 @@ namespace XTI_App.Api
 
         public ResourceAccess Access { get; }
 
-        public Task<bool> HasAccess() => user.HasAccess(Access);
+        public Task<bool> HasAccess() => HasAccess(AccessModifier.Default);
+        public Task<bool> HasAccess(AccessModifier modifier) => user.HasAccess(Access, modifier);
 
         public async Task EnsureUserHasAccess()
         {

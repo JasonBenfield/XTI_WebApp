@@ -15,7 +15,7 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             var adminRole = await input.App.Role(FakeRoleNames.Instance.Admin);
             await input.User.AddRole(adminRole);
-            var hasAccess = await input.Api.Employee.AddEmployee.HasAccess();
+            var hasAccess = await input.Api.Employee.AddEmployee.HasAccess(AccessModifier.Default);
             Assert.That(hasAccess, Is.True, "Should have access when user belongs to an allowed role");
         }
 
@@ -25,7 +25,7 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
             await input.User.AddRole(viewerRole);
-            var hasAccess = await input.Api.Employee.AddEmployee.HasAccess();
+            var hasAccess = await input.Api.Employee.AddEmployee.HasAccess(AccessModifier.Default);
             Assert.That(hasAccess, Is.False, "Should not have access when user does not belong to an allowed role");
         }
 
@@ -35,7 +35,7 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
             await input.User.AddRole(viewerRole);
-            var hasAccess = await input.Api.Product.AddProduct.HasAccess();
+            var hasAccess = await input.Api.Product.AddProduct.HasAccess(AccessModifier.Default);
             Assert.That(hasAccess, Is.False, "Should not have access when user belongs to a denied role");
         }
 
@@ -47,8 +47,34 @@ namespace XTI_WebApp.Tests
             await input.User.AddRole(adminRole);
             var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
             await input.User.AddRole(viewerRole);
-            var hasAccess = await input.Api.Product.AddProduct.HasAccess();
+            var hasAccess = await input.Api.Product.AddProduct.HasAccess(AccessModifier.Default);
             Assert.That(hasAccess, Is.False, "Should not have access when user belongs to a denied role even if they belong to an allowed role");
+        }
+
+        [Test]
+        public async Task ShouldHaveAccess_WhenUserBelongsToAnAllowedRole_ForModifiedAction()
+        {
+            var input = await setup();
+            var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
+            await input.User.AddRole(viewerRole, new AccessModifier("DifferentCompany"));
+            var adminRole = await input.App.Role(FakeRoleNames.Instance.Admin);
+            var modifier = new AccessModifier("MyCompany");
+            await input.User.AddRole(adminRole, modifier);
+            var hasAccess = await input.Api.Employee.AddEmployee.HasAccess(modifier);
+            Assert.That(hasAccess, Is.True, "Should have access when user belongs to an allowed role for modified action");
+        }
+
+        [Test]
+        public async Task ShouldNotHaveAccess_WhenUserDoesNoBelongToAnAllowedRole_ForModifiedAction()
+        {
+            var input = await setup();
+            var adminRole = await input.App.Role(FakeRoleNames.Instance.Admin);
+            await input.User.AddRole(adminRole, new AccessModifier("DifferentCompany"));
+            var modifier = new AccessModifier("MyCompany");
+            var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
+            await input.User.AddRole(viewerRole, modifier);
+            var hasAccess = await input.Api.Employee.AddEmployee.HasAccess(modifier);
+            Assert.That(hasAccess, Is.False, "Should not have access when user does not belong to an allowed role for modified action");
         }
 
         private async Task<TestInput> setup()

@@ -200,7 +200,7 @@ namespace XTI_WebApp.AspTests
             var request = (await session.Requests()).First();
             var events = (await request.Events()).ToArray();
             Assert.That(events.Length, Is.EqualTo(1), "Should log critical error");
-            Assert.That(events[0].Severity, Is.EqualTo(AppEventSeverity.CriticalError), "Should log critical error");
+            Assert.That(events[0].Severity, Is.EqualTo(AppEventSeverity.Values.CriticalError), "Should log critical error");
             Assert.That(events[0].Caption, Is.EqualTo("An unexpected error occurred"), "Should log critical error");
             Assert.That(events[0].Message, Is.EqualTo(exception.Message), "Should log critical error");
             Assert.That(events[0].Detail, Is.EqualTo(exception.StackTrace), "Should log critical error");

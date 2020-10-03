@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using XTI_App;
 
 namespace XTI_App.Api
 {
@@ -10,9 +9,9 @@ namespace XTI_App.Api
         string FriendlyName { get; }
         ResourceAccess Access { get; }
 
-        Task<bool> HasAccess();
+        Task<bool> HasAccess(AccessModifier modifier);
 
-        Task<object> Execute(object model);
+        Task<object> Execute(AccessModifier modifier, object model);
 
         AppApiActionTemplate Template();
     }
@@ -46,13 +45,18 @@ namespace XTI_App.Api
         public string FriendlyName { get; }
         public ResourceAccess Access { get; }
 
-        public Task<bool> HasAccess() => user.HasAccess(Access);
+        public Task<bool> HasAccess(AccessModifier modifier) =>
+            user.HasAccess(Access, modifier);
 
-        public async Task<object> Execute(object model) => await Execute((TModel)model);
+        public async Task<object> Execute(AccessModifier modifier, object model) =>
+            await Execute(modifier, (TModel)model);
 
-        public async Task<ResultContainer<TResult>> Execute(TModel model)
+        public async Task<ResultContainer<TResult>> Execute
+        (
+            AccessModifier modifier, TModel model
+        )
         {
-            await EnsureUserHasAccess();
+            await EnsureUserHasAccess(modifier);
             var errors = new ErrorList();
             var validation = createValidation(user);
             await validation.Validate(errors, model);
@@ -65,9 +69,9 @@ namespace XTI_App.Api
             return new ResultContainer<TResult>(actionResult);
         }
 
-        private async Task EnsureUserHasAccess()
+        private async Task EnsureUserHasAccess(AccessModifier modifier)
         {
-            var hasAccess = await HasAccess();
+            var hasAccess = await HasAccess(modifier);
             if (!hasAccess)
             {
                 throw new AccessDeniedException(Name);

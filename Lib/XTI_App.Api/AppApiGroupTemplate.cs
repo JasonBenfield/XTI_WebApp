@@ -5,14 +5,16 @@ namespace XTI_App.Api
 {
     public sealed class AppApiGroupTemplate
     {
-        public AppApiGroupTemplate(string name, ResourceAccess access, IEnumerable<AppApiActionTemplate> actionTemplates)
+        public AppApiGroupTemplate(string name, bool hasModifier, ResourceAccess access, IEnumerable<AppApiActionTemplate> actionTemplates)
         {
             Name = name;
+            HasModifier = hasModifier;
             Access = access;
             ActionTemplates = actionTemplates;
         }
 
         public string Name { get; }
+        public bool HasModifier { get; }
         public ResourceAccess Access { get; }
         public IEnumerable<AppApiActionTemplate> ActionTemplates { get; }
 
