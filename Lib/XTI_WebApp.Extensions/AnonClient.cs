@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Text;
 using System.Text.Json;
+using XTI_Secrets;
 
 namespace XTI_WebApp.Extensions
 {
@@ -31,9 +30,7 @@ namespace XTI_WebApp.Extensions
             }
             else
             {
-                var protectedBytes = Convert.FromBase64String(cookieText);
-                var unprotectedBytes = protector.Unprotect(protectedBytes);
-                var unprotectedText = UTF8Encoding.UTF8.GetString(unprotectedBytes);
+                var unprotectedText = new DecryptedValue(protector, cookieText).Value();
                 var info = JsonSerializer.Deserialize<AnonInfo>(unprotectedText);
                 SessionID = info.SessionID;
                 RequesterKey = info.RequesterKey;
@@ -47,9 +44,7 @@ namespace XTI_WebApp.Extensions
                 SessionID = sessionID,
                 RequesterKey = requesterKey
             });
-            var unprotectedBytes = Encoding.Default.GetBytes(cookieText);
-            var protectedBytes = protector.Protect(unprotectedBytes);
-            var protectedText = Convert.ToBase64String(protectedBytes);
+            var protectedText = new EncryptedValue(protector, cookieText).Value();
             var options = new CookieOptions
             {
                 HttpOnly = true,
