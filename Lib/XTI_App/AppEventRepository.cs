@@ -30,16 +30,16 @@ namespace XTI_App
                 Detail = detail
             };
             await repo.Create(record);
-            return factory.CreateEvent(record);
+            return factory.Event(record);
         }
 
         internal async Task<IEnumerable<AppEvent>> RetrieveByRequest(AppRequest request)
         {
-            var eventRepo = factory.EventRepository();
+            var eventRepo = factory.Events();
             var records = await repo.Retrieve()
                 .Where(e => e.RequestID == request.ID)
                 .ToArrayAsync();
-            return records.Select(e => factory.CreateEvent(e));
+            return records.Select(e => factory.Event(e));
         }
     }
 }

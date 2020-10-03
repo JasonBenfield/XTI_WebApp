@@ -23,18 +23,18 @@ namespace XTI_App
 
         public Task<AppVersion> Version()
         {
-            return factory.VersionRepository().Version(record.VersionID);
+            return factory.Versions().Version(record.VersionID);
         }
 
         public Task<IEnumerable<AppEvent>> Events()
         {
-            var eventRepo = factory.EventRepository();
+            var eventRepo = factory.Events();
             return eventRepo.RetrieveByRequest(this);
         }
 
         public Task LogCriticalException(DateTime timeOccurred, Exception ex, string caption)
         {
-            var eventRepo = factory.EventRepository();
+            var eventRepo = factory.Events();
             return eventRepo.LogEvent
             (
                 this, timeOccurred, AppEventSeverity.Values.CriticalError, caption, ex.Message, ex.StackTrace

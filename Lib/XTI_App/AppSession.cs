@@ -24,7 +24,7 @@ namespace XTI_App
 
         public Task<AppRequest> LogRequest(IAppVersion version, string path, DateTime timeRequested)
         {
-            var requestRepo = factory.RequestRepository();
+            var requestRepo = factory.Requests();
             return requestRepo.Add(this, version, path, timeRequested);
         }
 
@@ -46,7 +46,7 @@ namespace XTI_App
 
         public Task<IEnumerable<AppRequest>> Requests()
         {
-            var requestRepo = factory.RequestRepository();
+            var requestRepo = factory.Requests();
             return requestRepo.RetrieveBySession(this);
         }
 

@@ -25,12 +25,12 @@ namespace XTI_App
                 Modifier = modifier.Value
             };
             await repo.Create(record);
-            return factory.CreateAppUserRole(record);
+            return factory.UserRole(record);
         }
 
         internal async Task<IEnumerable<AppUserRole>> RolesForUser(IAppUser user, IApp app)
         {
-            var roleRepo = factory.RoleRepository();
+            var roleRepo = factory.Roles();
             var records = await repo.Retrieve()
                 .Where
                 (
@@ -39,7 +39,7 @@ namespace XTI_App
                         && roleRepo.RoleIDsForApp(app).Any(id => id == ur.RoleID)
                 )
                 .ToArrayAsync();
-            return records.Select(ur => factory.CreateAppUserRole(ur));
+            return records.Select(ur => factory.UserRole(ur));
         }
     }
 }

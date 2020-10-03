@@ -27,7 +27,7 @@ namespace XTI_App
                 TimeStarted = timeRequested
             };
             await repo.Create(record);
-            return factory.CreateAppRequest(record);
+            return factory.Request(record);
         }
 
         internal async Task<IEnumerable<AppRequest>> RetrieveBySession(AppSession session)
@@ -35,7 +35,7 @@ namespace XTI_App
             var requests = await repo.Retrieve()
                 .Where(r => r.SessionID == session.ID)
                 .ToArrayAsync();
-            return requests.Select(r => factory.CreateAppRequest(r));
+            return requests.Select(r => factory.Request(r));
         }
     }
 }

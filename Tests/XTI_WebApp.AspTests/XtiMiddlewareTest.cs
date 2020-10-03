@@ -98,7 +98,7 @@ namespace XTI_WebApp.AspTests
         {
             return
             (
-                await input.Factory.SessionRepository()
+                await input.Factory.Sessions()
                     .SessionsByTimeRange(input.Clock.Now().AddDays(-1), input.Clock.Now().AddDays(1))
             )
             .ToArray();
@@ -108,8 +108,8 @@ namespace XTI_WebApp.AspTests
         public async Task ShouldUseSessionForAuthenticatedUser()
         {
             var input = await setup();
-            var user = await input.Factory.UserRepository().User(new AppUserName("xartogg"));
-            var session = await input.Factory.SessionRepository().Create(user, input.Clock.Now(), "", "", "");
+            var user = await input.Factory.Users().User(new AppUserName("xartogg"));
+            var session = await input.Factory.Sessions().Create(user, input.Clock.Now(), "", "", "");
             input.TestAuthOptions.IsEnabled = true;
             input.TestAuthOptions.Session = session;
             input.TestAuthOptions.User = user;
@@ -125,7 +125,7 @@ namespace XTI_WebApp.AspTests
             var input = await setup();
             await input.GetAsync("/Fake/Current/Controller1/Action1");
             var sessions = await input.AppDbContext.Sessions.ToArrayAsync();
-            var anonUser = await input.Factory.UserRepository().User(AppUserName.Anon);
+            var anonUser = await input.Factory.Users().User(AppUserName.Anon);
             Assert.That(sessions[0].UserID, Is.EqualTo(anonUser.ID), "Should create session with anonymous user");
         }
 
@@ -361,10 +361,10 @@ namespace XTI_WebApp.AspTests
             });
             var adminRole = await input.App.AddRole(new AppRoleName("Admin"));
             var managerRole = await input.App.AddRole(new AppRoleName("Manager"));
-            var user = await input.Factory.UserRepository().User(new AppUserName("xartogg"));
+            var user = await input.Factory.Users().User(new AppUserName("xartogg"));
             var userAdminRole = await user.AddRole(adminRole);
             await user.AddRole(managerRole);
-            var session = await input.Factory.SessionRepository().Create(user, input.Clock.Now(), "", "", "");
+            var session = await input.Factory.Sessions().Create(user, input.Clock.Now(), "", "", "");
             input.TestAuthOptions.IsEnabled = true;
             input.TestAuthOptions.Session = session;
             input.TestAuthOptions.User = user;
@@ -440,13 +440,13 @@ namespace XTI_WebApp.AspTests
             var setup = new AppSetup(factory);
             await setup.Run();
             var clock = host.Services.GetService<Clock>();
-            var app = await factory.AppRepository().AddApp(new AppKey("Fake"), clock.Now());
+            var app = await factory.Apps().AddApp(new AppKey("Fake"), clock.Now());
             var version = await app.StartNewPatch(clock.Now());
             await version.Publishing();
             await version.Published();
             var currentVersion = await app.CurrentVersion();
             var input = new TestInput(host, app, version, hostEnvironment);
-            await input.Factory.UserRepository().Add
+            await input.Factory.Users().Add
             (
                 new AppUserName("xartogg"), new FakeHashedPassword("password"), input.Clock.Now()
             );

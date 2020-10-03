@@ -86,11 +86,11 @@ namespace XTI_WebApp.Tests
             var setup = new AppSetup(factory);
             await setup.Run();
             var clock = sp.GetService<FakeClock>();
-            var app = await factory.AppRepository().AddApp(new AppKey("Fake"), clock.Now());
+            var app = await factory.Apps().AddApp(new AppKey("Fake"), clock.Now());
             await app.AddRole(FakeRoleNames.Instance.Admin);
             await app.AddRole(FakeRoleNames.Instance.Manager);
             await app.AddRole(FakeRoleNames.Instance.Viewer);
-            var user = await factory.UserRepository().Add
+            var user = await factory.Users().Add
             (
                 new AppUserName("someone"), new FakeHashedPassword("Password"), clock.Now()
             );

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.Linq;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
@@ -18,7 +17,7 @@ namespace XTI_WebApp.Extensions
         }
 
         public async Task<IAppUser> User(int id) =>
-            await appFactory.UserRepository().User(id);
+            await appFactory.Users().User(id);
 
         public async Task<IAppUser> User()
         {
@@ -26,13 +25,12 @@ namespace XTI_WebApp.Extensions
             var httpUser = httpContextAccessor.HttpContext?.User;
             if (httpUser?.Identity.IsAuthenticated == true)
             {
-                var userIDClaim = httpUser.Claims.First(c => c.Type == "UserID");
-                var userID = int.Parse(userIDClaim.Value);
-                user = await User(userID);
+                var xtiClaims = new XtiClaims(httpContextAccessor);
+                user = await User(xtiClaims.UserID());
             }
             else
             {
-                user = await appFactory.UserRepository().User(AppUserName.Anon);
+                user = await appFactory.Users().User(AppUserName.Anon);
             }
             return user;
         }

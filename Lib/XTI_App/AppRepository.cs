@@ -23,19 +23,19 @@ namespace XTI_App
                 TimeAdded = timeAdded
             };
             await repo.Create(record);
-            return factory.CreateApp(record);
+            return factory.App(record);
         }
 
         public async Task<App> App(int id)
         {
             var record = await repo.Retrieve().FirstOrDefaultAsync(a => a.ID == id);
-            return factory.CreateApp(record);
+            return factory.App(record);
         }
 
         public async Task<App> App(AppKey key)
         {
             var record = await repo.Retrieve().FirstOrDefaultAsync(a => a.Key == key.Value);
-            return factory.CreateApp(record);
+            return factory.App(record);
         }
     }
 }

@@ -23,16 +23,16 @@ namespace XTI_App
         public bool Exists() => ID > 0;
 
         public Task<AppRole> AddRole(AppRoleName name) =>
-            factory.RoleRepository().Add(this, name);
+            factory.Roles().Add(this, name);
 
         async Task<IEnumerable<IAppRole>> IApp.Roles() =>
-            await factory.RoleRepository().RolesForApp(this);
+            await factory.Roles().RolesForApp(this);
 
         public Task<IEnumerable<AppRole>> Roles() =>
-            factory.RoleRepository().RolesForApp(this);
+            factory.Roles().RolesForApp(this);
 
         public Task<AppRole> Role(AppRoleName roleName) =>
-            factory.RoleRepository().Role(this, roleName);
+            factory.Roles().Role(this, roleName);
 
         public Task<AppVersion> StartNewPatch(DateTime timeAdded) =>
             startNewVersion(timeAdded, AppVersionType.Patch);
@@ -45,11 +45,11 @@ namespace XTI_App
 
         private Task<AppVersion> startNewVersion(DateTime timeAdded, AppVersionType type)
         {
-            return factory.VersionRepository().StartNewVersion(this, timeAdded, type);
+            return factory.Versions().StartNewVersion(this, timeAdded, type);
         }
 
         public Task<AppVersion> CurrentVersion() =>
-            factory.VersionRepository().CurrentVersion(this);
+            factory.Versions().CurrentVersion(this);
 
         public async Task SetRoles(IEnumerable<AppRoleName> roleNames)
         {
@@ -84,7 +84,7 @@ namespace XTI_App
         }
 
         async Task<IAppVersion> IApp.CurrentVersion() =>
-            await factory.VersionRepository().CurrentVersion(this);
+            await factory.Versions().CurrentVersion(this);
 
         public async Task<AppVersion> Version(int id) =>
             (await Versions()).First(v => v.ID == id);
@@ -93,7 +93,7 @@ namespace XTI_App
             (await Versions()).First(v => v.ID == id);
 
         public Task<IEnumerable<AppVersion>> Versions() =>
-            factory.VersionRepository().VersionsByApp(this);
+            factory.Versions().VersionsByApp(this);
 
         public override string ToString() => $"{nameof(App)} {ID}: {record.Key}";
     }

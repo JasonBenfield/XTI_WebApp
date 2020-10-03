@@ -31,19 +31,19 @@ namespace XTI_App
                 Type = type.Value
             };
             await repo.Create(record);
-            return factory.CreateVersion(record);
+            return factory.Version(record);
         }
 
         public async Task<AppVersion> Version(int versionID)
         {
             var record = await repo.Retrieve().FirstOrDefaultAsync(v => v.ID == versionID);
-            return factory.CreateVersion(record);
+            return factory.Version(record);
         }
 
         internal async Task<IEnumerable<AppVersion>> VersionsByApp(App app)
         {
             var records = await repo.Retrieve().Where(v => v.AppID == app.ID).ToArrayAsync();
-            return records.Select(v => factory.CreateVersion(v));
+            return records.Select(v => factory.Version(v));
         }
 
         internal async Task<AppVersion> CurrentVersion(App app)
@@ -51,7 +51,7 @@ namespace XTI_App
             var record = await repo.Retrieve()
                 .Where(v => v.AppID == app.ID && v.Status == AppVersionStatus.Current.Value)
                 .FirstOrDefaultAsync();
-            return factory.CreateVersion(record);
+            return factory.Version(record);
         }
     }
 }
