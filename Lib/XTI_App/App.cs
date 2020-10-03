@@ -7,11 +7,13 @@ namespace XTI_App
 {
     public sealed class App : IApp
     {
+        private readonly DataRepository<AppRecord> repo;
         private readonly AppFactory factory;
         private readonly AppRecord record;
 
-        internal App(AppFactory factory, AppRecord record)
+        internal App(DataRepository<AppRecord> repo, AppFactory factory, AppRecord record)
         {
+            this.repo = repo;
             this.factory = factory;
             this.record = record ?? new AppRecord();
         }
@@ -48,6 +50,38 @@ namespace XTI_App
 
         public Task<AppVersion> CurrentVersion() =>
             factory.VersionRepository().CurrentVersion(this);
+
+        public async Task SetRoles(IEnumerable<AppRoleName> roleNames)
+        {
+            var existingRoles = (await Roles()).ToArray();
+            await repo.Transaction(async () =>
+            {
+                await addRoles(roleNames, existingRoles);
+                var rolesToDelete = existingRoles
+                    .Where(r => !roleNames.Any(rn => r.Name().Equals(rn)))
+                    .ToArray();
+                await deleteRoles(rolesToDelete);
+            });
+        }
+
+        private async Task addRoles(IEnumerable<AppRoleName> roleNames, IEnumerable<AppRole> existingRoles)
+        {
+            foreach (var roleName in roleNames)
+            {
+                if (!existingRoles.Any(r => r.Name().Equals(roleName)))
+                {
+                    await AddRole(roleName);
+                }
+            }
+        }
+
+        private static async Task deleteRoles(IEnumerable<AppRole> rolesToDelete)
+        {
+            foreach (var role in rolesToDelete)
+            {
+                await role.Delete();
+            }
+        }
 
         async Task<IAppVersion> IApp.CurrentVersion() =>
             await factory.VersionRepository().CurrentVersion(this);
