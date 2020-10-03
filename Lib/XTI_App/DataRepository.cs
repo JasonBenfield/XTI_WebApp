@@ -10,6 +10,7 @@ namespace XTI_App
         IQueryable<T> Retrieve();
         Task Update(T record, Action<T> a);
         Task Delete(T record);
+        Task Transaction(Func<Task> action);
 
     }
 }

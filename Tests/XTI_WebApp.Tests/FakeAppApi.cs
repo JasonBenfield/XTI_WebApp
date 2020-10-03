@@ -5,18 +5,6 @@ using XTI_App.Api;
 
 namespace XTI_WebApp.Tests
 {
-    public sealed class FakeRoles
-    {
-        public static readonly FakeRoles Instance = new FakeRoles();
-
-        private FakeRoles()
-        {
-        }
-
-        public readonly AppRoleName Admin = new AppRoleName("Admin");
-        public readonly AppRoleName Viewer = new AppRoleName("Viewer");
-        public readonly AppRoleName Manager = new AppRoleName("Manager");
-    }
 
     public sealed class FakeAppApi : AppApi
     {
@@ -29,7 +17,7 @@ namespace XTI_WebApp.Tests
                   AppKeyValue,
                   user,
                   ResourceAccess.AllowAuthenticated()
-                    .WithAllowed(FakeRoles.Instance.Admin)
+                    .WithAllowed(FakeRoleNames.Instance.Admin)
             )
         {
             Employee = AddGroup(u => new EmployeeGroup(this, u));
@@ -47,8 +35,8 @@ namespace XTI_WebApp.Tests
                   api,
                   new NameFromGroupClassName(nameof(EmployeeGroup)).Value,
                   api.Access
-                    .WithAllowed(FakeRoles.Instance.Manager)
-                    .WithDenied(FakeRoles.Instance.Viewer),
+                    .WithAllowed(FakeRoleNames.Instance.Manager)
+                    .WithDenied(FakeRoleNames.Instance.Viewer),
                   user
             )
         {
@@ -120,7 +108,7 @@ namespace XTI_WebApp.Tests
                 api,
                 new NameFromGroupClassName(nameof(ProductGroup)).Value,
                 api.Access
-                    .WithDenied(FakeRoles.Instance.Viewer),
+                    .WithDenied(FakeRoleNames.Instance.Viewer),
                 user
             )
         {

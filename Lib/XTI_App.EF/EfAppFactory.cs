@@ -9,6 +9,7 @@ namespace XTI_App.EF
         public EfAppFactory(AppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
+            unitOfWork = new UnitOfWork(appDbContext);
             dbSetLookup = new Dictionary<Type, object>
             {
                 { typeof(AppSessionRecord), appDbContext.Sessions },
@@ -23,11 +24,12 @@ namespace XTI_App.EF
         }
 
         private readonly AppDbContext appDbContext;
+        private readonly UnitOfWork unitOfWork;
 
         private readonly Dictionary<Type, object> dbSetLookup;
 
         protected override DataRepository<T> CreateDataRepository<T>()
             where T : class =>
-                new EfDataRepository<T>(appDbContext, (DbSet<T>)dbSetLookup[typeof(T)]);
+                new EfDataRepository<T>(unitOfWork, appDbContext, (DbSet<T>)dbSetLookup[typeof(T)]);
     }
 }

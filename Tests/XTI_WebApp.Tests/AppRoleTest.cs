@@ -39,6 +39,39 @@ namespace XTI_WebApp.Tests
             Assert.That(userRoles[0].IsRole(adminRole), Is.True, "Should add role to user");
         }
 
+        [Test]
+        public async Task ShouldAddRolesFromAppRoleNames()
+        {
+            var input = await setup();
+            var roleNames = FakeRoleNames.Instance.Valus();
+            await input.App.SetRoles(roleNames);
+            var appRoles = await input.App.Roles();
+            Assert.That(appRoles.Select(r => r.Name()), Is.EquivalentTo(roleNames), "Should add role names from app role names");
+        }
+
+        [Test]
+        public async Task ShouldNotAddRoleFromAppRoleNames_WhenTheRoleAlreadyExists()
+        {
+            var input = await setup();
+            var roleNames = FakeRoleNames.Instance.Valus();
+            await input.App.SetRoles(roleNames);
+            await input.App.SetRoles(roleNames);
+            var appRoles = await input.App.Roles();
+            Assert.That(appRoles.Select(r => r.Name()), Is.EquivalentTo(roleNames), "Should add role names from app role names");
+        }
+
+        [Test]
+        public async Task ShouldRemoveRolesNotInAppRoleNames()
+        {
+            var input = await setup();
+            var roleNames = FakeRoleNames.Instance.Valus();
+            await input.App.SetRoles(roleNames);
+            roleNames = roleNames.Where(rn => !rn.Equals(FakeRoleNames.Instance.Manager)).ToArray();
+            await input.App.SetRoles(roleNames);
+            var appRoles = await input.App.Roles();
+            Assert.That(appRoles.Select(r => r.Name()), Is.EquivalentTo(roleNames), "Should add role names from app role names");
+        }
+
         private async Task<TestInput> setup()
         {
             var services = new ServiceCollection();
@@ -50,6 +83,13 @@ namespace XTI_WebApp.Tests
             var clock = sp.GetService<FakeClock>();
             var app = await factory.AppRepository().AddApp(new AppKey("Fake"), clock.Now());
             return new TestInput(sp, app);
+        }
+
+        private class FakeAppRoleNames : AppRoleNames
+        {
+            protected FakeAppRoleNames() : base(new AppKey("Fake"))
+            {
+            }
         }
 
         private sealed class TestInput

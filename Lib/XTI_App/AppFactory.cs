@@ -36,7 +36,8 @@ namespace XTI_App
         public AppRepository AppRepository() =>
             fetchRepo<AppRecord, AppRepository>(ref appRepo, dataRepo =>
                 new AppRepository(this, dataRepo));
-        internal App CreateApp(AppRecord record) => new App(this, record);
+        internal App CreateApp(AppRecord record) =>
+            new App(CreateDataRepository<AppRecord>(), this, record);
 
         private AppVersionRepository versionRepo;
         public AppVersionRepository VersionRepository() =>
@@ -47,7 +48,7 @@ namespace XTI_App
         private AppRoleRepository appRoleRepo;
         internal AppRoleRepository RoleRepository() =>
             fetchRepo<AppRoleRecord, AppRoleRepository>(ref appRoleRepo, dataRepo => new AppRoleRepository(this, dataRepo));
-        internal AppRole CreateAppRole(AppRoleRecord record) => new AppRole(record);
+        internal AppRole CreateAppRole(AppRoleRecord record) => new AppRole(CreateDataRepository<AppRoleRecord>(), record);
 
         private AppUserRoleRepository userRoleRepo;
         internal AppUserRoleRepository UserRoleRepository() =>
