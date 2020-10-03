@@ -51,6 +51,9 @@ namespace XTI_App.Api
         public async Task<object> Execute(AccessModifier modifier, object model) =>
             await Execute(modifier, (TModel)model);
 
+        public Task<ResultContainer<TResult>> Execute(TModel model) =>
+            Execute(AccessModifier.Default, model);
+
         public async Task<ResultContainer<TResult>> Execute
         (
             AccessModifier modifier, TModel model
