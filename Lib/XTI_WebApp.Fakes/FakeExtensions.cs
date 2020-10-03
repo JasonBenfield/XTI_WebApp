@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using XTI_App;
-using XTI_App.EF;
 using XTI_App.Api;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
+using XTI_App.EF;
 using XTI_WebApp.Extensions;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace XTI_WebApp.Fakes
 {
@@ -29,12 +28,13 @@ namespace XTI_WebApp.Fakes
                 })
                 .SetApplicationName("XTI_WEB_APP");
             services.AddHttpContextAccessor();
+            services.AddDataProtection();
             services.AddSingleton<Clock, FakeClock>();
             services.AddSingleton(sp => (FakeClock)sp.GetService<Clock>());
             services.AddSingleton<AppFactory, EfAppFactory>();
             services.AddScoped<IUserContext, FakeSessionContext>();
             services.AddScoped<IAppContext, FakeAppContext>();
-            services.AddSingleton<IAppApiUser, XtiAppApiUser>();
+            services.AddScoped<IAppApiUser, XtiAppApiUser>();
             services.AddSingleton<IHostEnvironment, FakeHostEnvironment>();
             services.AddScoped(sp =>
             {
