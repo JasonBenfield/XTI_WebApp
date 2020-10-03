@@ -40,7 +40,7 @@ namespace XTI_WebApp.Extensions
 
         private Task<AppSession> authenticatedSession()
         {
-            var sessionRepo = appFactory.SessionRepository();
+            var sessionRepo = appFactory.Sessions();
             var sessionID = new XtiClaims(httpContextAccessor).SessionID();
             return sessionRepo.Session(sessionID);
         }
@@ -48,7 +48,7 @@ namespace XTI_WebApp.Extensions
         private async Task<AppSession> anonSession()
         {
             anonClient.Load();
-            var sessionRepo = appFactory.SessionRepository();
+            var sessionRepo = appFactory.Sessions();
             var session = await sessionRepo.Session(anonClient.SessionID);
             if (!session.HasStarted() || session.HasEnded())
             {

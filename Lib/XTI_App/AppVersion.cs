@@ -33,7 +33,7 @@ namespace XTI_App
 
         public async Task Publishing()
         {
-            var app = await factory.AppRepository().App(record.AppID);
+            var app = await factory.Apps().App(record.AppID);
             var current = await app.CurrentVersion();
             await repo.Update(record, r =>
             {
@@ -59,7 +59,7 @@ namespace XTI_App
 
         public async Task Published()
         {
-            var app = await factory.AppRepository().App(record.AppID);
+            var app = await factory.Apps().App(record.AppID);
             var current = await app.CurrentVersion();
             if (current.IsCurrent())
             {

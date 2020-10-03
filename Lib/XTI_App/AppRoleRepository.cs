@@ -24,7 +24,7 @@ namespace XTI_App
                 Name = name.Value
             };
             await repo.Create(record);
-            return factory.CreateAppRole(record);
+            return factory.Role(record);
         }
 
         internal async Task<IEnumerable<AppRole>> RolesForApp(App app)
@@ -32,7 +32,7 @@ namespace XTI_App
             var records = await repo.Retrieve()
                 .Where(r => r.AppID == app.ID)
                 .ToArrayAsync();
-            return records.Select(r => factory.CreateAppRole(r));
+            return records.Select(r => factory.Role(r));
         }
 
         internal async Task<AppRole> Role(App app, AppRoleName roleName)
@@ -40,7 +40,7 @@ namespace XTI_App
             var record = await repo.Retrieve()
                 .Where(r => r.AppID == app.ID && r.Name == roleName.Value)
                 .FirstOrDefaultAsync();
-            return factory.CreateAppRole(record);
+            return factory.Role(record);
         }
 
         internal IQueryable<int> RoleIDsForApp(IApp app)

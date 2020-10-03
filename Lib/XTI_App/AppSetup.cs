@@ -13,7 +13,7 @@ namespace XTI_App
 
         public async Task Run()
         {
-            var userRepo = factory.UserRepository();
+            var userRepo = factory.Users();
             var anonUser = await userRepo.User(AppUserName.Anon);
             if (anonUser.IsUnknown())
             {

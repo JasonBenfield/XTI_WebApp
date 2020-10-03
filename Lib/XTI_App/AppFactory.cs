@@ -6,57 +6,57 @@ namespace XTI_App
     {
         protected AppFactory() { }
 
-        private AppUserRepository userRepo;
-        public AppUserRepository UserRepository() =>
-            fetchRepo<AppUserRecord, AppUserRepository>(ref userRepo,
+        private AppUserRepository users;
+        public AppUserRepository Users() =>
+            fetchRepo<AppUserRecord, AppUserRepository>(ref users,
                 dataRepo => new AppUserRepository(this, dataRepo));
-        internal AppUser CreateAppUser(AppUserRecord record) => new AppUser(this, record);
+        internal AppUser User(AppUserRecord record) => new AppUser(this, record);
 
-        private AppSessionRepository sessionRepo;
-        public AppSessionRepository SessionRepository() =>
-            fetchRepo<AppSessionRecord, AppSessionRepository>(ref sessionRepo,
+        private AppSessionRepository sessions;
+        public AppSessionRepository Sessions() =>
+            fetchRepo<AppSessionRecord, AppSessionRepository>(ref sessions,
                 dataRepo => new AppSessionRepository(this, dataRepo));
-        internal AppSession CreateAppSession(AppSessionRecord record) =>
+        internal AppSession Session(AppSessionRecord record) =>
             new AppSession(this, CreateDataRepository<AppSessionRecord>(), record);
 
-        private AppRequestRepository requestRepo;
-        public AppRequestRepository RequestRepository() =>
-            fetchRepo<AppRequestRecord, AppRequestRepository>(ref requestRepo,
+        private AppRequestRepository requests;
+        public AppRequestRepository Requests() =>
+            fetchRepo<AppRequestRecord, AppRequestRepository>(ref requests,
                 dataRepo => new AppRequestRepository(this, dataRepo));
-        internal AppRequest CreateAppRequest(AppRequestRecord record) =>
+        internal AppRequest Request(AppRequestRecord record) =>
             new AppRequest(this, CreateDataRepository<AppRequestRecord>(), record);
 
-        private AppEventRepository eventRepo;
-        public AppEventRepository EventRepository() =>
-            fetchRepo<AppEventRecord, AppEventRepository>(ref eventRepo,
+        private AppEventRepository events;
+        public AppEventRepository Events() =>
+            fetchRepo<AppEventRecord, AppEventRepository>(ref events,
                 dataRepo => new AppEventRepository(this, dataRepo));
-        internal AppEvent CreateEvent(AppEventRecord record) => new AppEvent(record);
+        internal AppEvent Event(AppEventRecord record) => new AppEvent(record);
 
-        private AppRepository appRepo;
-        public AppRepository AppRepository() =>
-            fetchRepo<AppRecord, AppRepository>(ref appRepo, dataRepo =>
+        private AppRepository apps;
+        public AppRepository Apps() =>
+            fetchRepo<AppRecord, AppRepository>(ref apps, dataRepo =>
                 new AppRepository(this, dataRepo));
-        internal App CreateApp(AppRecord record) =>
+        internal App App(AppRecord record) =>
             new App(CreateDataRepository<AppRecord>(), this, record);
 
         private AppVersionRepository versionRepo;
-        public AppVersionRepository VersionRepository() =>
+        public AppVersionRepository Versions() =>
             fetchRepo<AppVersionRecord, AppVersionRepository>(ref versionRepo, dataRepo =>
                 new AppVersionRepository(this, dataRepo));
-        internal AppVersion CreateVersion(AppVersionRecord record) => new AppVersion(this, CreateDataRepository<AppVersionRecord>(), record);
+        internal AppVersion Version(AppVersionRecord record) => new AppVersion(this, CreateDataRepository<AppVersionRecord>(), record);
 
-        private AppRoleRepository appRoleRepo;
-        internal AppRoleRepository RoleRepository() =>
-            fetchRepo<AppRoleRecord, AppRoleRepository>(ref appRoleRepo, dataRepo => new AppRoleRepository(this, dataRepo));
-        internal AppRole CreateAppRole(AppRoleRecord record) => new AppRole(CreateDataRepository<AppRoleRecord>(), record);
+        private AppRoleRepository roles;
+        internal AppRoleRepository Roles() =>
+            fetchRepo<AppRoleRecord, AppRoleRepository>(ref roles, dataRepo => new AppRoleRepository(this, dataRepo));
+        internal AppRole Role(AppRoleRecord record) => new AppRole(CreateDataRepository<AppRoleRecord>(), record);
 
-        private AppUserRoleRepository userRoleRepo;
-        internal AppUserRoleRepository UserRoleRepository() =>
+        private AppUserRoleRepository userRoles;
+        internal AppUserRoleRepository UserRoles() =>
             fetchRepo<AppUserRoleRecord, AppUserRoleRepository>
             (
-                ref userRoleRepo, dataRepo => new AppUserRoleRepository(this, dataRepo)
+                ref userRoles, dataRepo => new AppUserRoleRepository(this, dataRepo)
             );
-        internal AppUserRole CreateAppUserRole(AppUserRoleRecord record) =>
+        internal AppUserRole UserRole(AppUserRoleRecord record) =>
             new AppUserRole(CreateDataRepository<AppUserRoleRecord>(), record);
 
         private TRepo fetchRepo<TRecord, TRepo>

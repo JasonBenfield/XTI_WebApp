@@ -18,7 +18,7 @@ namespace XTI_Version
 
         public async Task<AppVersion> Execute(NewVersionOptions options)
         {
-            var app = await factory.AppRepository().App(new AppKey(options.App));
+            var app = await factory.Apps().App(new AppKey(options.App));
             AppVersion version;
             var versionType = AppVersionType.Parse(options.Type);
             if (versionType.Equals(AppVersionType.Major))

@@ -19,14 +19,14 @@ namespace XTI_App
         {
             var userRecord = await repo.Retrieve()
                 .FirstOrDefaultAsync(u => u.ID == id);
-            return factory.CreateAppUser(userRecord);
+            return factory.User(userRecord);
         }
 
         public async Task<AppUser> User(AppUserName userName)
         {
             var userRecord = await repo.Retrieve()
                 .FirstOrDefaultAsync(u => u.UserName == userName.Value);
-            return factory.CreateAppUser(userRecord);
+            return factory.User(userRecord);
         }
 
         public async Task<AppUser> Add(AppUserName userName, IHashedPassword password, DateTime timeAdded)
@@ -38,7 +38,7 @@ namespace XTI_App
                 TimeAdded = timeAdded
             };
             await repo.Create(newUser);
-            return factory.CreateAppUser(newUser);
+            return factory.User(newUser);
         }
     }
 }
