@@ -13,6 +13,10 @@ namespace AppDbApp
         {
             var configBuilder = new ConfigurationBuilder();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            if (string.IsNullOrWhiteSpace(environment))
+            {
+                environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT");
+            }
             configBuilder.UseXtiConfiguration(environment, args);
             var config = configBuilder.Build();
             var section = config.GetSection(DbOptions.DB);
