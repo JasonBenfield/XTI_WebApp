@@ -13,7 +13,8 @@ namespace XTI_ConsoleApp.Extensions
 {
     public static class ConsoleAppExtensions
     {
-        public static bool IsDevOrTest(this IHostEnvironment env) => env.IsDevelopment() || env.IsEnvironment("Test");
+        public static bool IsTest(this IHostEnvironment env) => env.IsEnvironment("Test");
+        public static bool IsDevOrTest(this IHostEnvironment env) => env.IsDevelopment() || env.IsTest();
 
         public static void AddConsoleAppServices(this IServiceCollection services, IConfiguration configuration)
         {
