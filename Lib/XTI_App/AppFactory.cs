@@ -10,7 +10,7 @@ namespace XTI_App
         public AppUserRepository Users() =>
             fetchRepo<AppUserRecord, AppUserRepository>(ref users,
                 dataRepo => new AppUserRepository(this, dataRepo));
-        internal AppUser User(AppUserRecord record) => new AppUser(this, record);
+        internal AppUser User(AppUserRecord record) => new AppUser(CreateDataRepository<AppUserRecord>(), this, record);
 
         private AppSessionRepository sessions;
         public AppSessionRepository Sessions() =>

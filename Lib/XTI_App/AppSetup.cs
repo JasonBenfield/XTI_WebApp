@@ -15,7 +15,7 @@ namespace XTI_App
         {
             var userRepo = factory.Users();
             var anonUser = await userRepo.User(AppUserName.Anon);
-            if (anonUser.IsUnknown())
+            if (!anonUser.Exists())
             {
                 await userRepo.Add
                 (
