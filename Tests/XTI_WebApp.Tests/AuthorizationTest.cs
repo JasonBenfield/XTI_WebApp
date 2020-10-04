@@ -77,6 +77,17 @@ namespace XTI_WebApp.Tests
             Assert.That(hasAccess, Is.False, "Should not have access when user does not belong to an allowed role for modified action");
         }
 
+        [Test]
+        public async Task ShouldHaveAccess_WhenUserBelongsToAnAllowedRoleWithDefaultModifier()
+        {
+            var input = await setup();
+            var adminRole = await input.App.Role(FakeRoleNames.Instance.Admin);
+            await input.User.AddRole(adminRole, AccessModifier.Default);
+            var modifier = new AccessModifier("MyCompany");
+            var hasAccess = await input.Api.Employee.AddEmployee.HasAccess(modifier);
+            Assert.That(hasAccess, Is.True, "Should have access when user belongs to an allowed role for modified action");
+        }
+
         private async Task<TestInput> setup()
         {
             var services = new ServiceCollection();
