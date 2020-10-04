@@ -11,7 +11,7 @@ using XTI_Secrets;
 
 namespace XTI_UserApp
 {
-    public sealed class UserAppService : IHostedService
+    public sealed class HostedService : IHostedService
     {
         private readonly IHostApplicationLifetime lifetime;
         private readonly AppFactory appFactory;
@@ -20,7 +20,7 @@ namespace XTI_UserApp
         private readonly Clock clock;
         private readonly UserOptions userOptions;
 
-        public UserAppService
+        public HostedService
         (
             IHostApplicationLifetime lifetime,
             AppFactory appFactory,
@@ -47,7 +47,15 @@ namespace XTI_UserApp
             {
                 var app = await appFactory.Apps().App(new AppKey(userOptions.AppKey));
                 var userName = new AppUserName(userOptions.UserName);
-                var password = Guid.NewGuid().ToString("N") + "!?";
+                string password;
+                if (string.IsNullOrWhiteSpace(userOptions.Password))
+                {
+                    password = Guid.NewGuid().ToString("N") + "!?";
+                }
+                else
+                {
+                    password = userOptions.Password;
+                }
                 var hashedPassword = hashedPasswordFactory.Create(password);
                 var user = await appFactory.Users().User(userName);
                 var roles = new List<AppRole>();
