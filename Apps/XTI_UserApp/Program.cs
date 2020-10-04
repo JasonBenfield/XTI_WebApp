@@ -33,7 +33,7 @@ namespace XTI_UserApp
                         var secretCredentialsFactory = scope.ServiceProvider.GetService<SecretCredentialsFactory>();
                         var clock = scope.ServiceProvider.GetService<Clock>();
                         var userOptions = scope.ServiceProvider.GetService<IOptions<UserOptions>>();
-                        return new UserAppService
+                        return new HostedService
                         (
                             lifetime,
                             appFactory,
