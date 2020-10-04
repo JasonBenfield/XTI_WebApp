@@ -21,7 +21,6 @@
     <ProjectReference Include="..\..\Lib\XTI_App.EF\XTI_App.EF.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_Configuration.Extensions\XTI_Configuration.Extensions.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_ConsoleApp.Extensions\XTI_ConsoleApp.Extensions.csproj" />
-    <ProjectReference Include="..\..\Lib\XTI_WebApp\XTI_WebApp.csproj" />
   </ItemGroup>
 
 </Project>

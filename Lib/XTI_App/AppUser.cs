@@ -5,18 +5,20 @@ namespace XTI_App
 {
     public sealed class AppUser : IAppUser
     {
-        internal AppUser(AppFactory factory, AppUserRecord record)
+        private readonly DataRepository<AppUserRecord> repo;
+        private readonly AppFactory factory;
+        private readonly AppUserRecord record;
+
+        internal AppUser(DataRepository<AppUserRecord> repo, AppFactory factory, AppUserRecord record)
         {
+            this.repo = repo;
             this.factory = factory;
             this.record = record ?? new AppUserRecord();
         }
 
-        private readonly AppFactory factory;
-        private readonly AppUserRecord record;
-
         public int ID { get => record.ID; }
         public AppUserName UserName() => new AppUserName(record.UserName);
-        public bool IsUnknown() => ID <= 0;
+        public bool Exists() => ID > 0;
 
         public bool IsPasswordCorrect(IHashedPassword hashedPassword) =>
             hashedPassword.Equals(record.Password);
@@ -35,5 +37,10 @@ namespace XTI_App
             await factory.UserRoles().RolesForUser(this, app);
 
         public Task RemoveRole(AppUserRole userAdminRole) => userAdminRole.Delete();
+
+        public Task ChangePassword(IHashedPassword password)
+        {
+            return repo.Update(record, u => u.Password = password.Value());
+        }
     }
 }

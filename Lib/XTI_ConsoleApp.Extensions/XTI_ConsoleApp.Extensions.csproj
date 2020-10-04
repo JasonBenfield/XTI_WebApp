@@ -7,6 +7,7 @@
   <Import Project="..\\..\\Version.Targets" />
   
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.8" />
@@ -15,5 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\XTI_App.EF\XTI_App.EF.csproj" />
+    <ProjectReference Include="..\XTI_Secrets\XTI_Secrets.csproj" />
   </ItemGroup>
 </Project>

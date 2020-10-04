@@ -18,6 +18,8 @@ namespace XTI_App
         public int ID { get => record.ID; }
         public AppRoleName Name() => new AppRoleName(record.Name);
 
+        public bool Exists() => ID > 0;
+
         internal Task Delete() => repo.Delete(record);
 
         public override string ToString() => $"{nameof(AppRole)} {ID}";

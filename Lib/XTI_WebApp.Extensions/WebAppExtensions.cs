@@ -12,13 +12,12 @@ using System.IO;
 using XTI_App;
 using XTI_App.Api;
 using XTI_App.EF;
+using XTI_Secrets;
 
 namespace XTI_WebApp.Extensions
 {
     public static class WebAppExtensions
     {
-        public const string appName = "XTI_Web_Apps";
-
         public static bool IsDevOrTest(this IHostEnvironment env) => env != null && (env.IsDevelopment() || env.IsEnvironment("Test"));
 
         public static void AddWebAppServices(this IServiceCollection services, IConfiguration configuration)
@@ -27,14 +26,15 @@ namespace XTI_WebApp.Extensions
             services.Configure<WebAppOptions>(configuration.GetSection(WebAppOptions.WebApp));
             services.Configure<DbOptions>(configuration.GetSection(DbOptions.DB));
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Jwt));
-            var webAppOptions = services.BuildServiceProvider().GetService<IOptions<WebAppOptions>>().Value;
+            services.Configure<SecretOptions>(configuration.GetSection(SecretOptions.Secret));
+            var secretOptions = configuration.GetSection(SecretOptions.Secret).Get<SecretOptions>();
             services
                 .AddDataProtection
                 (
-                    options => options.ApplicationDiscriminator = appName
+                    options => options.ApplicationDiscriminator = secretOptions.ApplicationName
                 )
-                .PersistKeysToFileSystem(new DirectoryInfo(webAppOptions.KeyFolder))
-                .SetApplicationName(appName);
+                .PersistKeysToFileSystem(new DirectoryInfo(secretOptions.KeyDirectoryPath))
+                .SetApplicationName(secretOptions.ApplicationName);
             services.AddAppDbContext();
             services.AddScoped<CacheBust>();
             services.AddScoped<PageContext>();
@@ -74,7 +74,7 @@ namespace XTI_WebApp.Extensions
         {
             services.AddScoped(sp =>
             {
-                var dataProtector = sp.GetDataProtector(new[] { $"{appName}-Anon" });
+                var dataProtector = sp.GetDataProtector(new[] { $"XTI_Apps_Anon" });
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 return new AnonClient(dataProtector, httpContextAccessor);
             });

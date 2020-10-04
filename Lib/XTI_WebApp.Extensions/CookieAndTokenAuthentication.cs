@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -38,7 +37,7 @@ namespace XTI_WebApp.Extensions
                             ValidateAudience = false
                         },
                         sp.GetService<IDataSerializer<AuthenticationTicket>>(),
-                        sp.GetDataProtector(new[] { $"{WebAppExtensions.appName}-Auth1" })
+                        sp.GetDataProtector(new[] { $"XTI_Apps_Auth1" })
                     );
                     options.Cookie.Path = "/";
                     options.Cookie.Domain = "";
