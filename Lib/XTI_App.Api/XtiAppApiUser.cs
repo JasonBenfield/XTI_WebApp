@@ -20,15 +20,30 @@ namespace XTI_App.Api
             var roles = await app.Roles();
             var allowedRoles = resourceAccess.Allowed.Select(ar => roles.FirstOrDefault(r => r.Name().Equals(ar)));
             var user = await userContext.User();
-            var userRoles = (await user.RolesForApp(app))
-                .Where(ur => ur.Modifier().Equals(modifier));
+            var userRoles = await user.RolesForApp(app);
+            var defaultUserRoles = userRoles
+                .Where(ur => ur.Modifier().Equals(AccessModifier.Default));
+            var modifiedUserRoles = modifier.Equals(AccessModifier.Default)
+                ? Enumerable.Empty<AppUserRole>()
+                : userRoles.Where(ur => ur.Modifier().Equals(modifier));
             bool hasAccess = false;
-            if (userRoles.Any(ur => allowedRoles.Any(ar => ur.IsRole(ar))))
+            if (defaultUserRoles.Any(ur => allowedRoles.Any(ar => ur.IsRole(ar))))
             {
                 hasAccess = true;
             }
-            var deniedRoles = resourceAccess.Denied.Select(dr => roles.FirstOrDefault(r => r.Name().Equals(dr)));
-            if (userRoles.Any(ur => deniedRoles.Any(dr => ur.IsRole(dr))))
+            if (!hasAccess && modifiedUserRoles.Any(ur => allowedRoles.Any(ar => ur.IsRole(ar))))
+            {
+                hasAccess = true;
+            }
+            var deniedRoles = resourceAccess.Denied.Select
+            (
+                dr => roles.FirstOrDefault(r => r.Name().Equals(dr))
+            );
+            if (defaultUserRoles.Any(ur => deniedRoles.Any(ar => ur.IsRole(ar))))
+            {
+                hasAccess = false;
+            }
+            if (modifiedUserRoles.Any(ur => deniedRoles.Any(dr => ur.IsRole(dr))))
             {
                 hasAccess = false;
             }
