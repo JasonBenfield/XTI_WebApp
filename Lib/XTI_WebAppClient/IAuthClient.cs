@@ -2,6 +2,6 @@
 {
     public interface IAuthClient
     {
-        IAuthClientGroup Auth { get; }
+        IAuthApiClientGroup AuthApi { get; }
     }
 }

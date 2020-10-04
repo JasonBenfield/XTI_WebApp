@@ -25,7 +25,7 @@ namespace XTI_WebAppClient
                     UserName = credentials.UserName,
                     Password = credentials.Password
                 };
-                var result = await authClient.Auth.Authenticate(loginModel);
+                var result = await authClient.AuthApi.Authenticate(loginModel);
                 token = result.Token;
             }
             return token;
