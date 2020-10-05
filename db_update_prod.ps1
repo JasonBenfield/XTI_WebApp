@@ -1,1 +1,1 @@
-.\db_update.ps1 -env Production
+& "$($env:XTI_Tools)\app_db_update.ps1" -env Production
