@@ -10,7 +10,7 @@ namespace XTI_App.EF
         }
 
         public AppConnectionString(DbOptions options, string envName)
-        : base(options, envName, "App")
+            : base(options, new AppDbName(envName))
         {
         }
     }
