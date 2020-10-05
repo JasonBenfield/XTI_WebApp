@@ -9,14 +9,15 @@ namespace XTI_Secrets
     {
         private readonly string directoryPath;
 
-        public FileSecretCredentials(string key, IDataProtector dataProtector)
+        public FileSecretCredentials(string environmentName, string key, IDataProtector dataProtector)
             : base(key, dataProtector)
         {
             directoryPath = Path.Combine
             (
                 Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
                 "XTI",
-                "Secrets"
+                "Secrets",
+                environmentName
             );
         }
 
