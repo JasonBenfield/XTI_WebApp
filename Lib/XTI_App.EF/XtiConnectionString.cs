@@ -8,12 +8,12 @@ namespace XTI_App.EF
     {
         private readonly string value;
 
-        public XtiConnectionString(IOptions<DbOptions> options, string envName, string dbName)
-            : this(options.Value, envName, dbName)
+        public XtiConnectionString(IOptions<DbOptions> options, XtiDbName dbName)
+            : this(options.Value, dbName)
         {
         }
 
-        public XtiConnectionString(DbOptions options, string envName, string dbName)
+        public XtiConnectionString(DbOptions options, XtiDbName dbName)
         {
             var connStr = new Dictionary<string, string>();
             connStr.Add("Data Source", options.Source);
@@ -26,7 +26,7 @@ namespace XTI_App.EF
                 connStr.Add("User Id", options.UserName);
                 connStr.Add("Password", options.Password);
             }
-            connStr.Add("Initial Catalog", $"XTI_{envName}_{dbName}");
+            connStr.Add("Initial Catalog", dbName.Value);
             value = string.Join(";", connStr.Keys.Select(key => $"{key}={connStr[key]}"));
         }
 
