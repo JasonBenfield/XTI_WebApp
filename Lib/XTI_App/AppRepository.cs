@@ -15,11 +15,12 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        public async Task<App> AddApp(AppKey key, DateTime timeAdded)
+        public async Task<App> AddApp(AppKey key, string title, DateTime timeAdded)
         {
             var record = new AppRecord
             {
                 Key = key.Value,
+                Title = title,
                 TimeAdded = timeAdded
             };
             await repo.Create(record);

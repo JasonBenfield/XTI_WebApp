@@ -17,9 +17,11 @@ namespace XTI_WebApp.Extensions
         {
             this.httpContextAccessor = httpContextAccessor;
             ID = app.ID;
+            Title = app.Title;
         }
 
         public int ID { get; }
+        public string Title { get; }
 
         public async Task<IAppVersion> CurrentVersion()
         {

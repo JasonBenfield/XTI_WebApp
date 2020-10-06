@@ -20,6 +20,7 @@ namespace XTI_App
 
         public int ID { get => record.ID; }
         public AppKey Key() => new AppKey(record.Key);
+        public string Title { get => record.Title; }
         public bool Exists() => ID > 0;
 
         public Task<AppRole> AddRole(AppRoleName name) =>
@@ -94,6 +95,14 @@ namespace XTI_App
 
         public Task<IEnumerable<AppVersion>> Versions() =>
             factory.Versions().VersionsByApp(this);
+
+        public Task SetTitle(string title)
+        {
+            return repo.Update(record, r =>
+            {
+                r.Title = title;
+            });
+        }
 
         public override string ToString() => $"{nameof(App)} {ID}: {record.Key}";
     }
