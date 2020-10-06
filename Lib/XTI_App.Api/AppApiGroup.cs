@@ -32,19 +32,8 @@ namespace XTI_App.Api
         public Task<bool> HasAccess() => HasAccess(AccessModifier.Default);
         public Task<bool> HasAccess(AccessModifier modifier) => user.HasAccess(Access, modifier);
 
-        public async Task EnsureUserHasAccess()
-        {
-            var hasAccess = await HasAccess();
-            if (!hasAccess)
-            {
-                throw new AccessDeniedException(Name);
-            }
-        }
-
-        protected AppApiAction<EmptyRequest, AppActionViewResult> AddDefaultView()
-        {
-            return AddDefaultView<EmptyRequest>(null);
-        }
+        protected AppApiAction<EmptyRequest, AppActionViewResult> AddDefaultView() =>
+            AddDefaultView(defaultCreateValidation<EmptyRequest>());
 
         protected AppApiAction<TModel, AppActionViewResult> AddDefaultView<TModel>
         (
@@ -65,7 +54,7 @@ namespace XTI_App.Api
             Func<AppAction<TModel, AppActionViewResult>> createAction
         )
         {
-            return AddView(actionName, null, createAction);
+            return AddView(actionName, defaultCreateValidation<TModel>(), createAction);
         }
 
         protected AppApiAction<TModel, AppActionViewResult> AddView<TModel>
@@ -92,7 +81,7 @@ namespace XTI_App.Api
                 access,
                 createValidation,
                 createAction,
-                null
+                ""
             );
         }
 
@@ -102,7 +91,7 @@ namespace XTI_App.Api
             Func<AppAction<TModel, AppActionRedirectResult>> createAction
         )
         {
-            return AddRedirect(actionName, null, createAction);
+            return AddRedirect(actionName, defaultCreateValidation<TModel>(), createAction);
         }
 
         protected AppApiAction<TModel, AppActionRedirectResult> AddRedirect<TModel>
@@ -129,7 +118,7 @@ namespace XTI_App.Api
                 access,
                 createValidation,
                 createAction,
-                null
+                ""
             );
         }
 
@@ -138,7 +127,7 @@ namespace XTI_App.Api
             string actionName,
             Func<AppActionValidation<TModel>> createValidation,
             Func<AppAction<TModel, TResult>> createExecution,
-            string friendlyName = null
+            string friendlyName = ""
         )
         {
             return AddAction(actionName, Access, createValidation, createExecution, friendlyName);
@@ -148,10 +137,10 @@ namespace XTI_App.Api
         (
             string actionName,
             Func<AppAction<TModel, TResult>> createExecution,
-            string friendlyName = null
+            string friendlyName = ""
         )
         {
-            return AddAction(actionName, Access, null, createExecution, friendlyName);
+            return AddAction(actionName, Access, defaultCreateValidation<TModel>(), createExecution, friendlyName);
         }
 
         protected AppApiAction<TModel, TResult> AddAction<TModel, TResult>
@@ -166,7 +155,7 @@ namespace XTI_App.Api
             (
                 actionName,
                 access,
-                null,
+                defaultCreateValidation<TModel>(),
                 createExecution,
                 friendlyName
             );
@@ -187,13 +176,19 @@ namespace XTI_App.Api
                 Name.WithAction(actionName),
                 access,
                 user,
-                createValidation ?? (() => new AppActionValidationNotRequired<TModel>()),
-                createExecution ?? (() => new EmptyAppAction<TModel, TResult>()),
+                createValidation ?? defaultCreateValidation<TModel>(),
+                createExecution ?? defaultCreateAction<TModel, TResult>(),
                 friendlyName ?? new FriendlyNameFromActionName(actionName).Value
             );
             actions.Add(action.Name.Action.ToLower(), action);
             return action;
         }
+
+        private Func<AppActionValidation<TModel>> defaultCreateValidation<TModel>() =>
+            () => new AppActionValidationNotRequired<TModel>();
+
+        private Func<AppAction<TModel, TResult>> defaultCreateAction<TModel, TResult>() =>
+            () => new EmptyAppAction<TModel, TResult>();
 
         public IEnumerable<IAppApiAction> Actions() => actions.Values.ToArray();
 

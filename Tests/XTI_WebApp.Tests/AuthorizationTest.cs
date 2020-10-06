@@ -19,18 +19,6 @@ namespace XTI_WebApp.Tests
             Assert.That(hasAccess, Is.True, "Should have access when user belongs to an allowed role");
         }
 
-        private Task addRolesToUser(TestInput input, params AppRole[] roles) =>
-            addRolesToUser(input, AccessModifier.Default, roles);
-
-        private async Task addRolesToUser(TestInput input, AccessModifier modifier, params AppRole[] roles)
-        {
-            var user = await input.User();
-            foreach (var role in roles)
-            {
-                await user.AddRole(role, modifier);
-            }
-        }
-
         [Test]
         public async Task ShouldNotHaveAccess_WhenUserDoesNoBelongToAnAllowedRole()
         {
@@ -117,6 +105,36 @@ namespace XTI_WebApp.Tests
             input.UserContext.SetUser(anonUser);
             var hasAccess = await input.Api.Login.Index.HasAccess(AccessModifier.Default);
             Assert.That(hasAccess, Is.True, "Anon should have access when anons are allowed");
+        }
+
+        [Test]
+        public async Task ShouldHaveAccessToApp_WhenTheUserBelongsToAnyAppRoles()
+        {
+            var input = await setup();
+            var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
+            await addRolesToUser(input, viewerRole);
+            var hasAccess = await input.Api.HasAccess();
+            Assert.That(hasAccess, Is.True, "User should have access to app when they belong to any app roles");
+        }
+
+        [Test]
+        public async Task ShouldNotHaveAccessToApp_WhenTheUserDoesNotBelongToAnyAppRoles()
+        {
+            var input = await setup();
+            var hasAccess = await input.Api.HasAccess();
+            Assert.That(hasAccess, Is.False, "User should not have access to app when they do not belong to any app roles");
+        }
+
+        private Task addRolesToUser(TestInput input, params AppRole[] roles) =>
+            addRolesToUser(input, AccessModifier.Default, roles);
+
+        private async Task addRolesToUser(TestInput input, AccessModifier modifier, params AppRole[] roles)
+        {
+            var user = await input.User();
+            foreach (var role in roles)
+            {
+                await user.AddRole(role, modifier);
+            }
         }
 
         private async Task<TestInput> setup()

@@ -14,6 +14,14 @@ namespace XTI_App.Api
             this.userContext = userContext;
         }
 
+        public async Task<bool> HasAccessToApp()
+        {
+            var app = await appContext.App();
+            var user = await userContext.User();
+            var userRoles = await user.RolesForApp(app);
+            return userRoles.Any();
+        }
+
         public async Task<bool> HasAccess(ResourceAccess resourceAccess, AccessModifier modifier)
         {
             var app = await appContext.App();
