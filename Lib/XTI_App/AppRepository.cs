@@ -20,7 +20,7 @@ namespace XTI_App
             var record = new AppRecord
             {
                 Key = key.Value,
-                Title = title,
+                Title = title?.Trim() ?? "",
                 TimeAdded = timeAdded
             };
             await repo.Create(record);
