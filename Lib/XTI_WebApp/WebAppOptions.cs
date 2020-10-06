@@ -1,4 +1,4 @@
-﻿namespace XTI_WebApp.Extensions
+﻿namespace XTI_WebApp
 {
     public sealed class WebAppOptions
     {

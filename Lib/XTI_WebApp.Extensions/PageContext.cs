@@ -7,7 +7,7 @@ using XTI_App.Api;
 
 namespace XTI_WebApp.Extensions
 {
-    public sealed class PageContext
+    public sealed class PageContext : IPageContext
     {
         private readonly AppOptions appOptions;
         private readonly CacheBust cacheBust;
@@ -22,10 +22,11 @@ namespace XTI_WebApp.Extensions
             this.hostEnvironment = hostEnvironment;
         }
 
-        public string BaseUrl { get; private set; }
-        public string CacheBust { get; private set; }
-        public string AppTitle { get; private set; }
-        public string EnvironmentName { get; private set; }
+        public string BaseUrl { get; private set; } = "";
+        public string CacheBust { get; private set; } = "";
+        public string EnvironmentName { get; private set; } = "";
+        public string AppTitle { get; private set; } = "";
+        public string PageTitle { get; set; } = "";
 
         public async Task<string> Serialize()
         {

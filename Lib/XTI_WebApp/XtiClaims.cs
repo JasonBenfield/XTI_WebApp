@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Linq;
 
-namespace XTI_WebApp.Extensions
+namespace XTI_WebApp
 {
     public sealed class XtiClaims
     {

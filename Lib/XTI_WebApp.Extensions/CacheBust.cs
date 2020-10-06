@@ -29,7 +29,7 @@ namespace XTI_WebApp.Extensions
             {
                 if (string.IsNullOrWhiteSpace(options.CacheBust))
                 {
-                    if (hostEnvironment.IsDevelopment() || hostEnvironment.IsEnvironment("Test"))
+                    if (hostEnvironment.IsDevOrTest())
                     {
                         value = Guid.NewGuid().ToString("N");
                     }

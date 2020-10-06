@@ -38,7 +38,7 @@ namespace XTI_WebApp.Extensions
                 .SetApplicationName(secretOptions.ApplicationName);
             services.AddAppDbContext();
             services.AddScoped<CacheBust>();
-            services.AddScoped<PageContext>();
+            services.AddScoped<IPageContext, PageContext>();
             services.AddSingleton<Clock, UtcClock>();
             services.AddScoped<AppFactory, EfAppFactory>();
             AddXtiContextServices(services);
