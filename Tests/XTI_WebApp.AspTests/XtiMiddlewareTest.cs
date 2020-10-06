@@ -25,6 +25,7 @@ using XTI_WebApp.Fakes;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.SqlServer.Update.Internal;
 
 namespace XTI_WebApp.AspTests
 {
@@ -419,6 +420,7 @@ namespace XTI_WebApp.AspTests
                             services.AddFakesForXtiWebApp();
                             services.AddHttpContextAccessor();
                             services.AddXtiContextServices();
+                            services.AddScoped<FakeAppSetup>();
                         })
                         .Configure(app =>
                         {
@@ -434,28 +436,14 @@ namespace XTI_WebApp.AspTests
                     (hostingContext, config) => config.UseXtiConfiguration(hostingContext.HostingEnvironment.EnvironmentName, new string[] { })
                 )
                 .StartAsync();
-            var hostEnvironment = (FakeHostEnvironment)host.Services.GetService<IHostEnvironment>();
-            hostEnvironment.EnvironmentName = "Production";
-            var factory = host.Services.GetService<AppFactory>();
-            var setup = new AppSetup(factory);
+            var setup = host.Services.GetService<FakeAppSetup>();
             await setup.Run();
-            var clock = host.Services.GetService<Clock>();
-            var app = await factory.Apps().AddApp(new AppKey("Fake"), clock.Now());
-            var version = await app.StartNewPatch(clock.Now());
-            await version.Publishing();
-            await version.Published();
-            var currentVersion = await app.CurrentVersion();
-            var input = new TestInput(host, app, version, hostEnvironment);
-            await input.Factory.Users().Add
-            (
-                new AppUserName("xartogg"), new FakeHashedPassword("password"), input.Clock.Now()
-            );
-            return input;
+            return new TestInput(host, setup.App, setup.CurrentVersion);
         }
 
         private sealed class TestInput
         {
-            public TestInput(IHost host, App app, AppVersion currentVersion, FakeHostEnvironment hostEnvironment)
+            public TestInput(IHost host, App app, AppVersion currentVersion)
             {
                 Host = host;
                 AppDbContext = host.Services.GetService<AppDbContext>();
@@ -465,7 +453,8 @@ namespace XTI_WebApp.AspTests
                 Cookies = new CookieContainer();
                 App = app;
                 CurrentVersion = currentVersion;
-                HostEnvironment = hostEnvironment;
+                HostEnvironment = (FakeHostEnvironment)host.Services.GetService<IHostEnvironment>();
+                HostEnvironment.EnvironmentName = "Production";
             }
             public IHost Host { get; }
             public CookieContainer Cookies { get; }

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 using XTI_WebApp.Extensions;
 
 namespace XTI_WebApp.TagHelpers
@@ -31,6 +33,10 @@ namespace XTI_WebApp.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+        }
+
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        {
             output.TagName = "script";
             string path;
             if (host.IsDevelopment() || host.IsEnvironment("Test"))
@@ -42,13 +48,19 @@ namespace XTI_WebApp.TagHelpers
                 path = "~/js/dist/";
             }
             var urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
-            output.Attributes.Add("src", pageUrl(urlHelper, path));
+            var pageUrl = await getPageUrl(urlHelper, path);
+            output.Attributes.Add("src", pageUrl);
             output.TagMode = TagMode.StartTagAndEndTag;
         }
 
-        private string pageUrl(IUrlHelper urlHelper, string path)
+        private async Task<string> getPageUrl(IUrlHelper urlHelper, string path)
         {
-            return urlHelper.Content($"{path}{PageName}.js?{cacheBust.Query()}");
+            var query = await cacheBust.Query();
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                query = $"?{query}";
+            }
+            return urlHelper.Content($"{path}{PageName}.js{query}");
         }
     }
 }

@@ -48,7 +48,11 @@ namespace XTI_WebApp.Extensions
             return value;
         }
 
-        public async Task<string> Query() => $"cacheBust={await Value()}";
+        public async Task<string> Query()
+        {
+            var value = await Value();
+            return string.IsNullOrWhiteSpace(value) ? "" : $"cacheBust={value}";
+        }
 
         public override string ToString() => $"{nameof(CacheBust)} {value}";
     }
