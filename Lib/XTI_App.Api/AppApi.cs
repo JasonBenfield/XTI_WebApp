@@ -26,17 +26,7 @@ namespace XTI_App.Api
 
         public ResourceAccess Access { get; }
 
-        public Task<bool> HasAccess() => HasAccess(AccessModifier.Default);
-        public Task<bool> HasAccess(AccessModifier modifier) => user.HasAccess(Access, modifier);
-
-        public async Task EnsureUserHasAccess()
-        {
-            var hasAccess = await HasAccess();
-            if (!hasAccess)
-            {
-                throw new AccessDeniedException(Name);
-            }
-        }
+        public Task<bool> HasAccess() => user.HasAccessToApp();
 
         protected TGroup AddGroup<TGroup>(Func<IAppApiUser, TGroup> createGroup)
             where TGroup : AppApiGroup
