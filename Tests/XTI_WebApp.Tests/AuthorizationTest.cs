@@ -14,9 +14,21 @@ namespace XTI_WebApp.Tests
         {
             var input = await setup();
             var adminRole = await input.App.Role(FakeRoleNames.Instance.Admin);
-            await input.User.AddRole(adminRole);
+            await addRolesToUser(input, adminRole);
             var hasAccess = await input.Api.Employee.AddEmployee.HasAccess(AccessModifier.Default);
             Assert.That(hasAccess, Is.True, "Should have access when user belongs to an allowed role");
+        }
+
+        private Task addRolesToUser(TestInput input, params AppRole[] roles) =>
+            addRolesToUser(input, AccessModifier.Default, roles);
+
+        private async Task addRolesToUser(TestInput input, AccessModifier modifier, params AppRole[] roles)
+        {
+            var user = await input.User();
+            foreach (var role in roles)
+            {
+                await user.AddRole(role, modifier);
+            }
         }
 
         [Test]
@@ -24,7 +36,7 @@ namespace XTI_WebApp.Tests
         {
             var input = await setup();
             var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
-            await input.User.AddRole(viewerRole);
+            await addRolesToUser(input, viewerRole);
             var hasAccess = await input.Api.Employee.AddEmployee.HasAccess(AccessModifier.Default);
             Assert.That(hasAccess, Is.False, "Should not have access when user does not belong to an allowed role");
         }
@@ -34,7 +46,7 @@ namespace XTI_WebApp.Tests
         {
             var input = await setup();
             var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
-            await input.User.AddRole(viewerRole);
+            await addRolesToUser(input, viewerRole);
             var hasAccess = await input.Api.Product.AddProduct.HasAccess(AccessModifier.Default);
             Assert.That(hasAccess, Is.False, "Should not have access when user belongs to a denied role");
         }
@@ -44,9 +56,8 @@ namespace XTI_WebApp.Tests
         {
             var input = await setup();
             var adminRole = await input.App.Role(FakeRoleNames.Instance.Admin);
-            await input.User.AddRole(adminRole);
             var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
-            await input.User.AddRole(viewerRole);
+            await addRolesToUser(input, adminRole, viewerRole);
             var hasAccess = await input.Api.Product.AddProduct.HasAccess(AccessModifier.Default);
             Assert.That(hasAccess, Is.False, "Should not have access when user belongs to a denied role even if they belong to an allowed role");
         }
@@ -56,10 +67,10 @@ namespace XTI_WebApp.Tests
         {
             var input = await setup();
             var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
-            await input.User.AddRole(viewerRole, new AccessModifier("DifferentCompany"));
+            await addRolesToUser(input, new AccessModifier("DifferentCompany"), viewerRole);
             var adminRole = await input.App.Role(FakeRoleNames.Instance.Admin);
             var modifier = new AccessModifier("MyCompany");
-            await input.User.AddRole(adminRole, modifier);
+            await addRolesToUser(input, modifier, adminRole);
             var hasAccess = await input.Api.Employee.AddEmployee.HasAccess(modifier);
             Assert.That(hasAccess, Is.True, "Should have access when user belongs to an allowed role for modified action");
         }
@@ -69,10 +80,10 @@ namespace XTI_WebApp.Tests
         {
             var input = await setup();
             var adminRole = await input.App.Role(FakeRoleNames.Instance.Admin);
-            await input.User.AddRole(adminRole, new AccessModifier("DifferentCompany"));
+            await addRolesToUser(input, new AccessModifier("DifferentCompany"), adminRole);
             var modifier = new AccessModifier("MyCompany");
             var viewerRole = await input.App.Role(FakeRoleNames.Instance.Viewer);
-            await input.User.AddRole(viewerRole, modifier);
+            await addRolesToUser(input, modifier, viewerRole);
             var hasAccess = await input.Api.Employee.AddEmployee.HasAccess(modifier);
             Assert.That(hasAccess, Is.False, "Should not have access when user does not belong to an allowed role for modified action");
         }
@@ -82,10 +93,30 @@ namespace XTI_WebApp.Tests
         {
             var input = await setup();
             var adminRole = await input.App.Role(FakeRoleNames.Instance.Admin);
-            await input.User.AddRole(adminRole, AccessModifier.Default);
+            await addRolesToUser(input, AccessModifier.Default, adminRole);
             var modifier = new AccessModifier("MyCompany");
             var hasAccess = await input.Api.Employee.AddEmployee.HasAccess(modifier);
             Assert.That(hasAccess, Is.True, "Should have access when user belongs to an allowed role for modified action");
+        }
+
+        [Test]
+        public async Task AnonShouldNotHaveAccess_WhenAnonIsNotAllowed()
+        {
+            var input = await setup();
+            var anonUser = await input.Factory.Users().User(AppUserName.Anon);
+            input.UserContext.SetUser(anonUser);
+            var hasAccess = await input.Api.Home.Index.HasAccess(AccessModifier.Default);
+            Assert.That(hasAccess, Is.False, "Anon should not have access unless anons are allowed");
+        }
+
+        [Test]
+        public async Task AnonShouldHaveAccess_WhenAnonIsAllowed()
+        {
+            var input = await setup();
+            var anonUser = await input.Factory.Users().User(AppUserName.Anon);
+            input.UserContext.SetUser(anonUser);
+            var hasAccess = await input.Api.Login.Index.HasAccess(AccessModifier.Default);
+            Assert.That(hasAccess, Is.True, "Anon should have access when anons are allowed");
         }
 
         private async Task<TestInput> setup()
@@ -94,8 +125,7 @@ namespace XTI_WebApp.Tests
             services.AddFakesForXtiWebApp();
             var sp = services.BuildServiceProvider();
             var factory = sp.GetService<AppFactory>();
-            var setup = new AppSetup(factory);
-            await setup.Run();
+            await new AppSetup(factory).Run();
             var clock = sp.GetService<FakeClock>();
             var app = await factory.Apps().AddApp(new AppKey("Fake"), "Fake", clock.Now());
             await app.AddRole(FakeRoleNames.Instance.Admin);
@@ -105,30 +135,31 @@ namespace XTI_WebApp.Tests
             (
                 new AppUserName("someone"), new FakeHashedPassword("Password"), clock.Now()
             );
-            var input = new TestInput(sp, app, user);
+            var input = new TestInput(sp, app);
             var appContext = (FakeAppContext)sp.GetService<IAppContext>();
             appContext.SetApp(app);
-            var sessionContext = (FakeUserContext)sp.GetService<IUserContext>();
-            sessionContext.SetUser(user);
+            input.UserContext.SetUser(user);
             return input;
         }
 
         private sealed class TestInput
         {
-            public TestInput(ServiceProvider sp, App app, AppUser user)
+            public TestInput(ServiceProvider sp, App app)
             {
                 Factory = sp.GetService<AppFactory>();
                 Clock = sp.GetService<FakeClock>();
+                UserContext = (FakeUserContext)sp.GetService<IUserContext>();
                 App = app;
-                User = user;
                 Api = new FakeAppApi(sp.GetService<IAppApiUser>());
             }
 
             public AppFactory Factory { get; }
             public FakeClock Clock { get; }
             public App App { get; }
-            public AppUser User { get; }
+            public FakeUserContext UserContext { get; }
             public FakeAppApi Api { get; }
+
+            public async Task<AppUser> User() => (AppUser)await UserContext.User();
         }
     }
 }
