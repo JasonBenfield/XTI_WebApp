@@ -100,7 +100,7 @@ namespace XTI_App
         {
             return repo.Update(record, r =>
             {
-                r.Title = title;
+                r.Title = title?.Trim() ?? "";
             });
         }
 

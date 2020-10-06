@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
@@ -20,7 +19,8 @@ namespace XTI_WebApp.Tests
         {
             var input = await setup();
             var pageContext = await execute(input);
-            Assert.That(pageContext.AppTitle, Is.EqualTo(input.App.Title), "Should set app title");
+            var app = await input.AppContext.App();
+            Assert.That(pageContext.AppTitle, Is.EqualTo(app.Title), "Should set app title");
         }
 
         [Test]
@@ -30,6 +30,15 @@ namespace XTI_WebApp.Tests
             input.AppOptions.BaseUrl = "https://webapps.xartogg.com";
             var pageContext = await execute(input);
             Assert.That(pageContext.BaseUrl, Is.EqualTo(input.AppOptions.BaseUrl), "Should set app title");
+        }
+
+        [Test]
+        public async Task ShouldSetEnvironmentName()
+        {
+            var input = await setup();
+            input.HostEnvironment.EnvironmentName = "Staging";
+            var pageContext = await execute(input);
+            Assert.That(pageContext.EnvironmentName, Is.EqualTo(input.HostEnvironment.EnvironmentName), "Should set environment name");
         }
 
         private static async Task<PageContextRecord> execute(TestInput input)
@@ -44,6 +53,7 @@ namespace XTI_WebApp.Tests
             public string BaseUrl { get; set; }
             public string CacheBust { get; set; }
             public string AppTitle { get; set; }
+            public string EnvironmentName { get; set; }
         }
 
         private async Task<TestInput> setup()
@@ -55,29 +65,31 @@ namespace XTI_WebApp.Tests
             var setup = new AppSetup(factory);
             await setup.Run();
             var clock = sp.GetService<FakeClock>();
+            var input = new TestInput(sp);
             var app = await factory.Apps().AddApp(new AppKey("Fake"), "Fake", clock.Now());
-            var appContext = (FakeAppContext)sp.GetService<IAppContext>();
-            appContext.SetApp(app);
-            return new TestInput(sp, app);
+            input.AppContext.SetApp(app);
+            return input;
         }
 
         private sealed class TestInput
         {
-            public TestInput(IServiceProvider sp, App app)
+            public TestInput(IServiceProvider sp)
             {
                 Factory = sp.GetService<AppFactory>();
                 Clock = sp.GetService<FakeClock>();
-                App = app;
-                PageContext = sp.GetService<PageContext>();
+                AppContext = (FakeAppContext)sp.GetService<IAppContext>();
+                HostEnvironment = (FakeHostEnvironment)sp.GetService<IHostEnvironment>();
                 AppOptions = sp.GetService<IOptions<AppOptions>>().Value;
+                PageContext = sp.GetService<PageContext>();
 
             }
 
             public AppFactory Factory { get; }
             public FakeClock Clock { get; }
-            public App App { get; }
-            public PageContext PageContext { get; }
+            public FakeAppContext AppContext { get; }
+            public FakeHostEnvironment HostEnvironment { get; }
             public AppOptions AppOptions { get; }
+            public PageContext PageContext { get; }
         }
     }
 }
