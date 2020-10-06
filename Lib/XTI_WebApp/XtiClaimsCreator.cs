@@ -2,14 +2,14 @@
 using System.Security.Claims;
 using XTI_App;
 
-namespace XTI_WebApp.Extensions
+namespace XTI_WebApp
 {
     public sealed class XtiClaimsCreator
     {
         private readonly AppSession session;
-        private readonly AppUser user;
+        private readonly IAppUser user;
 
-        public XtiClaimsCreator(AppSession session, AppUser user)
+        public XtiClaimsCreator(AppSession session, IAppUser user)
         {
             this.session = session;
             this.user = user;

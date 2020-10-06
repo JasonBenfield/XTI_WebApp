@@ -47,7 +47,7 @@ namespace XTI_WebApp.Fakes
                 return XtiPath.Parse($"{request?.PathBase}{request?.Path}");
             });
             services.AddScoped<CacheBust>();
-            services.AddScoped<PageContext>();
+            services.AddScoped<IPageContext, PageContext>();
             services.AddScoped<IHashedPasswordFactory, FakeHashedPasswordFactory>();
             services.AddScoped<IOptions<AppOptions>, FakeOptions<AppOptions>>();
             services.AddScoped<IOptions<WebAppOptions>, FakeOptions<WebAppOptions>>();

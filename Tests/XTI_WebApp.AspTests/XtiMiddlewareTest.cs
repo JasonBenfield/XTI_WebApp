@@ -307,7 +307,7 @@ namespace XTI_WebApp.AspTests
             PageContext pageContext = null;
             var input = await setup(async (context) =>
             {
-                pageContext = context.RequestServices.GetService<PageContext>();
+                pageContext = (PageContext)context.RequestServices.GetService<IPageContext>();
                 await pageContext.Serialize();
             });
             var uri = "/Fake/Current/Controller1/Action1";

@@ -80,7 +80,7 @@ namespace XTI_WebApp.Tests
                 AppContext = (FakeAppContext)sp.GetService<IAppContext>();
                 HostEnvironment = (FakeHostEnvironment)sp.GetService<IHostEnvironment>();
                 AppOptions = sp.GetService<IOptions<AppOptions>>().Value;
-                PageContext = sp.GetService<PageContext>();
+                PageContext = (PageContext)sp.GetService<IPageContext>();
 
             }
 

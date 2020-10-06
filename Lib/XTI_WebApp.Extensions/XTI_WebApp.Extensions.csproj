@@ -21,5 +21,6 @@
     <ProjectReference Include="..\XTI_App.Api\XTI_App.Api.csproj" />
     <ProjectReference Include="..\XTI_App.EF\XTI_App.EF.csproj" />
     <ProjectReference Include="..\XTI_Secrets\XTI_Secrets.csproj" />
+    <ProjectReference Include="..\XTI_WebApp\XTI_WebApp.csproj" />
   </ItemGroup>
 </Project>
