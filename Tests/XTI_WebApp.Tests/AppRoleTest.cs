@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_WebApp.Fakes;
@@ -81,7 +78,7 @@ namespace XTI_WebApp.Tests
             var setup = new AppSetup(factory);
             await setup.Run();
             var clock = sp.GetService<FakeClock>();
-            var app = await factory.Apps().AddApp(new AppKey("Fake"), clock.Now());
+            var app = await factory.Apps().AddApp(new AppKey("Fake"), "Fake", clock.Now());
             return new TestInput(sp, app);
         }
 

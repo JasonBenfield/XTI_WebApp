@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using XTI_App;
 using XTI_App.Api;
@@ -36,6 +38,8 @@ namespace XTI_WebApp.Fakes
             services.AddScoped<IAppContext, FakeAppContext>();
             services.AddScoped<IAppApiUser, XtiAppApiUser>();
             services.AddSingleton<IHostEnvironment, FakeHostEnvironment>();
+            services.AddSingleton(sp => (IWebHostEnvironment)sp.GetService<IHostEnvironment>());
+            services.AddHttpContextAccessor();
             services.AddScoped(sp =>
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
@@ -45,6 +49,8 @@ namespace XTI_WebApp.Fakes
             services.AddScoped<CacheBust>();
             services.AddScoped<PageContext>();
             services.AddScoped<IHashedPasswordFactory, FakeHashedPasswordFactory>();
+            services.AddScoped<IOptions<AppOptions>, FakeOptions<AppOptions>>();
+            services.AddScoped<IOptions<WebAppOptions>, FakeOptions<WebAppOptions>>();
         }
     }
 }

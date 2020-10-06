@@ -53,7 +53,7 @@ namespace XTI_WebApp.IntegrationTests
                 new AppUserName("someone"), new FakeHashedPassword("Password"), input.Clock.Now()
             );
             await user.AddRole(adminRole);
-            var app2 = await input.Factory.Apps().AddApp(new AppKey("app2"), input.Clock.Now());
+            var app2 = await input.Factory.Apps().AddApp(new AppKey("app2"), "App 2", input.Clock.Now());
             var role2 = await app2.AddRole(new AppRoleName("another role"));
             await user.AddRole(role2);
             var userRoles = (await user.RolesForApp(input.App)).ToArray();
@@ -80,7 +80,7 @@ namespace XTI_WebApp.IntegrationTests
             var appDbReset = sp.GetService<AppDbReset>();
             await appDbReset.Run();
             await new AppSetup(factory).Run();
-            var app = await factory.Apps().AddApp(new AppKey("Fake"), DateTime.UtcNow);
+            var app = await factory.Apps().AddApp(new AppKey("Fake"), "Fake", DateTime.UtcNow);
             var input = new TestInput(sp, app);
             return input;
         }
