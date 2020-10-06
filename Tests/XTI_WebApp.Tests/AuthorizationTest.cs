@@ -168,7 +168,7 @@ namespace XTI_WebApp.Tests
                 Clock = sp.GetService<FakeClock>();
                 UserContext = (FakeUserContext)sp.GetService<IUserContext>();
                 App = app;
-                Api = new FakeAppApi(sp.GetService<IAppApiUser>());
+                Api = new FakeAppApi("Current", sp.GetService<IAppApiUser>());
             }
 
             public AppFactory Factory { get; }

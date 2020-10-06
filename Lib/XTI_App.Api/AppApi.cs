@@ -10,11 +10,12 @@ namespace XTI_App.Api
         protected AppApi
         (
             string appKey,
+            string version,
             IAppApiUser user,
-            ResourceAccess access = null
+            ResourceAccess access
         )
         {
-            Name = new XtiPath(appKey, "Current");
+            Name = new XtiPath(appKey, version);
             this.user = user;
             Access = access ?? ResourceAccess.AllowAuthenticated();
         }

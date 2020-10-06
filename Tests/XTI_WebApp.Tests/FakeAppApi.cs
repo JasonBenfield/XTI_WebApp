@@ -11,10 +11,11 @@ namespace XTI_WebApp.Tests
         private static readonly string AppKeyValue = "Fake";
         public static readonly AppKey AppKey = new AppKey(AppKeyValue);
 
-        public FakeAppApi(IAppApiUser user)
+        public FakeAppApi(string version, IAppApiUser user)
             : base
             (
                   AppKeyValue,
+                  version,
                   user,
                   ResourceAccess.AllowAuthenticated()
                     .WithAllowed(FakeRoleNames.Instance.Admin)
