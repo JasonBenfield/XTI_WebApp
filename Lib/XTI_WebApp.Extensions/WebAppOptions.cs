@@ -4,6 +4,5 @@
     {
         public static readonly string WebApp = "WebApp";
         public string CacheBust { get; set; }
-        public string BaseUrl { get; set; }
     }
 }

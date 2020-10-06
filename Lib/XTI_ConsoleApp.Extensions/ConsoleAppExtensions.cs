@@ -18,6 +18,7 @@ namespace XTI_ConsoleApp.Extensions
 
         public static void AddConsoleAppServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<AppOptions>(configuration.GetSection(AppOptions.App));
             services.Configure<DbOptions>(configuration.GetSection(DbOptions.DB));
             services.Configure<SecretOptions>(configuration.GetSection(SecretOptions.Secret));
             var secretOptions = configuration.GetSection(SecretOptions.Secret).Get<SecretOptions>();
