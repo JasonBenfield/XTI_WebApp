@@ -16,7 +16,7 @@ namespace XTI_App.Api
         {
             Name = new XtiPath(appKey, "Current");
             this.user = user;
-            Access = access ?? ResourceAccess.AllowAnonymous();
+            Access = access ?? ResourceAccess.AllowAuthenticated();
         }
 
         private readonly IAppApiUser user;

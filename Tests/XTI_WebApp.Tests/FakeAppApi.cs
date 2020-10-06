@@ -45,13 +45,13 @@ namespace XTI_WebApp.Tests
             AddEmployee = AddAction
             (
                 "AddEmployee",
-                u => new AddEmployeeValidation(),
-                u => new AddEmployeeAction()
+                () => new AddEmployeeValidation(),
+                () => new AddEmployeeAction()
             );
             Employee = AddAction
             (
                 "Employee",
-                u => new EmployeeAction(),
+                () => new EmployeeAction(),
                 "Get Employee Information"
             );
         }
@@ -118,18 +118,18 @@ namespace XTI_WebApp.Tests
             GetInfo = AddAction
             (
                 "GetInfo",
-                u => new GetInfoAction()
+                () => new GetInfoAction()
             );
             AddProduct = AddAction
             (
                 "AddProduct",
-                u => new AddProductValidation(),
-                u => new AddProductAction()
+                () => new AddProductValidation(),
+                () => new AddProductAction()
             );
             Product = AddAction
             (
                 "Product",
-                u => new ProductAction(),
+                () => new ProductAction(),
                 "Get Product Information"
             );
         }

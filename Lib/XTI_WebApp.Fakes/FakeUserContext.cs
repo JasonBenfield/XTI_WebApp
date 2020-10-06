@@ -4,7 +4,7 @@ using XTI_App.Api;
 
 namespace XTI_WebApp.Fakes
 {
-    public sealed class FakeSessionContext : IUserContext
+    public sealed class FakeUserContext : IUserContext
     {
         private IAppUser user;
 
