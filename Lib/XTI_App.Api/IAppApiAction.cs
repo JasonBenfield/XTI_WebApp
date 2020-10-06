@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace XTI_App.Api
 {
-    public interface AppApiAction
+    public interface IAppApiAction
     {
         XtiPath Name { get; }
         string FriendlyName { get; }
@@ -16,15 +16,15 @@ namespace XTI_App.Api
         AppApiActionTemplate Template();
     }
 
-    public sealed class AppApiAction<TModel, TResult> : AppApiAction
+    public sealed class AppApiAction<TModel, TResult> : IAppApiAction
     {
         public AppApiAction
         (
             XtiPath name,
             ResourceAccess access,
             IAppApiUser user,
-            Func<IAppApiUser, AppActionValidation<TModel>> createValidation,
-            Func<IAppApiUser, AppAction<TModel, TResult>> createExecution,
+            Func<AppActionValidation<TModel>> createValidation,
+            Func<AppAction<TModel, TResult>> createExecution,
             string friendlyName
         )
         {
@@ -38,8 +38,8 @@ namespace XTI_App.Api
         }
 
         private readonly IAppApiUser user;
-        private readonly Func<IAppApiUser, AppActionValidation<TModel>> createValidation;
-        private readonly Func<IAppApiUser, AppAction<TModel, TResult>> createExecution;
+        private readonly Func<AppActionValidation<TModel>> createValidation;
+        private readonly Func<AppAction<TModel, TResult>> createExecution;
 
         public XtiPath Name { get; }
         public string FriendlyName { get; }
@@ -61,13 +61,13 @@ namespace XTI_App.Api
         {
             await EnsureUserHasAccess(modifier);
             var errors = new ErrorList();
-            var validation = createValidation(user);
+            var validation = createValidation();
             await validation.Validate(errors, model);
             if (errors.Any())
             {
                 throw new ValidationFailedException(errors.Errors());
             }
-            var action = createExecution(user);
+            var action = createExecution();
             var actionResult = await action.Execute(model);
             return new ResultContainer<TResult>(actionResult);
         }

@@ -32,7 +32,7 @@ namespace XTI_WebApp.Fakes
             services.AddSingleton<Clock, FakeClock>();
             services.AddSingleton(sp => (FakeClock)sp.GetService<Clock>());
             services.AddSingleton<AppFactory, EfAppFactory>();
-            services.AddScoped<IUserContext, FakeSessionContext>();
+            services.AddScoped<IUserContext, FakeUserContext>();
             services.AddScoped<IAppContext, FakeAppContext>();
             services.AddScoped<IAppApiUser, XtiAppApiUser>();
             services.AddSingleton<IHostEnvironment, FakeHostEnvironment>();
