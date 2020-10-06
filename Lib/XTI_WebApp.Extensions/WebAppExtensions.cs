@@ -23,6 +23,7 @@ namespace XTI_WebApp.Extensions
         public static void AddWebAppServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddXtiAspServices();
+            services.Configure<AppOptions>(configuration.GetSection(AppOptions.App));
             services.Configure<WebAppOptions>(configuration.GetSection(WebAppOptions.WebApp));
             services.Configure<DbOptions>(configuration.GetSection(DbOptions.DB));
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Jwt));

@@ -1,17 +1,18 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Threading.Tasks;
+using XTI_App;
 
 namespace XTI_WebApp.Extensions
 {
     public sealed class PageContext
     {
-        private readonly WebAppOptions webAppOptions;
+        private readonly AppOptions appOptions;
         private readonly CacheBust cacheBust;
 
-        public PageContext(IOptions<WebAppOptions> webAppOptions, CacheBust cacheBust)
+        public PageContext(IOptions<AppOptions> webAppOptions, CacheBust cacheBust)
         {
-            this.webAppOptions = webAppOptions.Value;
+            this.appOptions = webAppOptions.Value;
             this.cacheBust = cacheBust;
         }
 
@@ -20,7 +21,7 @@ namespace XTI_WebApp.Extensions
 
         public async Task<string> Serialize()
         {
-            BaseUrl = string.IsNullOrWhiteSpace(webAppOptions.BaseUrl) ? "/" : webAppOptions.BaseUrl;
+            BaseUrl = string.IsNullOrWhiteSpace(appOptions.BaseUrl) ? "/" : appOptions.BaseUrl;
             CacheBust = await cacheBust.Value();
             return JsonSerializer.Serialize(this);
         }

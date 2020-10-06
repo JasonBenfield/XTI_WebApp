@@ -11,6 +11,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using XTI_App;
 
 namespace XTI_WebApp.Extensions
 {
@@ -95,7 +96,7 @@ namespace XTI_WebApp.Extensions
 
         private static void redirectToLogin(ServiceProvider sp, RedirectContext<CookieAuthenticationOptions> x)
         {
-            var options = sp.GetService<IOptions<WebAppOptions>>().Value;
+            var options = sp.GetService<IOptions<AppOptions>>().Value;
             string startUrl;
             string returnUrl;
             string loginUrl;
@@ -117,7 +118,7 @@ namespace XTI_WebApp.Extensions
                 }
                 else
                 {
-                    loginUrl = "/Hub";
+                    loginUrl = "/Hub/Current";
                 }
                 startUrl = $"{x.Request.PathBase.Value}/User";
             }
@@ -135,7 +136,7 @@ namespace XTI_WebApp.Extensions
             }
             startUrl = HttpUtility.UrlEncode(startUrl);
             returnUrl = HttpUtility.UrlEncode(returnUrl);
-            loginUrl = $"{loginUrl}Hub/Auth?startUrl={startUrl}&returnUrl={returnUrl}";
+            loginUrl = $"{loginUrl}/Auth?startUrl={startUrl}&returnUrl={returnUrl}";
             x.Response.Redirect(loginUrl);
         }
 
