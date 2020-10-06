@@ -67,6 +67,10 @@ namespace AppDbApp
                     }
                     await appDbRestore.Run(hostEnvironment.EnvironmentName, options.BackupFilePath);
                 }
+                else
+                {
+                    throw new NotSupportedException($"Command '{options.Command}' is not supported");
+                }
             }
             catch (Exception ex)
             {
