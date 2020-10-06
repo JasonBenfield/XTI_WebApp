@@ -20,11 +20,49 @@ namespace XTI_WebApp.Tests
                     .WithAllowed(FakeRoleNames.Instance.Admin)
             )
         {
+            Login = AddGroup(u => new LoginGroup(this, u));
+            Home = AddGroup(u => new HomeGroup(this, u));
             Employee = AddGroup(u => new EmployeeGroup(this, u));
             Product = AddGroup(u => new ProductGroup(this, u));
         }
+        public LoginGroup Login { get; }
+        public HomeGroup Home { get; }
         public EmployeeGroup Employee { get; }
         public ProductGroup Product { get; }
+    }
+
+    public sealed class HomeGroup : AppApiGroup
+    {
+        public HomeGroup(AppApi api, IAppApiUser user)
+            : base
+            (
+                  api,
+                  new NameFromGroupClassName(nameof(HomeGroup)).Value,
+                  true,
+                  ResourceAccess.AllowAuthenticated(),
+                  user
+            )
+        {
+            Index = AddDefaultView();
+        }
+        public AppApiAction<EmptyRequest, AppActionViewResult> Index { get; }
+    }
+
+    public sealed class LoginGroup : AppApiGroup
+    {
+        public LoginGroup(AppApi api, IAppApiUser user)
+            : base
+            (
+                  api,
+                  new NameFromGroupClassName(nameof(LoginGroup)).Value,
+                  true,
+                  ResourceAccess.AllowAnonymous(),
+                  user
+            )
+        {
+            Index = AddDefaultView();
+        }
+        public AppApiAction<EmptyRequest, AppActionViewResult> Index { get; }
     }
 
     public sealed class EmployeeGroup : AppApiGroup

@@ -11,14 +11,18 @@ namespace XTI_WebApp.Extensions
     public sealed class CachedAppUser : IAppUser
     {
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly AppUserName userName;
 
         public CachedAppUser(IHttpContextAccessor httpContextAccessor, IAppUser source)
         {
             this.httpContextAccessor = httpContextAccessor;
             ID = source.ID;
+            userName = source.UserName();
         }
 
         public int ID { get; }
+
+        public AppUserName UserName() => userName;
 
         public async Task<IEnumerable<IAppUserRole>> RolesForApp(IApp app)
         {
