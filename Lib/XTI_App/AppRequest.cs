@@ -30,11 +30,11 @@ namespace XTI_App
 
         public Task<IEnumerable<AppEvent>> Events() => factory.Events().RetrieveByRequest(this);
 
-        public Task LogCriticalException(DateTime timeOccurred, Exception ex, string caption)
+        public Task LogException(AppEventSeverity severity, DateTime timeOccurred, Exception ex, string caption)
         {
             return factory.Events().LogEvent
             (
-                this, timeOccurred, AppEventSeverity.Values.CriticalError, caption, ex.Message, ex.StackTrace
+                this, timeOccurred, severity, caption, ex.Message, ex.StackTrace
             );
         }
 

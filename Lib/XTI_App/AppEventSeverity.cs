@@ -11,11 +11,17 @@ namespace XTI_App
             {
                 NotSet = DefaultValue;
                 CriticalError = add(100, "Critical Error");
+                AccessDenied = add(80, "Access Denied");
+                AppError = add(70, "App Error");
+                ValidationFailed = add(60, "Validation Failed");
             }
             private AppEventSeverity add(int value, string displayText) =>
                 Add(new AppEventSeverity(value, displayText));
             public AppEventSeverity NotSet { get; }
             public AppEventSeverity CriticalError { get; }
+            public AppEventSeverity AccessDenied { get; }
+            public AppEventSeverity ValidationFailed { get; }
+            public AppEventSeverity AppError { get; }
         }
 
         public static readonly AppEventSeverities Values = new AppEventSeverities();

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
@@ -59,12 +60,40 @@ namespace XTI_WebApp.Extensions
 
         private async Task handleError(HttpContext context, Clock clock, AppRequest request, Exception ex)
         {
-            await request.LogCriticalException(clock.Now(), ex, "An unexpected error occurred");
+            await logException(clock, request, ex);
             context.Response.StatusCode = getErrorStatusCode(ex);
             context.Response.ContentType = "application/json";
-            var errors = getErrors(ex);
+            var errors = new ResultContainer<ErrorModel[]>(getErrors(ex));
             var serializedErrors = JsonSerializer.Serialize(errors);
             await context.Response.WriteAsync(serializedErrors);
+        }
+
+        private static async Task logException(Clock clock, AppRequest request, Exception ex)
+        {
+            AppEventSeverity severity;
+            string caption;
+            var now = clock.Now();
+            if (ex is ValidationFailedException)
+            {
+                severity = AppEventSeverity.Values.ValidationFailed;
+                caption = "Validation Failed";
+            }
+            else if (ex is AccessDeniedException accessDeniedException)
+            {
+                severity = AppEventSeverity.Values.AccessDenied;
+                caption = accessDeniedException.DisplayMessage;
+            }
+            else if (ex is AppException appException)
+            {
+                severity = AppEventSeverity.Values.AppError;
+                caption = appException.DisplayMessage;
+            }
+            else
+            {
+                severity = AppEventSeverity.Values.CriticalError;
+                caption = "An unexpected error occurred";
+            }
+            await request.LogException(severity, now, ex, caption);
         }
 
         private int getErrorStatusCode(Exception ex)
@@ -88,14 +117,14 @@ namespace XTI_WebApp.Extensions
             return statusCode;
         }
 
-        private IEnumerable<ErrorModel> getErrors(Exception ex)
+        private ErrorModel[] getErrors(Exception ex)
         {
-            IEnumerable<ErrorModel> errors;
+            ErrorModel[] errors;
             if (ex is AppException appException)
             {
                 if (ex is ValidationFailedException validationFailedException)
                 {
-                    errors = validationFailedException.Errors;
+                    errors = validationFailedException.Errors.ToArray();
                 }
                 else
                 {
