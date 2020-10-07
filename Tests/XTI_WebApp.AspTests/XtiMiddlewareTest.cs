@@ -203,6 +203,93 @@ namespace XTI_WebApp.AspTests
         }
 
         [Test]
+        public async Task ShouldLogValidationError()
+        {
+            Exception exception = null;
+            var input = await setup(c =>
+            {
+                try
+                {
+                    throw new ValidationFailedException(new[] { new ErrorModel("User name is required") });
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                    throw;
+                }
+                return Task.CompletedTask;
+            });
+            var uri = "/Fake/Current/Controller1/Action1";
+            await input.GetAsync(uri);
+            var session = (await retrieveSessionsForToday(input)).First();
+            var request = (await session.Requests()).First();
+            var events = (await request.Events()).ToArray();
+            Assert.That(events.Length, Is.EqualTo(1), "Should log validation failed");
+            Assert.That(events[0].Severity, Is.EqualTo(AppEventSeverity.Values.ValidationFailed), "Should log validation failed");
+            Assert.That(events[0].Caption, Is.EqualTo("Validation Failed"), "Should log validation failed");
+            Assert.That(events[0].Message, Is.EqualTo("Validation failed with the following errors:\r\nUser name is required"), "Should log validation failed");
+            Assert.That(events[0].Detail, Is.EqualTo(exception.StackTrace), "Should log validation failed");
+        }
+
+        [Test]
+        public async Task ShouldLogAppError()
+        {
+            Exception exception = null;
+            var input = await setup(c =>
+            {
+                try
+                {
+                    throw new AppException("Full Message", "Display Message");
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                    throw;
+                }
+                return Task.CompletedTask;
+            });
+            var uri = "/Fake/Current/Controller1/Action1";
+            await input.GetAsync(uri);
+            var session = (await retrieveSessionsForToday(input)).First();
+            var request = (await session.Requests()).First();
+            var events = (await request.Events()).ToArray();
+            Assert.That(events.Length, Is.EqualTo(1), "Should log app error");
+            Assert.That(events[0].Severity, Is.EqualTo(AppEventSeverity.Values.AppError), "Should log app error");
+            Assert.That(events[0].Caption, Is.EqualTo("Display Message"), "Should log app error");
+            Assert.That(events[0].Message, Is.EqualTo("Full Message"), "Should log app error");
+            Assert.That(events[0].Detail, Is.EqualTo(exception.StackTrace), "Should log app error");
+        }
+
+        [Test]
+        public async Task ShouldLogAccessDenied()
+        {
+            Exception exception = null;
+            var uri = "/Fake/Current/Controller1/Action1";
+            var input = await setup(c =>
+            {
+                try
+                {
+                    throw new AccessDeniedException(XtiPath.Parse(uri));
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                    throw;
+                }
+                return Task.CompletedTask;
+            });
+            await input.GetAsync(uri);
+            var session = (await retrieveSessionsForToday(input)).First();
+            var request = (await session.Requests()).First();
+            var events = (await request.Events()).ToArray();
+            Assert.That(events.Length, Is.EqualTo(1), "Should log access denied");
+            Assert.That(events[0].Severity, Is.EqualTo(AppEventSeverity.Values.AccessDenied), "Should log access denied");
+            Assert.That(events[0].Caption, Is.EqualTo("Access Denied"), "Should log access denied");
+            Assert.That(events[0].Message, Is.EqualTo("Access denied to Fake/Current/Controller1/Action1"), "Should log access denied");
+            Assert.That(events[0].Detail, Is.EqualTo(exception.StackTrace), "Should log access denied");
+        }
+
+        [Test]
         public async Task ShouldReturnServerError_WhenAnUnexpectedErrorOccurs()
         {
             Exception exception = null;
@@ -223,7 +310,13 @@ namespace XTI_WebApp.AspTests
             var response = await input.GetAsync(uri);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
             var result = await response.Content.ReadAsStringAsync();
-            var expectedResult = JsonSerializer.Serialize(new[] { new ErrorModel("An unexpected error occurred") });
+            var expectedResult = JsonSerializer.Serialize
+            (
+                new ResultContainer<ErrorModel[]>
+                (
+                    new[] { new ErrorModel("An unexpected error occurred") }
+                )
+            );
             Assert.That(result, Is.EqualTo(expectedResult), "Should return errors");
         }
 
@@ -240,7 +333,7 @@ namespace XTI_WebApp.AspTests
             var response = await input.GetAsync(uri);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
             var result = await response.Content.ReadAsStringAsync();
-            var expectedResult = JsonSerializer.Serialize(errors);
+            var expectedResult = JsonSerializer.Serialize(new ResultContainer<ErrorModel[]>(errors));
             Assert.That(result, Is.EqualTo(expectedResult), "Should return errors");
         }
 
@@ -266,7 +359,7 @@ namespace XTI_WebApp.AspTests
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
             var result = await response.Content.ReadAsStringAsync();
             var errors = new[] { new ErrorModel(exception.DisplayMessage) };
-            var expectedResult = JsonSerializer.Serialize(errors);
+            var expectedResult = JsonSerializer.Serialize(new ResultContainer<ErrorModel[]>(errors));
             Assert.That(result, Is.EqualTo(expectedResult), "Should return errors");
         }
 
@@ -292,7 +385,7 @@ namespace XTI_WebApp.AspTests
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
             var result = await response.Content.ReadAsStringAsync();
             var errors = new[] { new ErrorModel(exception.DisplayMessage) };
-            var expectedResult = JsonSerializer.Serialize(errors);
+            var expectedResult = JsonSerializer.Serialize(new ResultContainer<ErrorModel[]>(errors));
             Assert.That(result, Is.EqualTo(expectedResult), "Should return errors");
         }
 

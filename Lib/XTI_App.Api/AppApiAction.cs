@@ -18,7 +18,7 @@ namespace XTI_App.Api
             name.EnsureActionResource();
             Access = access;
             Name = name;
-            FriendlyName = friendlyName;
+            FriendlyName = string.IsNullOrWhiteSpace(friendlyName) ? name.Action : friendlyName;
             this.user = user;
             this.createValidation = createValidation;
             this.createExecution = createExecution;
