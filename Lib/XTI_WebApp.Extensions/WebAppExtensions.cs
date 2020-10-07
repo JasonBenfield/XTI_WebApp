@@ -101,7 +101,7 @@ namespace XTI_WebApp.Extensions
                 return new CachedUserContext(httpContextAccessor, cache, sessionContext);
             });
             services.AddScoped<WebUserContext>();
-            services.AddScoped<SessionLog>();
+            services.AddScoped<ISessionContext, WebSessionContext>();
         }
 
     }

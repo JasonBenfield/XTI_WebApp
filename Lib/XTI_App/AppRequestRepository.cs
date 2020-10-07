@@ -23,7 +23,7 @@ namespace XTI_App
             {
                 SessionID = session.ID,
                 VersionID = version.ID,
-                Path = path,
+                Path = path ?? "",
                 TimeStarted = timeRequested
             };
             await repo.Create(record);

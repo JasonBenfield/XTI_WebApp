@@ -24,9 +24,12 @@ namespace XTI_WebApp
             return string.IsNullOrWhiteSpace(userIDValue) ? 0 : int.Parse(userIDValue);
         }
 
-        private string claim(string type) =>
-            httpContextAccessor.HttpContext.User.Identity.IsAuthenticated
-                ? httpContextAccessor.HttpContext.User.Claims.First(c => c.Type == type).Value
+        private string claim(string type)
+        {
+            var httpUser = httpContextAccessor.HttpContext?.User;
+            return httpUser?.Identity.IsAuthenticated == true
+                ? httpUser.Claims.First(c => c.Type == type).Value
                 : "";
+        }
     }
 }

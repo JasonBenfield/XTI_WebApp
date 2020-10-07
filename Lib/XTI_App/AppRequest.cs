@@ -6,7 +6,12 @@ namespace XTI_App
 {
     public sealed class AppRequest
     {
-        internal AppRequest(AppFactory factory, DataRepository<AppRequestRecord> repo, AppRequestRecord record)
+        internal AppRequest
+        (
+            AppFactory factory,
+            DataRepository<AppRequestRecord> repo,
+            AppRequestRecord record
+        )
         {
             this.repo = repo;
             this.factory = factory;
@@ -21,21 +26,13 @@ namespace XTI_App
         public XtiPath ResourceName() => XtiPath.Parse(record.Path);
         public bool HasEnded() => new Timestamp(record.TimeEnded).IsValid();
 
-        public Task<AppVersion> Version()
-        {
-            return factory.Versions().Version(record.VersionID);
-        }
+        public Task<AppVersion> Version() => factory.Versions().Version(record.VersionID);
 
-        public Task<IEnumerable<AppEvent>> Events()
-        {
-            var eventRepo = factory.Events();
-            return eventRepo.RetrieveByRequest(this);
-        }
+        public Task<IEnumerable<AppEvent>> Events() => factory.Events().RetrieveByRequest(this);
 
         public Task LogCriticalException(DateTime timeOccurred, Exception ex, string caption)
         {
-            var eventRepo = factory.Events();
-            return eventRepo.LogEvent
+            return factory.Events().LogEvent
             (
                 this, timeOccurred, AppEventSeverity.Values.CriticalError, caption, ex.Message, ex.StackTrace
             );
