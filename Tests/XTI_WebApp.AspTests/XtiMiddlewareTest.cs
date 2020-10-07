@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -17,15 +16,11 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Api;
 using XTI_App.EF;
 using XTI_Configuration.Extensions;
-using XTI_App.Api;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
-using Microsoft.Extensions.Caching.Memory;
-using System.Collections;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.SqlServer.Update.Internal;
 
 namespace XTI_WebApp.AspTests
 {
@@ -436,6 +431,8 @@ namespace XTI_WebApp.AspTests
                     (hostingContext, config) => config.UseXtiConfiguration(hostingContext.HostingEnvironment.EnvironmentName, new string[] { })
                 )
                 .StartAsync();
+            var factory = host.Services.GetService<AppFactory>();
+            await new AppSetup(factory).Run();
             var setup = host.Services.GetService<FakeAppSetup>();
             await setup.Run();
             return new TestInput(host, setup.App, setup.CurrentVersion);

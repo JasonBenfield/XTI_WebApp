@@ -20,26 +20,25 @@ namespace XTI_WebApp.Extensions
         public async Task InvokeAsync
         (
             HttpContext context,
-            SessionLog sessionLog,
+            ISessionContext sessionLog,
             Clock clock,
             IAppContext appContext,
             XtiPath xtiPath
         )
         {
-            var session = await sessionLog.Session();
-            var version = await retrieveVersion(appContext, xtiPath);
-            var request = await session.LogRequest(version, context.Request.Path, clock.Now());
+            await sessionLog.StartSession();
+            await sessionLog.StartRequest();
             try
             {
                 await _next(context);
             }
             catch (Exception ex)
             {
-                await handleError(context, clock, request, ex);
+                await handleError(context, clock, sessionLog.CurrentRequest, ex);
             }
             finally
             {
-                await request.End(clock.Now());
+                await sessionLog.CurrentRequest.End(clock.Now());
             }
         }
 
