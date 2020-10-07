@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\XTI_Secrets\XTI_Secrets.csproj" />
     <ProjectReference Include="..\XTI_Version\XTI_Version.csproj" />
   </ItemGroup>
 

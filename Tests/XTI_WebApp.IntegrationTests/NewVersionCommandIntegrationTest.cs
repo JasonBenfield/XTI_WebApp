@@ -3,11 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.EF;
 using XTI_Configuration.Extensions;
+using XTI_Secrets;
 using XTI_Version;
 using XTI_Version.Octo;
 using XTI_WebApp.Extensions;
@@ -50,7 +50,8 @@ namespace XTI_WebApp.IntegrationTests
             var input = await setup();
             input.Options.Type = AppVersionType.Major.DisplayText;
             var newVersion = await execute(input);
-            var milestoneExists = await githubRepo(input).MilestoneExists($"xti_major_version_{newVersion.ID}");
+            var gitHubRepo = await getGitHubRepo(input);
+            var milestoneExists = await gitHubRepo.MilestoneExists($"xti_major_version_{newVersion.ID}");
             Assert.That(milestoneExists, Is.True, "Should create milestone for new version");
         }
 
@@ -60,11 +61,12 @@ namespace XTI_WebApp.IntegrationTests
             var input = await setup();
             input.Options.Type = AppVersionType.Major.DisplayText;
             var newVersion = await execute(input);
-            var branchExists = await githubRepo(input).BranchExists($"xti/major/{newVersion.ID}");
+            var gitHubRepo = await getGitHubRepo(input);
+            var branchExists = await gitHubRepo.BranchExists($"xti/major/{newVersion.ID}");
             Assert.That(branchExists, Is.True, "Should create branch for new version");
         }
 
-        private GitHubXtiRepoClient githubRepo(TestInput input)
+        private Task<GitHubXtiRepoClient> getGitHubRepo(TestInput input)
         {
             return input.GithubClient.Repo(input.Options.RepoOwner, input.Options.RepoName);
         }
@@ -77,9 +79,9 @@ namespace XTI_WebApp.IntegrationTests
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.UseXtiConfiguration("Test", new string[] { });
             var configuration = configurationBuilder.Build();
-            services.Configure<GitHubOptions>(configuration.GetSection(GitHubOptions.GitHub));
             services.AddScoped<IHostEnvironment>(sp => hostEnv);
             services.AddWebAppServices(configuration);
+            services.AddFileSecretCredentials();
             services.AddScoped<GitHubXtiClient, OctoGithubXtiClient>();
             services.AddScoped((sp =>
             {

@@ -37,7 +37,7 @@ namespace XTI_Version
             {
                 version = null;
             }
-            var gitHubRepo = githubClient.Repo(options.RepoOwner, options.RepoName);
+            var gitHubRepo = await githubClient.Repo(options.RepoOwner, options.RepoName);
             await createMilestoneIfNoneExists(gitHubRepo, version);
             await createBranchIfNoneExists(gitHubRepo, version);
             return version;

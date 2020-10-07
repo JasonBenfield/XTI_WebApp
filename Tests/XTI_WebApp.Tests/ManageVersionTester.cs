@@ -47,6 +47,7 @@ namespace XTI_WebApp.Tests
                 var endPublishVersionCommand = sp.GetService<EndPublishVersionCommand>();
                 return new ManageVersionCommand(newVersionCommand, beginPublishVersionCommand, endPublishVersionCommand);
             });
+            services.AddFakeSecretCredentials();
             sp = services.BuildServiceProvider();
             var factory = sp.GetService<AppFactory>();
             var setup = new AppSetup(factory);

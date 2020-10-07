@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using XTI_App;
 using XTI_Configuration.Extensions;
 using XTI_ConsoleApp.Extensions;
+using XTI_Secrets;
 using XTI_Version;
 using XTI_Version.Octo;
 
@@ -21,7 +22,7 @@ namespace XTI_VersionApp
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddConsoleAppServices(hostContext.Configuration);
-                    services.Configure<GitHubOptions>(hostContext.Configuration.GetSection(GitHubOptions.GitHub));
+                    services.AddFileSecretCredentials();
                     services.Configure<ManageVersionOptions>(hostContext.Configuration.GetSection(ManageVersionOptions.ManageVersion));
                     services.AddSingleton<GitHubXtiClient, OctoGithubXtiClient>();
                     services.AddSingleton<BeginPublishVersionCommand>();
