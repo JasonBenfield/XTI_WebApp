@@ -1,4 +1,6 @@
-﻿namespace XTI_WebApp
+﻿using System.Threading.Tasks;
+
+namespace XTI_WebApp
 {
     public interface IPageContext
     {
@@ -9,5 +11,7 @@
         bool IsAuthenticated { get; }
         string UserName { get; }
         string PageTitle { get; set; }
+
+        Task<string> Serialize();
     }
 }

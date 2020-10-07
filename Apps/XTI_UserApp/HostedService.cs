@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using XTI_App;
@@ -40,13 +39,9 @@ namespace XTI_UserApp
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(userOptions.AppKey)) { throw new ArgumentException("App key is required"); }
             if (string.IsNullOrWhiteSpace(userOptions.UserName)) { throw new ArgumentException("User name is required"); }
-            if (string.IsNullOrWhiteSpace(userOptions.CredentialKey)) { throw new ArgumentException("Credential key is required"); }
             try
             {
-                var app = await appFactory.Apps().App(new AppKey(userOptions.AppKey));
-                var userName = new AppUserName(userOptions.UserName);
                 string password;
                 if (string.IsNullOrWhiteSpace(userOptions.Password))
                 {
@@ -56,48 +51,56 @@ namespace XTI_UserApp
                 {
                     password = userOptions.Password;
                 }
-                var hashedPassword = hashedPasswordFactory.Create(password);
-                var user = await appFactory.Users().User(userName);
-                var roles = new List<AppRole>();
-                if (!string.IsNullOrWhiteSpace(userOptions.RoleNames))
+                if (!string.IsNullOrWhiteSpace(userOptions.AppKey))
                 {
-                    foreach (var roleName in userOptions.RoleNames.Split(","))
+                    var app = await appFactory.Apps().App(new AppKey(userOptions.AppKey));
+                    var userName = new AppUserName(userOptions.UserName);
+                    var hashedPassword = hashedPasswordFactory.Create(password);
+                    var user = await appFactory.Users().User(userName);
+                    var roles = new List<AppRole>();
+                    if (!string.IsNullOrWhiteSpace(userOptions.RoleNames))
                     {
-                        if (!string.IsNullOrWhiteSpace(roleName))
+                        foreach (var roleName in userOptions.RoleNames.Split(","))
                         {
-                            var role = await app.Role(new AppRoleName(roleName));
-                            if (role.Exists())
+                            if (!string.IsNullOrWhiteSpace(roleName))
                             {
-                                roles.Add(role);
+                                var role = await app.Role(new AppRoleName(roleName));
+                                if (role.Exists())
+                                {
+                                    roles.Add(role);
+                                }
                             }
                         }
                     }
-                }
-                if (user.Exists())
-                {
-                    await user.ChangePassword(hashedPassword);
-                    var userRoles = (await user.RolesForApp(app)).ToArray();
-                    foreach (var role in roles)
+                    if (user.Exists())
                     {
-                        if (!userRoles.Any(ur => ur.IsRole(role)))
+                        await user.ChangePassword(hashedPassword);
+                        var userRoles = (await user.RolesForApp(app)).ToArray();
+                        foreach (var role in roles)
+                        {
+                            if (!userRoles.Any(ur => ur.IsRole(role)))
+                            {
+                                await user.AddRole(role);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        user = await appFactory.Users().Add(userName, hashedPassword, clock.Now());
+                        foreach (var role in roles)
                         {
                             await user.AddRole(role);
                         }
                     }
                 }
-                else
+                if (string.IsNullOrWhiteSpace(userOptions.CredentialKey))
                 {
-                    user = await appFactory.Users().Add(userName, hashedPassword, clock.Now());
-                    foreach (var role in roles)
-                    {
-                        await user.AddRole(role);
-                    }
+                    var secretCredentials = secretCredentialsFactory.Create(userOptions.CredentialKey);
+                    await secretCredentials.Update
+                    (
+                        new XtiCredentials(userOptions.UserName, password)
+                    );
                 }
-                var secretCredentials = secretCredentialsFactory.Create(userOptions.CredentialKey);
-                await secretCredentials.Update
-                (
-                    new XtiCredentials(userName.Value, password)
-                );
             }
             catch (Exception ex)
             {
