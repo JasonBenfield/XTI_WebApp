@@ -1,7 +1,9 @@
-﻿namespace XTI_Version
+﻿using System.Threading.Tasks;
+
+namespace XTI_Version
 {
     public interface GitHubXtiClient
     {
-        GitHubXtiRepoClient Repo(string owner, string name);
+        Task<GitHubXtiRepoClient> Repo(string owner, string name);
     }
 }

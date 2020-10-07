@@ -93,7 +93,7 @@ namespace XTI_UserApp
                         }
                     }
                 }
-                if (string.IsNullOrWhiteSpace(userOptions.CredentialKey))
+                if (!string.IsNullOrWhiteSpace(userOptions.CredentialKey))
                 {
                     var secretCredentials = secretCredentialsFactory.Create(userOptions.CredentialKey);
                     await secretCredentials.Update

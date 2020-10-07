@@ -40,7 +40,8 @@ namespace XTI_WebApp.Tests
             var tester = await setup();
             tester.Options.NewVersion.Type = AppVersionType.Major.DisplayText;
             var newVersion = await tester.Execute();
-            var milestoneExists = await githubRepo(tester).MilestoneExists($"xti_major_version_{newVersion.ID}");
+            var gitHubRepo = await getGitHubRepo(tester);
+            var milestoneExists = await gitHubRepo.MilestoneExists($"xti_major_version_{newVersion.ID}");
             Assert.That(milestoneExists, Is.True, "Should create milestone for new version");
         }
 
@@ -50,11 +51,12 @@ namespace XTI_WebApp.Tests
             var tester = await setup();
             tester.Options.NewVersion.Type = AppVersionType.Major.DisplayText;
             var newVersion = await tester.Execute();
-            var branchExists = await githubRepo(tester).BranchExists($"xti/major/{newVersion.ID}");
+            var gitHubRepo = await getGitHubRepo(tester);
+            var branchExists = await gitHubRepo.BranchExists($"xti/major/{newVersion.ID}");
             Assert.That(branchExists, Is.True, "Should create branch for new version");
         }
 
-        private GitHubXtiRepoClient githubRepo(ManageVersionTester tester)
+        private Task<GitHubXtiRepoClient> getGitHubRepo(ManageVersionTester tester)
         {
             return tester.GithubClient.Repo(tester.Options.NewVersion.RepoOwner, tester.Options.NewVersion.RepoName);
         }

@@ -1,24 +1,28 @@
 ﻿using Microsoft.Extensions.Options;
 using Octokit;
+using System.Threading.Tasks;
+using XTI_Secrets;
 
 namespace XTI_Version.Octo
 {
     public sealed class OctoGithubXtiClient : GitHubXtiClient
     {
         private GitHubClient client;
-        private readonly GitHubOptions options;
+        private readonly SecretCredentialsFactory secretCredentialsFactory;
 
-        public OctoGithubXtiClient(IOptions<GitHubOptions> options)
+        public OctoGithubXtiClient(SecretCredentialsFactory secretCredentialsFactory)
         {
-            this.options = options.Value;
+            this.secretCredentialsFactory = secretCredentialsFactory;
         }
 
-        public GitHubXtiRepoClient Repo(string owner, string name)
+        public async Task<GitHubXtiRepoClient> Repo(string owner, string name)
         {
             if (client == null)
             {
                 client = new GitHubClient(new ProductHeaderValue("xti-app"));
-                client.Credentials = new Credentials(options.UserName, options.Password);
+                var secretCredentials = secretCredentialsFactory.Create("github");
+                var credentials = await secretCredentials.Value();
+                client.Credentials = new Credentials(credentials.UserName, credentials.Password);
             }
             return new OctoGithubXtiRepoClient(owner, name, client);
         }

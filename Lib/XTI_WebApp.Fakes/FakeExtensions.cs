@@ -9,6 +9,7 @@ using System;
 using XTI_App;
 using XTI_App.Api;
 using XTI_App.EF;
+using XTI_Secrets;
 using XTI_WebApp.Extensions;
 
 namespace XTI_WebApp.Fakes
@@ -51,6 +52,16 @@ namespace XTI_WebApp.Fakes
             services.AddScoped<IHashedPasswordFactory, FakeHashedPasswordFactory>();
             services.AddScoped<IOptions<AppOptions>, FakeOptions<AppOptions>>();
             services.AddScoped<IOptions<WebAppOptions>, FakeOptions<WebAppOptions>>();
+        }
+
+        public static void AddFakeSecretCredentials(this IServiceCollection services)
+        {
+            services.AddScoped<SecretCredentialsFactory>(sp =>
+            {
+                var hostEnv = sp.GetService<IHostEnvironment>();
+                var dataProtector = sp.GetDataProtector(new[] { "XTI_Secrets" });
+                return new FakeSecretCredentialsFactory(dataProtector);
+            });
         }
     }
 }
