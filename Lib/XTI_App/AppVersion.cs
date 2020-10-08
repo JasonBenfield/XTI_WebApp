@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace XTI_App
 {
@@ -16,9 +18,9 @@ namespace XTI_App
         }
 
         public int ID { get => record.ID; }
-        public int Major { get => record.Major; }
-        public int Minor { get => record.Minor; }
-        public int Patch { get => record.Patch; }
+        private int Major { get => record.Major; }
+        private int Minor { get => record.Minor; }
+        private int Patch { get => record.Patch; }
 
         public AppVersionKey Key() => AppVersionKey.Parse(record.VersionKey);
 
@@ -33,6 +35,11 @@ namespace XTI_App
         private AppVersionStatus Status() => AppVersionStatus.FromValue(record.Status);
         private AppVersionType Type() => AppVersionType.FromValue(record.Type);
 
+        public Version Version() => new Version(Major, Minor, Patch);
+        public Version NextMajor() => new Version(Major + 1, 0, 0);
+        public Version NextMinor() => new Version(Major, Minor + 1, 0);
+        public Version NextPatch() => new Version(Major, Minor, Patch + 1);
+
         public async Task Publishing()
         {
             var app = await factory.Apps().App(record.AppID);
@@ -41,21 +48,26 @@ namespace XTI_App
             {
                 r.Status = AppVersionStatus.Publishing.Value;
                 var type = Type();
+                Version nextVersion;
                 if (type.Equals(AppVersionType.Major))
                 {
-                    r.Major = current.Major + 1;
+                    nextVersion = current.NextMajor();
                 }
                 else if (type.Equals(AppVersionType.Minor))
                 {
-                    r.Major = current.Major;
-                    r.Minor = current.Minor + 1;
+                    nextVersion = current.NextMinor();
                 }
                 else if (type.Equals(AppVersionType.Patch))
                 {
-                    r.Major = current.Major;
-                    r.Minor = current.Minor;
-                    r.Patch = current.Patch + 1;
+                    nextVersion = current.NextPatch();
                 }
+                else
+                {
+                    throw new NotSupportedException($"Version type '{type}' is not supported");
+                }
+                r.Major = nextVersion.Major;
+                r.Minor = nextVersion.Minor;
+                r.Patch = nextVersion.Build;
             });
         }
 

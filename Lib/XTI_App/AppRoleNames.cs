@@ -21,7 +21,7 @@ namespace XTI_App
             return roleName;
         }
 
-        public IEnumerable<AppRoleName> Valus() => roleNames.ToArray();
+        public IEnumerable<AppRoleName> Values() => roleNames.ToArray();
 
         public override string ToString()
         {
