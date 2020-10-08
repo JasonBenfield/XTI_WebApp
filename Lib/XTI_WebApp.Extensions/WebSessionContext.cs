@@ -13,7 +13,7 @@ namespace XTI_WebApp.Extensions
         private readonly IAppContext appContext;
         private readonly IUserContext userContext;
         private readonly XtiPath xtiPath;
-        private readonly AnonClient anonClient;
+        private readonly IAnonClient anonClient;
         private readonly Clock clock;
 
         public WebSessionContext
@@ -23,7 +23,7 @@ namespace XTI_WebApp.Extensions
             IAppContext appContext,
             IUserContext userContext,
             XtiPath xtiPath,
-            AnonClient anonClient,
+            IAnonClient anonClient,
             Clock clock
         )
         {

@@ -37,6 +37,13 @@ namespace XTI_WebApp.Fakes
             services.AddSingleton<AppFactory, EfAppFactory>();
             services.AddScoped<IUserContext, FakeUserContext>();
             services.AddScoped<IAppContext, FakeAppContext>();
+            services.AddScoped<IAnonClient, FakeAnonClient>();
+            services.AddScoped(sp =>
+            {
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                var request = httpContextAccessor.HttpContext?.Request;
+                return XtiPath.Parse($"{request?.PathBase}{request?.Path}");
+            });
             services.AddScoped<ISessionContext, WebSessionContext>();
             services.AddScoped<IAppApiUser, XtiAppApiUser>();
             services.AddSingleton<IHostEnvironment, FakeHostEnvironment>();

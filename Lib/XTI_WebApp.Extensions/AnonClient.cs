@@ -5,7 +5,7 @@ using XTI_Secrets;
 
 namespace XTI_WebApp.Extensions
 {
-    public sealed class AnonClient
+    public sealed class AnonClient : IAnonClient
     {
         private readonly IDataProtector protector;
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -23,7 +23,7 @@ namespace XTI_WebApp.Extensions
 
         public void Load()
         {
-            var cookieText = httpContextAccessor.HttpContext.Request.Cookies[cookieName];
+            var cookieText = httpContextAccessor.HttpContext?.Request.Cookies[cookieName];
             if (string.IsNullOrWhiteSpace(cookieText))
             {
                 SessionID = 0;
@@ -52,7 +52,7 @@ namespace XTI_WebApp.Extensions
                 Path = "/",
                 SameSite = SameSiteMode.Lax
             };
-            httpContextAccessor.HttpContext.Response.Cookies.Append(cookieName, protectedText, options);
+            httpContextAccessor.HttpContext?.Response.Cookies.Append(cookieName, protectedText, options);
         }
 
         private class AnonInfo

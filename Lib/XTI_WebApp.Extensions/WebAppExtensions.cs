@@ -73,7 +73,7 @@ namespace XTI_WebApp.Extensions
 
         public static void AddXtiContextServices(this IServiceCollection services)
         {
-            services.AddScoped(sp =>
+            services.AddScoped<IAnonClient>(sp =>
             {
                 var dataProtector = sp.GetDataProtector(new[] { $"XTI_Apps_Anon" });
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
