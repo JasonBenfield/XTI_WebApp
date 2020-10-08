@@ -16,7 +16,7 @@ namespace XTI_Version
         {
             var xtiVersionBranch = new XtiVersionBranch(options.Branch);
             var versionID = xtiVersionBranch.VersionID();
-            var version = await factory.Versions().Version(versionID);
+            var version = await factory.Versions().Version(new AppVersionKey(versionID));
             if (!version.IsNew() && !version.IsPublishing())
             {
                 throw new PublishVersionException($"Unable to begin publishing version {versionID} when it's status is not 'New' or 'Publishing'");

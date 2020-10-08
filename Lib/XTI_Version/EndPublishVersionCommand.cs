@@ -18,7 +18,7 @@ namespace XTI_Version
         public async Task<AppVersion> Execute(PublishVersionOptions options)
         {
             var xtiVersionBranch = new XtiVersionBranch(options.Branch);
-            var version = await factory.Versions().Version(xtiVersionBranch.VersionID());
+            var version = await factory.Versions().Version(new AppVersionKey(xtiVersionBranch.VersionID()));
             await version.Published();
             return version;
         }

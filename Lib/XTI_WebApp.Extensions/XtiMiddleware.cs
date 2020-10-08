@@ -43,21 +43,6 @@ namespace XTI_WebApp.Extensions
             }
         }
 
-        private static async Task<IAppVersion> retrieveVersion(IAppContext appContext, XtiPath xtiPath)
-        {
-            var app = await appContext.App();
-            IAppVersion version;
-            if (xtiPath.IsCurrentVersion())
-            {
-                version = await app.CurrentVersion();
-            }
-            else
-            {
-                version = await app.Version(xtiPath.VersionID());
-            }
-            return version;
-        }
-
         private async Task handleError(HttpContext context, Clock clock, AppRequest request, Exception ex)
         {
             await logException(clock, request, ex);

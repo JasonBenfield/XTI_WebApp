@@ -97,7 +97,7 @@ namespace XTI_WebApp.Extensions
             }
             else
             {
-                version = await app.Version(xtiPath.VersionID());
+                version = await app.Version(AppVersionKey.Parse(xtiPath.Version));
             }
             return version;
         }

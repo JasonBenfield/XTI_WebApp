@@ -46,7 +46,7 @@ namespace XTI_App
 
         private Task<AppVersion> startNewVersion(DateTime timeAdded, AppVersionType type)
         {
-            return factory.Versions().StartNewVersion(this, timeAdded, type);
+            return factory.Versions().StartNewVersion(AppVersionKey.None, this, timeAdded, type);
         }
 
         public Task<AppVersion> CurrentVersion() =>
@@ -87,11 +87,16 @@ namespace XTI_App
         async Task<IAppVersion> IApp.CurrentVersion() =>
             await factory.Versions().CurrentVersion(this);
 
-        public async Task<AppVersion> Version(int id) =>
-            (await Versions()).First(v => v.ID == id);
+        public async Task<AppVersion> Version(AppVersionKey versionKey) =>
+            (AppVersion)await version(versionKey);
 
-        async Task<IAppVersion> IApp.Version(int id) =>
-            (await Versions()).First(v => v.ID == id);
+        Task<IAppVersion> IApp.Version(AppVersionKey versionKey) => version(versionKey);
+
+        private async Task<IAppVersion> version(AppVersionKey versionKey)
+        {
+            var versions = await Versions();
+            return versions.First(v => v.Key().Equals(versionKey));
+        }
 
         public Task<IEnumerable<AppVersion>> Versions() =>
             factory.Versions().VersionsByApp(this);
