@@ -20,6 +20,8 @@ namespace XTI_App
         public int Minor { get => record.Minor; }
         public int Patch { get => record.Patch; }
 
+        public AppVersionKey Key() => AppVersionKey.Parse(record.VersionKey);
+
         public bool IsPublishing() => Status().Equals(AppVersionStatus.Publishing);
         public bool IsCurrent() => Status().Equals(AppVersionStatus.Current);
         public bool IsNew() => Status().Equals(AppVersionStatus.New);

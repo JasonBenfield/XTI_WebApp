@@ -9,8 +9,10 @@ namespace XTI_App.EF
         {
             builder.HasKey(v => v.ID);
             builder.Property(v => v.ID).ValueGeneratedOnAdd();
+            builder.Property(v => v.VersionKey).HasMaxLength(50);
+            builder.HasIndex(v => v.VersionKey).IsUnique();
             builder
-                 .HasOne<AppRecord>()
+                .HasOne<AppRecord>()
                 .WithMany()
                 .HasForeignKey(v => v.AppID);
         }

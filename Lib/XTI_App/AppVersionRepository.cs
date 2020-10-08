@@ -17,26 +17,43 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        internal async Task<AppVersion> StartNewVersion(App app, DateTime timeAdded, AppVersionType type)
+        internal async Task<AppVersion> StartNewVersion(AppVersionKey key, App app, DateTime timeAdded, AppVersionType type)
         {
-            var record = new AppVersionRecord
+            AppVersionRecord record = null;
+            await repo.Transaction(async () =>
             {
-                AppID = app.ID,
-                Major = 0,
-                Minor = 0,
-                Patch = 0,
-                TimeAdded = timeAdded,
-                Description = "",
-                Status = AppVersionStatus.New.Value,
-                Type = type.Value
-            };
-            await repo.Create(record);
+                record = new AppVersionRecord
+                {
+                    VersionKey = key.Value,
+                    AppID = app.ID,
+                    Major = 0,
+                    Minor = 0,
+                    Patch = 0,
+                    TimeAdded = timeAdded,
+                    Description = "",
+                    Status = AppVersionStatus.New.Value,
+                    Type = type.Value
+                };
+                await repo.Create(record);
+                if (key.Equals(AppVersionKey.None))
+                {
+                    await repo.Update(record, r => r.VersionKey = new AppVersionKey(r.ID).Value);
+                }
+            });
             return factory.Version(record);
         }
 
-        public async Task<AppVersion> Version(int versionID)
+        public async Task<AppVersion> Version(int id)
         {
-            var record = await repo.Retrieve().FirstOrDefaultAsync(v => v.ID == versionID);
+            var record = await repo.Retrieve()
+                .FirstOrDefaultAsync(v => v.ID == id);
+            return factory.Version(record);
+        }
+
+        public async Task<AppVersion> Version(AppVersionKey versionKey)
+        {
+            var record = await repo.Retrieve()
+                .FirstOrDefaultAsync(v => v.VersionKey == versionKey.Value);
             return factory.Version(record);
         }
 

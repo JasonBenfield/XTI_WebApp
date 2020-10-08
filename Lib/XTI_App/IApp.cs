@@ -8,7 +8,7 @@ namespace XTI_App
         int ID { get; }
         string Title { get; }
         Task<IAppVersion> CurrentVersion();
-        Task<IAppVersion> Version(int id);
+        Task<IAppVersion> Version(AppVersionKey versionKey);
         Task<IEnumerable<IAppRole>> Roles();
     }
 }

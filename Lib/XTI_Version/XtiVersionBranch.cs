@@ -32,7 +32,7 @@ namespace XTI_Version
             {
                 type = "";
             }
-            return $"xti/{type}/{version.ID}";
+            return $"xti/{type}/{version.Key().VersionNumber()}";
         }
 
         public XtiVersionBranch(string branchName)

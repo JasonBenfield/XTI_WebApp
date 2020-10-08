@@ -33,11 +33,11 @@ namespace XTI_WebApp.Extensions
             return currentVersion;
         }
 
-        public async Task<IAppVersion> Version(int id)
+        public async Task<IAppVersion> Version(AppVersionKey versionKey)
         {
-            var requestedVersion = await fetch($"version_{id}", async (app) =>
+            var requestedVersion = await fetch($"version_{versionKey.Value}", async (app) =>
             {
-                var version = await app.Version(id);
+                var version = await app.Version(versionKey);
                 return new CachedAppVersion(version);
             });
             return requestedVersion;
