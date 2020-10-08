@@ -57,9 +57,9 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             var patch = await input.App.StartNewPatch(input.Clock.Now());
             await patch.Publishing();
-            Assert.That(patch.Major, Is.EqualTo(0), "Should assign version number for new patch");
-            Assert.That(patch.Minor, Is.EqualTo(0), "Should assign version number for new patch");
-            Assert.That(patch.Patch, Is.EqualTo(1), "Should assign version number for new patch");
+            Assert.That(patch.Version().Major, Is.EqualTo(0), "Should assign version number for new patch");
+            Assert.That(patch.Version().Minor, Is.EqualTo(0), "Should assign version number for new patch");
+            Assert.That(patch.Version().Build, Is.EqualTo(1), "Should assign version number for new patch");
         }
 
         [Test]
@@ -68,9 +68,9 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             var minorVersion = await input.App.StartNewMinorVersion(input.Clock.Now());
             await minorVersion.Publishing();
-            Assert.That(minorVersion.Major, Is.EqualTo(0), "Should assign version number for new minor version");
-            Assert.That(minorVersion.Minor, Is.EqualTo(1), "Should assign version number for new minor version");
-            Assert.That(minorVersion.Patch, Is.EqualTo(0), "Should assign version number for new minor version");
+            Assert.That(minorVersion.Version().Major, Is.EqualTo(0), "Should assign version number for new minor version");
+            Assert.That(minorVersion.Version().Minor, Is.EqualTo(1), "Should assign version number for new minor version");
+            Assert.That(minorVersion.Version().Build, Is.EqualTo(0), "Should assign version number for new minor version");
         }
 
         [Test]
@@ -79,9 +79,9 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             var majorVersion = await input.App.StartNewMajorVersion(input.Clock.Now());
             await majorVersion.Publishing();
-            Assert.That(majorVersion.Major, Is.EqualTo(1), "Should assign version number for new major version");
-            Assert.That(majorVersion.Minor, Is.EqualTo(0), "Should assign version number for new major version");
-            Assert.That(majorVersion.Patch, Is.EqualTo(0), "Should assign version number for new major version");
+            Assert.That(majorVersion.Version().Major, Is.EqualTo(1), "Should assign version number for new major version");
+            Assert.That(majorVersion.Version().Minor, Is.EqualTo(0), "Should assign version number for new major version");
+            Assert.That(majorVersion.Version().Build, Is.EqualTo(0), "Should assign version number for new major version");
         }
 
         [Test]
@@ -93,9 +93,9 @@ namespace XTI_WebApp.Tests
             await originalCurrent.Published();
             var patch = await input.App.StartNewPatch(input.Clock.Now());
             await patch.Publishing();
-            Assert.That(patch.Major, Is.EqualTo(0), "Should increment patch of current version");
-            Assert.That(patch.Minor, Is.EqualTo(0), "Should increment patch of current version");
-            Assert.That(patch.Patch, Is.EqualTo(2), "Should increment patch of current version");
+            Assert.That(patch.Version().Major, Is.EqualTo(0), "Should increment patch of current version");
+            Assert.That(patch.Version().Minor, Is.EqualTo(0), "Should increment patch of current version");
+            Assert.That(patch.Version().Build, Is.EqualTo(2), "Should increment patch of current version");
         }
 
         [Test]
@@ -107,9 +107,9 @@ namespace XTI_WebApp.Tests
             await originalCurrent.Published();
             var minorVersion = await input.App.StartNewMinorVersion(input.Clock.Now());
             await minorVersion.Publishing();
-            Assert.That(minorVersion.Major, Is.EqualTo(0), "Should increment minor of current version");
-            Assert.That(minorVersion.Minor, Is.EqualTo(2), "Should increment minor of current version");
-            Assert.That(minorVersion.Patch, Is.EqualTo(0), "Should increment minor of current version");
+            Assert.That(minorVersion.Version().Major, Is.EqualTo(0), "Should increment minor of current version");
+            Assert.That(minorVersion.Version().Minor, Is.EqualTo(2), "Should increment minor of current version");
+            Assert.That(minorVersion.Version().Build, Is.EqualTo(0), "Should increment minor of current version");
         }
 
         [Test]
@@ -121,9 +121,9 @@ namespace XTI_WebApp.Tests
             await originalCurrent.Published();
             var majorVersion = await input.App.StartNewMajorVersion(input.Clock.Now());
             await majorVersion.Publishing();
-            Assert.That(majorVersion.Major, Is.EqualTo(2), "Should increment major of current version");
-            Assert.That(majorVersion.Minor, Is.EqualTo(0), "Should increment major of current version");
-            Assert.That(majorVersion.Patch, Is.EqualTo(0), "Should increment major of current version");
+            Assert.That(majorVersion.Version().Major, Is.EqualTo(2), "Should increment major of current version");
+            Assert.That(majorVersion.Version().Minor, Is.EqualTo(0), "Should increment major of current version");
+            Assert.That(majorVersion.Version().Build, Is.EqualTo(0), "Should increment major of current version");
         }
 
         [Test]
@@ -136,9 +136,9 @@ namespace XTI_WebApp.Tests
             var minorVersion = await input.App.StartNewMinorVersion(input.Clock.Now());
             await minorVersion.Publishing();
             await minorVersion.Published();
-            Assert.That(minorVersion.Major, Is.EqualTo(1), "Should retain major version from the previous current");
-            Assert.That(minorVersion.Minor, Is.EqualTo(1), "Should increment minor version");
-            Assert.That(minorVersion.Patch, Is.EqualTo(0), "Should reset patch");
+            Assert.That(minorVersion.Version().Major, Is.EqualTo(1), "Should retain major version from the previous current");
+            Assert.That(minorVersion.Version().Minor, Is.EqualTo(1), "Should increment minor version");
+            Assert.That(minorVersion.Version().Build, Is.EqualTo(0), "Should reset patch");
         }
 
         [Test]
@@ -153,9 +153,9 @@ namespace XTI_WebApp.Tests
             await minorVersion.Published();
             var patch = await input.App.StartNewPatch(input.Clock.Now());
             await patch.Publishing();
-            Assert.That(patch.Major, Is.EqualTo(1), "Should retain major version from the previous current");
-            Assert.That(patch.Minor, Is.EqualTo(1), "Should retain minor version from the previous current");
-            Assert.That(patch.Patch, Is.EqualTo(1), "Should increment patch");
+            Assert.That(patch.Version().Major, Is.EqualTo(1), "Should retain major version from the previous current");
+            Assert.That(patch.Version().Minor, Is.EqualTo(1), "Should retain minor version from the previous current");
+            Assert.That(patch.Version().Build, Is.EqualTo(1), "Should increment patch");
         }
 
         [Test]
@@ -167,9 +167,9 @@ namespace XTI_WebApp.Tests
             await patch.Published();
             var minorVersion = await input.App.StartNewMinorVersion(input.Clock.Now());
             await minorVersion.Publishing();
-            Assert.That(minorVersion.Major, Is.EqualTo(0), "Should reset patch when minor version is publishing");
-            Assert.That(minorVersion.Minor, Is.EqualTo(1), "Should reset patch when minor version is publishing");
-            Assert.That(minorVersion.Patch, Is.EqualTo(0), "Should reset patch when minor version is publishing");
+            Assert.That(minorVersion.Version().Major, Is.EqualTo(0), "Should reset patch when minor version is publishing");
+            Assert.That(minorVersion.Version().Minor, Is.EqualTo(1), "Should reset patch when minor version is publishing");
+            Assert.That(minorVersion.Version().Build, Is.EqualTo(0), "Should reset patch when minor version is publishing");
         }
 
         [Test]
@@ -184,9 +184,9 @@ namespace XTI_WebApp.Tests
             await minorVersion.Published();
             var majorVersion = await input.App.StartNewMajorVersion(input.Clock.Now());
             await majorVersion.Publishing();
-            Assert.That(majorVersion.Major, Is.EqualTo(1), "Should reset minor version and patch when major version is publishing");
-            Assert.That(majorVersion.Minor, Is.EqualTo(0), "Should reset minor version and patch when major version is publishing");
-            Assert.That(majorVersion.Patch, Is.EqualTo(0), "Should reset minor version and patch when major version is publishing");
+            Assert.That(majorVersion.Version().Major, Is.EqualTo(1), "Should reset minor version and patch when major version is publishing");
+            Assert.That(majorVersion.Version().Minor, Is.EqualTo(0), "Should reset minor version and patch when major version is publishing");
+            Assert.That(majorVersion.Version().Build, Is.EqualTo(0), "Should reset minor version and patch when major version is publishing");
         }
 
         private async Task<TestInput> setup()
