@@ -19,6 +19,7 @@ namespace XTI_WebApp.Extensions
     {
         public static void ConfigureXtiCookieAndTokenAuthentication(this IServiceCollection services)
         {
+            services.AddScoped<IDataSerializer<AuthenticationTicket>, TicketSerializer>();
             services
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -38,7 +39,7 @@ namespace XTI_WebApp.Extensions
                             ValidateAudience = false
                         },
                         sp.GetService<IDataSerializer<AuthenticationTicket>>(),
-                        sp.GetDataProtector(new[] { $"XTI_Apps_Auth1" })
+                        sp.GetDataProtector(new[] { "XTI_Apps_Auth1" })
                     );
                     options.Cookie.Path = "/";
                     options.Cookie.Domain = "";
@@ -72,7 +73,7 @@ namespace XTI_WebApp.Extensions
                             return Task.CompletedTask;
                         }
                     };
-                    options.LogoutPath = "/Auth/Logout";
+                    options.LogoutPath = "/Hub/Current/Auth/Logout";
                     options.AccessDeniedPath = options.LoginPath;
                     options.ReturnUrlParameter = "returnUrl";
                 })
