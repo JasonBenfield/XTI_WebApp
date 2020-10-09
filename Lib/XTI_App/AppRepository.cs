@@ -15,11 +15,12 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        public async Task<App> AddApp(AppKey key, string title, DateTime timeAdded)
+        public async Task<App> AddApp(AppKey key, AppType type, string title, DateTime timeAdded)
         {
             var record = new AppRecord
             {
                 Key = key.Value,
+                Type = type.Value,
                 Title = title?.Trim() ?? "",
                 TimeAdded = timeAdded
             };
@@ -33,9 +34,12 @@ namespace XTI_App
             return factory.App(record);
         }
 
-        public async Task<App> App(AppKey key)
+        public Task<App> WebApp(AppKey key) => App(key, AppType.Values.WebApp);
+
+        public async Task<App> App(AppKey key, AppType type)
         {
-            var record = await repo.Retrieve().FirstOrDefaultAsync(a => a.Key == key.Value);
+            var record = await repo.Retrieve()
+                .FirstOrDefaultAsync(a => a.Key == key.Value && a.Type == type.Value);
             return factory.App(record);
         }
     }

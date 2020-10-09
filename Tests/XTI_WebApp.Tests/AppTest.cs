@@ -14,8 +14,8 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             var appKey = new AppKey("Fake");
             var title = "Fake Title";
-            await input.Factory.Apps().AddApp(appKey, title, input.Clock.Now());
-            var app = await input.Factory.Apps().App(appKey);
+            await input.Factory.Apps().AddApp(appKey, AppType.Values.WebApp, title, input.Clock.Now());
+            var app = await input.Factory.Apps().WebApp(appKey);
             Assert.That(app.Exists(), Is.True, "Should add app");
             Assert.That(app.Title, Is.EqualTo(title), "Should set app title");
         }
@@ -25,8 +25,8 @@ namespace XTI_WebApp.Tests
         {
             var input = await setup();
             var appKey = new AppKey("Fake");
-            await input.Factory.Apps().AddApp(appKey, "Original Title", input.Clock.Now());
-            var app = await input.Factory.Apps().App(appKey);
+            await input.Factory.Apps().AddApp(appKey, AppType.Values.WebApp, "Original Title", input.Clock.Now());
+            var app = await input.Factory.Apps().WebApp(appKey);
             var newTitle = "New Title";
             await app.SetTitle(newTitle);
             Assert.That(app.Title, Is.EqualTo(newTitle), "Should set app title");

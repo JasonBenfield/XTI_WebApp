@@ -25,7 +25,7 @@ namespace AppDbApp
                 .UseSqlServer
                 (
                     new AppConnectionString(appDbOptions, environment).Value(),
-                    b => b.MigrationsAssembly("AppDbApp")
+                    b => b.MigrationsAssembly("AppDbTool")
                 )
                 .EnableSensitiveDataLogging();
             return new AppDbContext(optionsBuilder.Options);

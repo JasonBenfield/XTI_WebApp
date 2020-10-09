@@ -4,14 +4,23 @@ namespace XTI_App
 {
     public sealed class AppVersionStatus : NumericValue, IEquatable<AppVersionStatus>
     {
-        public static readonly AppVersionStatus NotSet = new AppVersionStatus(0, "Not Set");
-        public static readonly AppVersionStatus New = new AppVersionStatus(1, "New");
-        public static readonly AppVersionStatus Publishing = new AppVersionStatus(2, "Publishing");
-        public static readonly AppVersionStatus Old = new AppVersionStatus(3, "Old");
-        public static readonly AppVersionStatus Current = new AppVersionStatus(4, "Current");
+        public sealed class AppVersionStatuses : NumericValues<AppVersionStatus>
+        {
+            public AppVersionStatuses() : base(new AppVersionStatus(0, "Not Set"))
+            {
+                New = Add(new AppVersionStatus(1, "New"));
+                Publishing = Add(new AppVersionStatus(2, "Publishing"));
+                Old = Add(new AppVersionStatus(3, "Old"));
+                Current = Add(new AppVersionStatus(4, "Current"));
+            }
+            public AppVersionStatus NotSet { get; }
+            public AppVersionStatus New { get; }
+            public AppVersionStatus Publishing { get; }
+            public AppVersionStatus Old { get; }
+            public AppVersionStatus Current { get; }
+        }
 
-        public static AppVersionStatus FromValue(int value) =>
-            FromValue(new[] { NotSet, New, Publishing, Old, Current }, value) ?? NotSet;
+        public static readonly AppVersionStatuses Values = new AppVersionStatuses();
 
         private AppVersionStatus(int value, string displayText) : base(value, displayText)
         {

@@ -18,18 +18,18 @@ namespace XTI_Version
 
         public async Task<AppVersion> Execute(NewVersionOptions options)
         {
-            var app = await factory.Apps().App(new AppKey(options.App));
+            var app = await factory.Apps().WebApp(new AppKey(options.App));
             AppVersion version;
-            var versionType = AppVersionType.Parse(options.Type);
-            if (versionType.Equals(AppVersionType.Major))
+            var versionType = AppVersionType.Values.Value(options.Type);
+            if (versionType.Equals(AppVersionType.Values.Major))
             {
                 version = await app.StartNewMajorVersion(clock.Now());
             }
-            else if (versionType.Equals(AppVersionType.Minor))
+            else if (versionType.Equals(AppVersionType.Values.Minor))
             {
                 version = await app.StartNewMinorVersion(clock.Now());
             }
-            else if (versionType.Equals(AppVersionType.Patch))
+            else if (versionType.Equals(AppVersionType.Values.Patch))
             {
                 version = await app.StartNewPatch(clock.Now());
             }

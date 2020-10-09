@@ -4,6 +4,7 @@
     {
         public string Command { get; set; }
         public string AppKey { get; set; }
+        public string AppType { get; set; }
         public string AppTitle { get; set; }
     }
 }

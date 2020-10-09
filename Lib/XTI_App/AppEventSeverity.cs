@@ -26,8 +26,6 @@ namespace XTI_App
 
         public static readonly AppEventSeverities Values = new AppEventSeverities();
 
-        public static AppEventSeverity FromValue(int value) => Values.Value(value);
-
         private AppEventSeverity(int value, string displayText)
             : base(value, displayText)
         {

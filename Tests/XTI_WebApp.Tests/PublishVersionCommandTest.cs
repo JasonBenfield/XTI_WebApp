@@ -32,8 +32,10 @@ namespace XTI_WebApp.Tests
         {
             var tester = await setup();
             var newVersion = await tester.Command().Execute(tester.Options);
-            tester.Options.Command = "EndPublish";
+            tester.Options.Command = "BeginPublish";
             tester.Options.PublishVersion.Branch = new XtiVersionBranch(newVersion).BranchName();
+            await tester.Command().Execute(tester.Options);
+            tester.Options.Command = "EndPublish";
             var publishedVersion = await tester.Execute();
             Assert.That(publishedVersion.IsCurrent(), Is.True, "Should make the new version the current version");
         }
