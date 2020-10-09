@@ -11,7 +11,7 @@ namespace XTI_WebApp.Tests
         public async Task ShouldCreateNewPatch()
         {
             var tester = await setup();
-            tester.Options.NewVersion.Type = AppVersionType.Patch.DisplayText;
+            tester.Options.NewVersion.Type = AppVersionType.Values.Patch.DisplayText;
             var newVersion = await tester.Execute();
             Assert.That(newVersion?.IsPatch(), Is.True, "Should start new patch");
         }
@@ -20,7 +20,7 @@ namespace XTI_WebApp.Tests
         public async Task ShouldCreateNewMinorVersion()
         {
             var tester = await setup();
-            tester.Options.NewVersion.Type = AppVersionType.Minor.DisplayText;
+            tester.Options.NewVersion.Type = AppVersionType.Values.Minor.DisplayText;
             var newVersion = await tester.Execute();
             Assert.That(newVersion?.IsMinor(), Is.True, "Should start new minor version");
         }
@@ -29,7 +29,7 @@ namespace XTI_WebApp.Tests
         public async Task ShouldCreateNewMajorVersion()
         {
             var tester = await setup();
-            tester.Options.NewVersion.Type = AppVersionType.Major.DisplayText;
+            tester.Options.NewVersion.Type = AppVersionType.Values.Major.DisplayText;
             var newVersion = await tester.Execute();
             Assert.That(newVersion?.IsMajor(), Is.True, "Should start new major version");
         }
@@ -38,7 +38,7 @@ namespace XTI_WebApp.Tests
         public async Task ShouldCreateMilestoneForNewVersion()
         {
             var tester = await setup();
-            tester.Options.NewVersion.Type = AppVersionType.Major.DisplayText;
+            tester.Options.NewVersion.Type = AppVersionType.Values.Major.DisplayText;
             var newVersion = await tester.Execute();
             var gitHubRepo = await getGitHubRepo(tester);
             var milestoneExists = await gitHubRepo.MilestoneExists($"xti_major_version_{newVersion.ID}");
@@ -49,7 +49,7 @@ namespace XTI_WebApp.Tests
         public async Task ShouldCreateBranchForNewVersion()
         {
             var tester = await setup();
-            tester.Options.NewVersion.Type = AppVersionType.Major.DisplayText;
+            tester.Options.NewVersion.Type = AppVersionType.Values.Major.DisplayText;
             var newVersion = await tester.Execute();
             var gitHubRepo = await getGitHubRepo(tester);
             var branchExists = await gitHubRepo.BranchExists($"xti/major/{newVersion.ID}");

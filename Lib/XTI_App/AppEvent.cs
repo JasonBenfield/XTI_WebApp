@@ -13,7 +13,7 @@
         public string Caption { get => record.Caption; }
         public string Message { get => record.Message; }
         public string Detail { get => record.Detail; }
-        public AppEventSeverity Severity() => AppEventSeverity.FromValue(record.Severity);
+        public AppEventSeverity Severity() => AppEventSeverity.Values.Value(record.Severity);
 
         public override string ToString() => $"{nameof(AppEvent)} {ID}";
     }

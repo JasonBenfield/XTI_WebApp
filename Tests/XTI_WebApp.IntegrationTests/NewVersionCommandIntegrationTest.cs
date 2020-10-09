@@ -21,7 +21,7 @@ namespace XTI_WebApp.IntegrationTests
         public async Task ShouldCreateNewPatch()
         {
             var input = await setup();
-            input.Options.Type = AppVersionType.Patch.DisplayText;
+            input.Options.Type = AppVersionType.Values.Patch.DisplayText;
             var newVersion = await execute(input);
             Assert.That(newVersion?.IsPatch(), Is.True, "Should start new patch");
         }
@@ -30,7 +30,7 @@ namespace XTI_WebApp.IntegrationTests
         public async Task ShouldCreateNewMinorVersion()
         {
             var input = await setup();
-            input.Options.Type = AppVersionType.Minor.DisplayText;
+            input.Options.Type = AppVersionType.Values.Minor.DisplayText;
             var newVersion = await execute(input);
             Assert.That(newVersion?.IsMinor(), Is.True, "Should start new minor version");
         }
@@ -39,7 +39,7 @@ namespace XTI_WebApp.IntegrationTests
         public async Task ShouldCreateNewMajorVersion()
         {
             var input = await setup();
-            input.Options.Type = AppVersionType.Major.DisplayText;
+            input.Options.Type = AppVersionType.Values.Major.DisplayText;
             var newVersion = await execute(input);
             Assert.That(newVersion?.IsMajor(), Is.True, "Should start new major version");
         }
@@ -48,7 +48,7 @@ namespace XTI_WebApp.IntegrationTests
         public async Task ShouldCreateMilestoneForNewVersion()
         {
             var input = await setup();
-            input.Options.Type = AppVersionType.Major.DisplayText;
+            input.Options.Type = AppVersionType.Values.Major.DisplayText;
             var newVersion = await execute(input);
             var gitHubRepo = await getGitHubRepo(input);
             var milestoneExists = await gitHubRepo.MilestoneExists($"xti_major_version_{newVersion.ID}");
@@ -59,7 +59,7 @@ namespace XTI_WebApp.IntegrationTests
         public async Task ShouldCreateBranchForNewVersion()
         {
             var input = await setup();
-            input.Options.Type = AppVersionType.Major.DisplayText;
+            input.Options.Type = AppVersionType.Values.Major.DisplayText;
             var newVersion = await execute(input);
             var gitHubRepo = await getGitHubRepo(input);
             var branchExists = await gitHubRepo.BranchExists($"xti/major/{newVersion.ID}");
@@ -96,7 +96,7 @@ namespace XTI_WebApp.IntegrationTests
             var appDbReset = sp.GetService<AppDbReset>();
             await appDbReset.Run();
             await new AppSetup(factory).Run();
-            var app = await factory.Apps().AddApp(new AppKey("Fake"), "Fake", DateTime.UtcNow);
+            var app = await factory.Apps().AddApp(new AppKey("Fake"), AppType.Values.WebApp, "Fake", DateTime.UtcNow);
             var input = new TestInput(sp, app);
             return input;
         }
@@ -119,7 +119,7 @@ namespace XTI_WebApp.IntegrationTests
                 Options = new NewVersionOptions
                 {
                     App = app.Key().Value,
-                    Type = AppVersionType.Patch.DisplayText,
+                    Type = AppVersionType.Values.Patch.DisplayText,
                     RepoOwner = "JasonBenfield",
                     RepoName = "XTI_WebApp"
                 };

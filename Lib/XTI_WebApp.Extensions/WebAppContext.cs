@@ -16,6 +16,6 @@ namespace XTI_WebApp.Extensions
         }
 
         public async Task<IApp> App() =>
-            await appFactory.Apps().App(new AppKey(xtiPath.App));
+            await appFactory.Apps().WebApp(new AppKey(xtiPath.App));
     }
 }

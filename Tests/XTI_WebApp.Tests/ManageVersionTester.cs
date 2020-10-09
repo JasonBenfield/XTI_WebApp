@@ -52,7 +52,7 @@ namespace XTI_WebApp.Tests
             var factory = sp.GetService<AppFactory>();
             var setup = new AppSetup(factory);
             await setup.Run();
-            var app = await factory.Apps().AddApp(new AppKey("Fake"), "Fake", DateTime.UtcNow);
+            var app = await factory.Apps().AddApp(new AppKey("Fake"), AppType.Values.WebApp, "Fake", DateTime.UtcNow);
             Factory = sp.GetService<AppFactory>();
             App = app;
             Clock = sp.GetService<FakeClock>();
@@ -66,7 +66,7 @@ namespace XTI_WebApp.Tests
                 NewVersion = new NewVersionOptions
                 {
                     App = app.Key().Value,
-                    Type = AppVersionType.Patch.DisplayText,
+                    Type = AppVersionType.Values.Patch.DisplayText,
                     RepoOwner = "https://github.com/JasonBenfield/FakeWebApp"
                 }
             };

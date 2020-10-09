@@ -21,7 +21,7 @@ namespace XTI_WebApp.AspTests
 
         public async Task Run()
         {
-            App = await appFactory.Apps().AddApp(new AppKey("Fake"), "Fake", clock.Now());
+            App = await appFactory.Apps().AddApp(new AppKey("Fake"), AppType.Values.WebApp, "Fake", clock.Now());
             var version = await App.StartNewPatch(clock.Now());
             await version.Publishing();
             await version.Published();

@@ -145,7 +145,7 @@ namespace XTI_WebApp.Tests
             var factory = sp.GetService<AppFactory>();
             await new AppSetup(factory).Run();
             var clock = sp.GetService<FakeClock>();
-            var app = await factory.Apps().AddApp(new AppKey("Fake"), "Fake", clock.Now());
+            var app = await factory.Apps().AddApp(new AppKey("Fake"), AppType.Values.WebApp, "Fake", clock.Now());
             await app.AddRole(FakeRoleNames.Instance.Admin);
             await app.AddRole(FakeRoleNames.Instance.Manager);
             await app.AddRole(FakeRoleNames.Instance.Viewer);

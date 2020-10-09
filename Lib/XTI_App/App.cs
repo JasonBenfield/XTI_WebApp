@@ -36,13 +36,13 @@ namespace XTI_App
             factory.Roles().Role(this, roleName);
 
         public Task<AppVersion> StartNewPatch(DateTime timeAdded) =>
-            startNewVersion(timeAdded, AppVersionType.Patch);
+            startNewVersion(timeAdded, AppVersionType.Values.Patch);
 
         public Task<AppVersion> StartNewMinorVersion(DateTime timeAdded) =>
-            startNewVersion(timeAdded, AppVersionType.Minor);
+            startNewVersion(timeAdded, AppVersionType.Values.Minor);
 
         public Task<AppVersion> StartNewMajorVersion(DateTime timeAdded) =>
-            startNewVersion(timeAdded, AppVersionType.Major);
+            startNewVersion(timeAdded, AppVersionType.Values.Major);
 
         private Task<AppVersion> startNewVersion(DateTime timeAdded, AppVersionType type)
         {

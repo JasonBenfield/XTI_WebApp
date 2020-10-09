@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace XTI_App
@@ -24,16 +23,16 @@ namespace XTI_App
 
         public AppVersionKey Key() => AppVersionKey.Parse(record.VersionKey);
 
-        public bool IsPublishing() => Status().Equals(AppVersionStatus.Publishing);
-        public bool IsCurrent() => Status().Equals(AppVersionStatus.Current);
-        public bool IsNew() => Status().Equals(AppVersionStatus.New);
+        public bool IsPublishing() => Status().Equals(AppVersionStatus.Values.Publishing);
+        public bool IsCurrent() => Status().Equals(AppVersionStatus.Values.Current);
+        public bool IsNew() => Status().Equals(AppVersionStatus.Values.New);
 
-        public bool IsPatch() => Type().Equals(AppVersionType.Patch);
-        public bool IsMinor() => Type().Equals(AppVersionType.Minor);
-        public bool IsMajor() => Type().Equals(AppVersionType.Major);
+        public bool IsPatch() => Type().Equals(AppVersionType.Values.Patch);
+        public bool IsMinor() => Type().Equals(AppVersionType.Values.Minor);
+        public bool IsMajor() => Type().Equals(AppVersionType.Values.Major);
 
-        private AppVersionStatus Status() => AppVersionStatus.FromValue(record.Status);
-        private AppVersionType Type() => AppVersionType.FromValue(record.Type);
+        private AppVersionStatus Status() => AppVersionStatus.Values.Value(record.Status);
+        private AppVersionType Type() => AppVersionType.Values.Value(record.Type);
 
         public Version Version() => new Version(Major, Minor, Patch);
         public Version NextMajor() => new Version(Major + 1, 0, 0);
@@ -46,18 +45,18 @@ namespace XTI_App
             var current = await app.CurrentVersion();
             await repo.Update(record, r =>
             {
-                r.Status = AppVersionStatus.Publishing.Value;
+                r.Status = AppVersionStatus.Values.Publishing.Value;
                 var type = Type();
                 Version nextVersion;
-                if (type.Equals(AppVersionType.Major))
+                if (type.Equals(AppVersionType.Values.Major))
                 {
                     nextVersion = current.NextMajor();
                 }
-                else if (type.Equals(AppVersionType.Minor))
+                else if (type.Equals(AppVersionType.Values.Minor))
                 {
                     nextVersion = current.NextMinor();
                 }
-                else if (type.Equals(AppVersionType.Patch))
+                else if (type.Equals(AppVersionType.Values.Patch))
                 {
                     nextVersion = current.NextPatch();
                 }
@@ -73,6 +72,10 @@ namespace XTI_App
 
         public async Task Published()
         {
+            if (!IsPublishing())
+            {
+                throw new ArgumentException($"Cannot publish when status is '{Status().DisplayText}'");
+            }
             var app = await factory.Apps().App(record.AppID);
             var current = await app.CurrentVersion();
             if (current.IsCurrent())
@@ -81,7 +84,7 @@ namespace XTI_App
             }
             await repo.Update(record, r =>
             {
-                r.Status = AppVersionStatus.Current.Value;
+                r.Status = AppVersionStatus.Values.Current.Value;
             });
         }
 
@@ -89,7 +92,7 @@ namespace XTI_App
         {
             return repo.Update(record, r =>
             {
-                r.Status = AppVersionStatus.Old.Value;
+                r.Status = AppVersionStatus.Values.Old.Value;
             });
         }
 

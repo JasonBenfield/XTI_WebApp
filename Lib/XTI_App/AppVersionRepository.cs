@@ -31,7 +31,7 @@ namespace XTI_App
                     Patch = 0,
                     TimeAdded = timeAdded,
                     Description = "",
-                    Status = AppVersionStatus.New.Value,
+                    Status = AppVersionStatus.Values.New.Value,
                     Type = type.Value
                 };
                 await repo.Create(record);
@@ -66,7 +66,7 @@ namespace XTI_App
         internal async Task<AppVersion> CurrentVersion(App app)
         {
             var record = await repo.Retrieve()
-                .Where(v => v.AppID == app.ID && v.Status == AppVersionStatus.Current.Value)
+                .Where(v => v.AppID == app.ID && v.Status == AppVersionStatus.Values.Current.Value)
                 .FirstOrDefaultAsync();
             return factory.Version(record);
         }

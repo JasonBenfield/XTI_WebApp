@@ -89,7 +89,7 @@ namespace XTI_WebApp.Tests
             await new AppSetup(factory).Run();
             var clock = sp.GetService<FakeClock>();
             var input = new TestInput(sp);
-            var app = await factory.Apps().AddApp(new AppKey("Fake"), "Fake", clock.Now());
+            var app = await factory.Apps().AddApp(new AppKey("Fake"), AppType.Values.WebApp, "Fake", clock.Now());
             input.AppContext.SetApp(app);
             var user = await factory.Users().Add(new AppUserName("someone"), new FakeHashedPassword("Password"), clock.Now());
             input.UserContext.SetUser(user);
