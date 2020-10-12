@@ -53,7 +53,10 @@ namespace XTI_UserApp
                 }
                 if (!string.IsNullOrWhiteSpace(userOptions.AppKey))
                 {
-                    var app = await appFactory.Apps().WebApp(new AppKey(userOptions.AppKey));
+                    var appType = string.IsNullOrWhiteSpace(userOptions.AppType)
+                        ? AppType.Values.WebApp
+                        : AppType.Values.Value(userOptions.AppType);
+                    var app = await appFactory.Apps().App(new AppKey(userOptions.AppKey), appType);
                     var userName = new AppUserName(userOptions.UserName);
                     var hashedPassword = hashedPasswordFactory.Create(password);
                     var user = await appFactory.Users().User(userName);

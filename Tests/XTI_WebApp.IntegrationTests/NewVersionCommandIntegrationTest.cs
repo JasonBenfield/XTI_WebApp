@@ -9,7 +9,6 @@ using XTI_App.EF;
 using XTI_Configuration.Extensions;
 using XTI_Secrets;
 using XTI_Version;
-using XTI_Version.Octo;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
 
@@ -21,7 +20,7 @@ namespace XTI_WebApp.IntegrationTests
         public async Task ShouldCreateNewPatch()
         {
             var input = await setup();
-            input.Options.Type = AppVersionType.Values.Patch.DisplayText;
+            input.Options.VersionType = AppVersionType.Values.Patch.DisplayText;
             var newVersion = await execute(input);
             Assert.That(newVersion?.IsPatch(), Is.True, "Should start new patch");
         }
@@ -30,7 +29,7 @@ namespace XTI_WebApp.IntegrationTests
         public async Task ShouldCreateNewMinorVersion()
         {
             var input = await setup();
-            input.Options.Type = AppVersionType.Values.Minor.DisplayText;
+            input.Options.VersionType = AppVersionType.Values.Minor.DisplayText;
             var newVersion = await execute(input);
             Assert.That(newVersion?.IsMinor(), Is.True, "Should start new minor version");
         }
@@ -39,36 +38,9 @@ namespace XTI_WebApp.IntegrationTests
         public async Task ShouldCreateNewMajorVersion()
         {
             var input = await setup();
-            input.Options.Type = AppVersionType.Values.Major.DisplayText;
+            input.Options.VersionType = AppVersionType.Values.Major.DisplayText;
             var newVersion = await execute(input);
             Assert.That(newVersion?.IsMajor(), Is.True, "Should start new major version");
-        }
-
-        [Test]
-        public async Task ShouldCreateMilestoneForNewVersion()
-        {
-            var input = await setup();
-            input.Options.Type = AppVersionType.Values.Major.DisplayText;
-            var newVersion = await execute(input);
-            var gitHubRepo = await getGitHubRepo(input);
-            var milestoneExists = await gitHubRepo.MilestoneExists($"xti_major_version_{newVersion.ID}");
-            Assert.That(milestoneExists, Is.True, "Should create milestone for new version");
-        }
-
-        [Test]
-        public async Task ShouldCreateBranchForNewVersion()
-        {
-            var input = await setup();
-            input.Options.Type = AppVersionType.Values.Major.DisplayText;
-            var newVersion = await execute(input);
-            var gitHubRepo = await getGitHubRepo(input);
-            var branchExists = await gitHubRepo.BranchExists($"xti/major/{newVersion.ID}");
-            Assert.That(branchExists, Is.True, "Should create branch for new version");
-        }
-
-        private Task<GitHubXtiRepoClient> getGitHubRepo(TestInput input)
-        {
-            return input.GithubClient.Repo(input.Options.RepoOwner, input.Options.RepoName);
         }
 
         private async Task<TestInput> setup()
@@ -82,14 +54,7 @@ namespace XTI_WebApp.IntegrationTests
             services.AddScoped<IHostEnvironment>(sp => hostEnv);
             services.AddWebAppServices(configuration);
             services.AddFileSecretCredentials();
-            services.AddScoped<GitHubXtiClient, OctoGithubXtiClient>();
-            services.AddScoped((sp =>
-            {
-                var factory = sp.GetService<AppFactory>();
-                var clock = sp.GetService<Clock>();
-                var githubClient = sp.GetService<GitHubXtiClient>();
-                return new NewVersionCommand(factory, clock, githubClient);
-            }));
+            services.AddScoped<ManageVersionCommand>();
             services.AddScoped<AppDbReset>();
             var sp = services.BuildServiceProvider();
             var factory = sp.GetService<AppFactory>();
@@ -116,22 +81,19 @@ namespace XTI_WebApp.IntegrationTests
                 this.sp = sp;
                 Factory = sp.GetService<AppFactory>();
                 App = app;
-                Options = new NewVersionOptions
+                Options = new ManageVersionOptions
                 {
-                    App = app.Key().Value,
-                    Type = AppVersionType.Values.Patch.DisplayText,
-                    RepoOwner = "JasonBenfield",
-                    RepoName = "XTI_WebApp"
+                    Command = "New",
+                    AppKey = app.Key().Value,
+                    VersionType = AppVersionType.Values.Patch.DisplayText
                 };
-                GithubClient = sp.GetService<GitHubXtiClient>();
             }
 
             public AppFactory Factory { get; }
             public App App { get; }
-            public NewVersionOptions Options { get; }
-            public GitHubXtiClient GithubClient { get; }
+            public ManageVersionOptions Options { get; }
 
-            public NewVersionCommand Command() => sp.GetService<NewVersionCommand>();
+            public ManageVersionCommand Command() => sp.GetService<ManageVersionCommand>();
         }
     }
 }

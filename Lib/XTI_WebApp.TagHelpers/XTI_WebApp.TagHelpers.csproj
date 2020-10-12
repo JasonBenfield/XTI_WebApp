@@ -8,8 +8,6 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
   </ItemGroup>
   
-  <Import Project="..\\..\\Version.Targets" />
-
   <ItemGroup>
     <ProjectReference Include="..\XTI_WebApp.Extensions\XTI_WebApp.Extensions.csproj" />
   </ItemGroup>

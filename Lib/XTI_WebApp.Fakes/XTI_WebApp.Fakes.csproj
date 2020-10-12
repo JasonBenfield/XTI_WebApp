@@ -4,8 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <Import Project="..\\..\\Version.Targets" />
-  
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="3.1.8" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />

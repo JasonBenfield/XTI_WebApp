@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
-using XTI_App;
 using XTI_Configuration.Extensions;
 using XTI_ConsoleApp.Extensions;
 using XTI_Secrets;
 using XTI_Version;
-using XTI_Version.Octo;
 
-namespace XTI_VersionApp
+namespace XTI_VersionTool
 {
     class Program
     {
@@ -23,19 +22,16 @@ namespace XTI_VersionApp
                 {
                     services.AddConsoleAppServices(hostContext.Configuration);
                     services.AddFileSecretCredentials();
-                    services.Configure<ManageVersionOptions>(hostContext.Configuration.GetSection(ManageVersionOptions.ManageVersion));
-                    services.AddSingleton<GitHubXtiClient, OctoGithubXtiClient>();
-                    services.AddSingleton<BeginPublishVersionCommand>();
-                    services.AddSingleton<EndPublishVersionCommand>();
-                    services.AddSingleton(sp =>
+                    services.Configure<ManageVersionOptions>(hostContext.Configuration);
+                    services.AddScoped<ManageVersionCommand>();
+                    services.AddHostedService(sp =>
                     {
-                        var appFactory = sp.GetService<AppFactory>();
-                        var clock = sp.GetService<Clock>();
-                        var gitHubClient = sp.GetService<GitHubXtiClient>();
-                        return new NewVersionCommand(appFactory, clock, gitHubClient);
+                        var scope = sp.CreateScope();
+                        var lifetime = scope.ServiceProvider.GetService<IHostApplicationLifetime>();
+                        var manageVersionCommand = scope.ServiceProvider.GetService<ManageVersionCommand>();
+                        var options = scope.ServiceProvider.GetService<IOptions<ManageVersionOptions>>();
+                        return new VersionManager(lifetime, manageVersionCommand, options);
                     });
-                    services.AddSingleton<ManageVersionCommand>();
-                    services.AddHostedService<VersionManager>();
                 })
                 .RunConsoleAsync();
         }

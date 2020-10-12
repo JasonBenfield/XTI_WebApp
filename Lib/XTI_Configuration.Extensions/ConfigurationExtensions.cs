@@ -19,6 +19,7 @@ namespace XTI_Configuration.Extensions
                 .AddJsonFile(Path.Combine(sharedDir, "appsettings.json"), optional: true, reloadOnChange: true)
                 .AddJsonFile(Path.Combine(sharedDir, $"appsettings.{envName}.json"),
                                  optional: true, reloadOnChange: true)
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{envName}.json",
                                  optional: true, reloadOnChange: true)

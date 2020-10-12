@@ -3,7 +3,6 @@ using System;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_Version;
-using XTI_Version.Fakes;
 using XTI_WebApp.Fakes;
 
 namespace XTI_WebApp.Tests
@@ -16,37 +15,12 @@ namespace XTI_WebApp.Tests
         public App App { get; private set; }
         public FakeClock Clock { get; private set; }
         public ManageVersionOptions Options { get; private set; }
-        public FakeGithubXtiClient GithubClient { get; private set; }
 
         public async Task Setup()
         {
             var services = new ServiceCollection();
             services.AddFakesForXtiWebApp();
-            services.AddSingleton<GitHubXtiClient, FakeGithubXtiClient>();
-            services.AddSingleton(sp =>
-            {
-                var factory = sp.GetService<AppFactory>();
-                var clock = sp.GetService<Clock>();
-                var githubClient = sp.GetService<GitHubXtiClient>();
-                return new NewVersionCommand(factory, clock, githubClient);
-            });
-            services.AddSingleton(sp =>
-            {
-                var factory = sp.GetService<AppFactory>();
-                return new BeginPublishVersionCommand(factory);
-            });
-            services.AddSingleton(sp =>
-            {
-                var factory = sp.GetService<AppFactory>();
-                return new EndPublishVersionCommand(factory);
-            });
-            services.AddSingleton(sp =>
-            {
-                var newVersionCommand = sp.GetService<NewVersionCommand>();
-                var beginPublishVersionCommand = sp.GetService<BeginPublishVersionCommand>();
-                var endPublishVersionCommand = sp.GetService<EndPublishVersionCommand>();
-                return new ManageVersionCommand(newVersionCommand, beginPublishVersionCommand, endPublishVersionCommand);
-            });
+            services.AddSingleton<ManageVersionCommand>();
             services.AddFakeSecretCredentials();
             sp = services.BuildServiceProvider();
             var factory = sp.GetService<AppFactory>();
@@ -59,18 +33,10 @@ namespace XTI_WebApp.Tests
             Options = new ManageVersionOptions
             {
                 Command = "New",
-                PublishVersion = new PublishVersionOptions
-                {
-                    Branch = ""
-                },
-                NewVersion = new NewVersionOptions
-                {
-                    App = app.Key().Value,
-                    Type = AppVersionType.Values.Patch.DisplayText,
-                    RepoOwner = "https://github.com/JasonBenfield/FakeWebApp"
-                }
+                BranchName = "",
+                AppKey = app.Key().Value,
+                VersionType = AppVersionType.Values.Patch.DisplayText,
             };
-            GithubClient = (FakeGithubXtiClient)sp.GetService<GitHubXtiClient>();
         }
 
         public Task<AppVersion> Execute()

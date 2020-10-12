@@ -5,7 +5,7 @@ namespace XTI_App
 {
     public sealed class AppVersionKey : SemanticType<string>, IEquatable<AppVersionKey>
     {
-        private static readonly Regex keyRegex = new Regex("V(\\d+)");
+        private static readonly Regex keyRegex = new Regex("V?(\\d+)");
 
         public static readonly AppVersionKey None = new AppVersionKey(0);
 
@@ -33,12 +33,6 @@ namespace XTI_App
 
         private AppVersionKey(string key) : base(key)
         {
-        }
-
-        public int VersionNumber()
-        {
-            var match = keyRegex.Match(Value);
-            return int.Parse(match.Groups[1].Value);
         }
 
         public bool Equals(AppVersionKey other) => _Equals(other);
