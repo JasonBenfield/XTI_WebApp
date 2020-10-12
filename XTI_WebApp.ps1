@@ -1,6 +1,6 @@
 Import-Module PowershellForXti -Force
 
-$script:config = [PSCustomObject]@{
+$script:webAppConfig = [PSCustomObject]@{
     RepoOwner = "JasonBenfield"
     RepoName = "XTI_WebApp"
     AppKey = "XTI_WebApp"
@@ -15,7 +15,7 @@ function WebApp-New-XtiIssue {
         $Label = @(),
         [string] $Body = ""
     )
-    $script:config | New-XtiIssue @PsBoundParameters
+    $script:webAppConfig | New-XtiIssue @PsBoundParameters
 }
 
 function WebApp-Xti-StartIssue {
@@ -25,7 +25,7 @@ function WebApp-Xti-StartIssue {
         $IssueBranchTitle = "",
         $AssignTo = ""
     )
-    $script:config | Xti-StartIssue @PsBoundParameters
+    $script:webAppConfig | Xti-StartIssue @PsBoundParameters
 }
 
 function WebApp-New-XtiVersion {
@@ -36,7 +36,7 @@ function WebApp-New-XtiVersion {
         [ValidateSet("Development", "Production", "Staging", "Test")]
         $EnvName = "Production"
     )
-    $script:config | New-XtiVersion @PsBoundParameters
+    $script:webAppConfig | New-XtiVersion @PsBoundParameters
 }
 
 function WebApp-New-XtiPullRequest {
@@ -44,18 +44,18 @@ function WebApp-New-XtiPullRequest {
         [Parameter(Position=0)]
         [string] $CommitMessage
     )
-    $script:config | New-XtiPullRequest @PsBoundParameters
+    $script:webAppConfig | New-XtiPullRequest @PsBoundParameters
 }
 
 function WebApp-Xti-PostMerge {
     param(
     )
-    $script:config | Xti-PostMerge @PsBoundParameters
+    $script:webAppConfig | Xti-PostMerge @PsBoundParameters
 }
 
 function WebApp-Publish {
     param(
-        [switch] $Dev
+        [switch] $Prod
     )
     Xti-PublishPackage @PsBoundParameters
 }

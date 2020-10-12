@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_Credentials;
 using XTI_Secrets;
 
 namespace XTI_UserApp
@@ -101,7 +102,7 @@ namespace XTI_UserApp
                     var secretCredentials = secretCredentialsFactory.Create(userOptions.CredentialKey);
                     await secretCredentials.Update
                     (
-                        new XtiCredentials(userOptions.UserName, password)
+                        new CredentialValue(userOptions.UserName, password)
                     );
                 }
             }

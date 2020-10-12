@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.EF;
 using XTI_Configuration.Extensions;
-using XTI_Secrets;
 using XTI_Version;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
@@ -53,7 +52,6 @@ namespace XTI_WebApp.IntegrationTests
             var configuration = configurationBuilder.Build();
             services.AddScoped<IHostEnvironment>(sp => hostEnv);
             services.AddWebAppServices(configuration);
-            services.AddFileSecretCredentials();
             services.AddScoped<ManageVersionCommand>();
             services.AddScoped<AppDbReset>();
             var sp = services.BuildServiceProvider();
