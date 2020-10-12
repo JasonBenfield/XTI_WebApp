@@ -59,7 +59,7 @@ namespace XTI_AppTool
                     }
                     else
                     {
-                        await appFactory.Apps().AddApp(appKey, appType, title, clock.Now());
+                        app = await appFactory.Apps().AddApp(appKey, appType, title, clock.Now());
                     }
                     var currentVersion = await app.CurrentVersion();
                     if (!currentVersion.IsCurrent())
@@ -68,14 +68,6 @@ namespace XTI_AppTool
                         await version.Publishing();
                         await version.Published();
                     }
-                }
-                else if (appToolOptions.Command == "get-dev-version")
-                {
-                    var currentVersion = await app.CurrentVersion();
-                    var nextPatch = currentVersion.NextPatch();
-                    var devVersion = $"{nextPatch.Major}.{nextPatch.Minor}.{nextPatch.Build}-dev{DateTime.Now:yyMMdd_HHmmssfff}";
-                    using var writer = new StreamWriter("dev_version.txt", false);
-                    writer.WriteLine(devVersion);
                 }
                 else
                 {

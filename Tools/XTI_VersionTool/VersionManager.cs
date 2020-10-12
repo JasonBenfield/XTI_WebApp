@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using System.IO;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using XTI_Version;
 
-namespace XTI_VersionApp
+namespace XTI_VersionTool
 {
     public sealed class VersionManager : IHostedService
     {
@@ -26,7 +28,7 @@ namespace XTI_VersionApp
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await manageVersionCommand.Execute(manageVersionOptions);
+            var version = await manageVersionCommand.Execute(manageVersionOptions);
             lifetime.StopApplication();
         }
 

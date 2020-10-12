@@ -6,7 +6,7 @@ namespace XTI_Version
     public sealed class XtiVersionBranch
     {
         private readonly string branchName;
-        private static readonly Regex branchNameRegex = new Regex("^xti\\/((major)|(minor)|(patch))\\/(\\d+)$");
+        private static readonly Regex branchNameRegex = new Regex("^xti\\/((major)|(minor)|(patch))\\/(V?\\d+)$", RegexOptions.IgnoreCase);
 
         public XtiVersionBranch(AppVersion version)
             : this(getBranchName(version))
@@ -15,24 +15,8 @@ namespace XTI_Version
 
         private static string getBranchName(AppVersion version)
         {
-            string type;
-            if (version.IsMajor())
-            {
-                type = "major";
-            }
-            else if (version.IsMinor())
-            {
-                type = "minor";
-            }
-            else if (version.IsPatch())
-            {
-                type = "patch";
-            }
-            else
-            {
-                type = "";
-            }
-            return $"xti/{type}/{version.Key().VersionNumber()}";
+            var type = version.Type().DisplayText;
+            return $"xti/{type}/{version.Key().Value}";
         }
 
         public XtiVersionBranch(string branchName)
@@ -49,10 +33,10 @@ namespace XTI_Version
 
         public string BranchName() => branchName;
 
-        public int VersionID()
+        public string VersionKey()
         {
             var match = branchNameRegex.Match(branchName);
-            return int.Parse(match.Groups[5].Value);
+            return match.Groups[5].Value;
         }
 
         public override string ToString() => $"{nameof(XtiVersionBranch)} {branchName}";

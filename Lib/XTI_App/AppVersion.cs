@@ -32,17 +32,23 @@ namespace XTI_App
         public bool IsMajor() => Type().Equals(AppVersionType.Values.Major);
 
         private AppVersionStatus Status() => AppVersionStatus.Values.Value(record.Status);
-        private AppVersionType Type() => AppVersionType.Values.Value(record.Type);
+        public AppVersionType Type() => AppVersionType.Values.Value(record.Type);
 
         public Version Version() => new Version(Major, Minor, Patch);
         public Version NextMajor() => new Version(Major + 1, 0, 0);
         public Version NextMinor() => new Version(Major, Minor + 1, 0);
         public Version NextPatch() => new Version(Major, Minor, Patch + 1);
 
-        public async Task Publishing()
+        public async Task<AppVersion> Current()
         {
             var app = await factory.Apps().App(record.AppID);
             var current = await app.CurrentVersion();
+            return current;
+        }
+
+        public async Task Publishing()
+        {
+            var current = await Current();
             await repo.Update(record, r =>
             {
                 r.Status = AppVersionStatus.Values.Publishing.Value;
