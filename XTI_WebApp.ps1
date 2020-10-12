@@ -2,17 +2,17 @@ Import-Module PowershellForXti -Force
 
 $script:config = [PSCustomObject]@{
     RepoOwner = "JasonBenfield"
-    RepoName = "FakeWebApp"
-    AppKey = "Fake"
-    AppType = "WebApp"
-    ProjectDir = "C:\XTI\src\FakeWebApp\Apps\FakeWebApp"
+    RepoName = "XTI_WebApp"
+    AppKey = "XTI_WebApp"
+    AppType = "Package"
+    ProjectDir = "C:\XTI\src\XTI_WebApp\Apps\XTI_WebApp"
 }
 
 function WebApp-New-XtiIssue {
     param(
         [Parameter(Mandatory, Position=0)]
         [string] $IssueTitle,
-        [string] $Label = "",
+        $Label = @(),
         [string] $Body = ""
     )
     $script:config | New-XtiIssue @PsBoundParameters
