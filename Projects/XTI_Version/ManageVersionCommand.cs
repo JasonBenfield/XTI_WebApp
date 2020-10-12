@@ -45,6 +45,10 @@ namespace XTI_Version
                 {
                     version = await version.Current();
                 }
+                else if (!options.Command.Equals("GetVersion", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new NotSupportedException($"Command '{options.Command}' is not supported");
+                }
             }
             if (!string.IsNullOrWhiteSpace(options.OutputPath))
             {
