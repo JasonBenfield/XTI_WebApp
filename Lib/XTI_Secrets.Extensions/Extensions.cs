@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace XTI_Secrets
+namespace XTI_Secrets.Extensions
 {
     public static class Extensions
     {

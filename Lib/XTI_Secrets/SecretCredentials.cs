@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
+using XTI_Credentials;
 
 namespace XTI_Secrets
 {
-    public abstract class SecretCredentials
+    public abstract class SecretCredentials : ICredentials
     {
         private readonly string key;
         private readonly IDataProtector dataProtector;
@@ -19,37 +16,40 @@ namespace XTI_Secrets
             this.dataProtector = dataProtector;
         }
 
-        public Task Update(XtiCredentials value)
+        public Task Update(string userName, string password) =>
+            Update(new CredentialValue(userName, password));
+
+        public Task Update(CredentialValue value)
         {
-            var serialized = JsonSerializer.Serialize(new XtiCredentialsRecord(value));
+            var serialized = JsonSerializer.Serialize(new CredentialValueRecord(value));
             var encrypted = new EncryptedValue(dataProtector, serialized).Value();
             return Persist(key, encrypted);
         }
 
         protected abstract Task Persist(string key, string encryptedText);
 
-        public async Task<XtiCredentials> Value()
+        public async Task<CredentialValue> Value()
         {
             var encrypted = await Load(key);
             var serialized = new DecryptedValue(dataProtector, encrypted).Value();
             var deserialized = string.IsNullOrWhiteSpace(serialized)
-                ? new XtiCredentialsRecord()
-                : JsonSerializer.Deserialize<XtiCredentialsRecord>(serialized);
-            return new XtiCredentials(deserialized.UserName, deserialized.Password);
+                ? new CredentialValueRecord()
+                : JsonSerializer.Deserialize<CredentialValueRecord>(serialized);
+            return new CredentialValue(deserialized.UserName, deserialized.Password);
         }
 
         protected abstract Task<string> Load(string key);
 
-        private class XtiCredentialsRecord
+        private class CredentialValueRecord
         {
-            public XtiCredentialsRecord()
+            public CredentialValueRecord()
             {
             }
 
-            public XtiCredentialsRecord(XtiCredentials credentials)
+            public CredentialValueRecord(CredentialValue credentialValue)
             {
-                UserName = credentials?.UserName ?? "";
-                Password = credentials?.Password ?? "";
+                UserName = credentialValue?.UserName ?? "";
+                Password = credentialValue?.Password ?? "";
             }
 
             public string UserName { get; set; } = "";

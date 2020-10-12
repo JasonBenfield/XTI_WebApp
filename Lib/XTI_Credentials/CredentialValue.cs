@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace XTI_Secrets
+namespace XTI_Credentials
 {
-    public sealed class XtiCredentials : IEquatable<XtiCredentials>
+    public sealed class CredentialValue : IEquatable<CredentialValue>
     {
-        public XtiCredentials(string userName, string password)
+        public CredentialValue(string userName, string password)
         {
             UserName = userName;
             Password = password;
@@ -16,19 +16,19 @@ namespace XTI_Secrets
         public string UserName { get; }
         public string Password { get; }
 
-        public bool Equals(XtiCredentials other)
+        public bool Equals(CredentialValue other)
         {
             return UserName == other.UserName && Password == other.Password;
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as XtiCredentials);
+            return Equals(obj as CredentialValue);
         }
 
         public override int GetHashCode() => hashCode;
 
-        public override string ToString() => $"{nameof(XtiCredentials)} {UserName}";
+        public override string ToString() => $"{nameof(CredentialValue)} {UserName}";
 
     }
 }

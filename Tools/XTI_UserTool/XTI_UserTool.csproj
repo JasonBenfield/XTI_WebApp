@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Lib\XTI_Configuration.Extensions\XTI_Configuration.Extensions.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_ConsoleApp.Extensions\XTI_ConsoleApp.Extensions.csproj" />
+    <ProjectReference Include="..\..\Lib\XTI_Secrets.Extensions\XTI_Secrets.Extensions.csproj" />
   </ItemGroup>
 
 </Project>
