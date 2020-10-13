@@ -91,7 +91,8 @@ namespace XTI_WebApp.Extensions
                 var cache = sp.GetService<IMemoryCache>();
                 var appContext = sp.GetService<WebAppContext>();
                 return new CachedAppContext(httpContextAccessor, cache, appContext);
-            }); ;
+            });
+            services.AddScoped<IAppApiUser, XtiAppApiUser>();
             services.AddScoped<WebAppContext>();
             services.AddScoped<IUserContext>(sp =>
             {
