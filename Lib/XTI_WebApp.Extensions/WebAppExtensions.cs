@@ -22,7 +22,9 @@ namespace XTI_WebApp.Extensions
 
         public static void AddWebAppServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddXtiAspServices();
+            services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
+            services.AddHttpContextAccessor();
             services.Configure<AppOptions>(configuration.GetSection(AppOptions.App));
             services.Configure<WebAppOptions>(configuration.GetSection(WebAppOptions.WebApp));
             services.Configure<DbOptions>(configuration.GetSection(DbOptions.DB));
@@ -42,19 +44,6 @@ namespace XTI_WebApp.Extensions
             services.AddSingleton<Clock, UtcClock>();
             services.AddScoped<AppFactory, EfAppFactory>();
             AddXtiContextServices(services);
-        }
-
-        public static void AddXtiAspServices(this IServiceCollection services)
-        {
-            services.AddMemoryCache();
-            services.AddDistributedMemoryCache();
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
-            services.AddHttpContextAccessor();
         }
 
         public static void AddAppDbContext(this IServiceCollection services)

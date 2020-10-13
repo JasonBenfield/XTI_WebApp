@@ -9,7 +9,7 @@ namespace XTI_WebApp.Extensions
     public sealed class CachedAppContext : IAppContext
     {
         private readonly IHttpContextAccessor httpContextAccessor;
-        private IMemoryCache cache;
+        private readonly IMemoryCache cache;
         private readonly IAppContext source;
 
         public CachedAppContext(IHttpContextAccessor httpContextAccessor, IMemoryCache cache, IAppContext source)
