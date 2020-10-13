@@ -15,6 +15,8 @@ namespace XTI_WebAppClient
             url = $"{baseUrl}/{appKey}/{version}";
         }
 
+        public void ResetToken() => xtiToken.Reset();
+
         public override string ToString() => $"{GetType().Name} {url}";
     }
 }
