@@ -37,7 +37,7 @@ namespace XTI_WebApp.Extensions
                 cachedUserRoles = userRoles
                     .Select(ur => new CachedAppUserRole(ur))
                     .ToArray();
-                cache.Set(key, userRoles);
+                cache.Set(key, cachedUserRoles);
             }
             return cachedUserRoles;
         }

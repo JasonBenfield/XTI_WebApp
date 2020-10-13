@@ -12,7 +12,7 @@ function WebApp-New-XtiIssue {
     param(
         [Parameter(Mandatory, Position=0)]
         [string] $IssueTitle,
-        $Label = @(),
+        $Labels = @(),
         [string] $Body = ""
     )
     $script:webAppConfig | New-XtiIssue @PsBoundParameters

@@ -30,6 +30,8 @@ namespace XTI_WebApp.Fakes
                     options.ApplicationDiscriminator = "XTI_WEB_APP";
                 })
                 .SetApplicationName("XTI_WEB_APP");
+            services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
             services.AddHttpContextAccessor();
             services.AddDataProtection();
             services.AddSingleton<Clock, FakeClock>();
@@ -48,7 +50,6 @@ namespace XTI_WebApp.Fakes
             services.AddScoped<IAppApiUser, XtiAppApiUser>();
             services.AddSingleton<IHostEnvironment, FakeHostEnvironment>();
             services.AddSingleton(sp => (IWebHostEnvironment)sp.GetService<IHostEnvironment>());
-            services.AddHttpContextAccessor();
             services.AddScoped(sp =>
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
