@@ -57,5 +57,5 @@ function WebApp-Publish {
     param(
         [switch] $Prod
     )
-    Xti-PublishPackage @PsBoundParameters
+    $script:webAppConfig | Xti-PublishPackage @PsBoundParameters
 }
