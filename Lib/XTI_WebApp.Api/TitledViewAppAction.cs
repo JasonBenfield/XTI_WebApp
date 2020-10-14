@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using XTI_App.Api;
 
-namespace XTI_WebApp
+namespace XTI_WebApp.Api
 {
     public sealed class TitledViewAppAction<TModel> : AppAction<TModel, AppActionViewResult>
     {

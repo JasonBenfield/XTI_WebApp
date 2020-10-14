@@ -82,6 +82,9 @@ namespace XTI_App
             }
         }
 
+        public XtiPath WithNewGroup(string groupName)
+            => new XtiPath(App, Version, groupName, "", Modifier);
+
         public XtiPath WithGroup(string groupName)
         {
             if (!string.IsNullOrWhiteSpace(Group)) { throw new ArgumentException("Cannot create group for a group"); }

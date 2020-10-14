@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace XTI_App.Api
@@ -22,5 +23,7 @@ namespace XTI_App.Api
             ActionTemplates
                 .SelectMany(a => a.ObjectTemplates())
                 .Distinct();
+
+        public bool IsUser() => Name.Equals("User", StringComparison.OrdinalIgnoreCase);
     }
 }

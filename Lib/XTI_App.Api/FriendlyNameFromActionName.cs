@@ -1,6 +1,6 @@
 ﻿namespace XTI_App.Api
 {
-    public class FriendlyNameFromActionName
+    public sealed class FriendlyNameFromActionName
     {
         public FriendlyNameFromActionName(string actionName)
         {

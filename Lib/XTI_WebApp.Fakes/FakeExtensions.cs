@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using System;
 using XTI_App;
 using XTI_App.Api;
@@ -59,8 +58,6 @@ namespace XTI_WebApp.Fakes
             services.AddScoped<CacheBust>();
             services.AddScoped<IPageContext, PageContext>();
             services.AddScoped<IHashedPasswordFactory, FakeHashedPasswordFactory>();
-            services.AddScoped<IOptions<AppOptions>, FakeOptions<AppOptions>>();
-            services.AddScoped<IOptions<WebAppOptions>, FakeOptions<WebAppOptions>>();
         }
 
         public static void AddFakeSecretCredentials(this IServiceCollection services)

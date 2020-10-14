@@ -64,7 +64,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XTI_Secrets.Extensions", "L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XTI_Credentials", "Lib\XTI_Credentials\XTI_Credentials.csproj", "{E5B2B259-0A97-456D-9B28-EF20584A1836}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XTI_WebApp.TestFakes", "Tests\XTI_WebApp.TestFakes\XTI_WebApp.TestFakes.csproj", "{0534CC27-3319-4DB1-8535-B2256BBC1223}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XTI_WebApp.TestFakes", "Tests\XTI_WebApp.TestFakes\XTI_WebApp.TestFakes.csproj", "{0534CC27-3319-4DB1-8535-B2256BBC1223}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XTI_WebApp.Api", "Lib\XTI_WebApp.Api\XTI_WebApp.Api.csproj", "{B89F6B18-0DAB-483F-B25F-933F92E76F22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -160,6 +162,10 @@ Global
 		{0534CC27-3319-4DB1-8535-B2256BBC1223}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0534CC27-3319-4DB1-8535-B2256BBC1223}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0534CC27-3319-4DB1-8535-B2256BBC1223}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B89F6B18-0DAB-483F-B25F-933F92E76F22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B89F6B18-0DAB-483F-B25F-933F92E76F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B89F6B18-0DAB-483F-B25F-933F92E76F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B89F6B18-0DAB-483F-B25F-933F92E76F22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -187,6 +193,7 @@ Global
 		{036F2147-2320-40D7-8FE7-736473BCD5FA} = {A1F1F235-4442-4F52-BE3F-CDE93211A15C}
 		{E5B2B259-0A97-456D-9B28-EF20584A1836} = {A1F1F235-4442-4F52-BE3F-CDE93211A15C}
 		{0534CC27-3319-4DB1-8535-B2256BBC1223} = {45100A1C-EEF2-4F7D-8275-00FADB311317}
+		{B89F6B18-0DAB-483F-B25F-933F92E76F22} = {A1F1F235-4442-4F52-BE3F-CDE93211A15C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {91B19DE7-0676-4D29-BEAA-DFB7C8C405AF}

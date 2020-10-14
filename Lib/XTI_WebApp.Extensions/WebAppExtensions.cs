@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,10 @@ namespace XTI_WebApp.Extensions
 
         public static void AddWebAppServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<RazorViewEngineOptions>(o =>
+            {
+                o.ViewLocationFormats.Add("/Views/Exports/Hub/{1}/{0}" + RazorViewEngine.ViewExtension);
+            });
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
             services.AddHttpContextAccessor();

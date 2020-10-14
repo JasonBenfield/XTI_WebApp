@@ -33,6 +33,10 @@ namespace XTI_App.Api
             {
                 hasAccess = resourceAccess.IsAnonymousAllowed;
             }
+            else if (!resourceAccess.Allowed.Any() && !resourceAccess.Denied.Any())
+            {
+                hasAccess = true;
+            }
             else
             {
                 var userRoles = await user.RolesForApp(app);
