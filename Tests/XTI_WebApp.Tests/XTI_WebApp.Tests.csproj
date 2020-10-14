@@ -13,8 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Lib\XTI_WebApp.Fakes\XTI_WebApp.Fakes.csproj" />
+    <ProjectReference Include="..\..\Lib\XTI_WebApp.Api\XTI_WebApp.Api.csproj" />
     <ProjectReference Include="..\..\Projects\XTI_Version\XTI_Version.csproj" />
+    <ProjectReference Include="..\XTI_WebApp.TestFakes\XTI_WebApp.TestFakes.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 using XTI_App;
 using XTI_WebApp.Fakes;
 
-namespace XTI_WebApp.AspTests
+namespace XTI_WebApp.TestFakes
 {
     public sealed class FakeAppSetup
     {
@@ -30,6 +30,10 @@ namespace XTI_WebApp.AspTests
             (
                 new AppUserName("xartogg"), new FakeHashedPassword("password"), clock.Now()
             );
+            foreach (var roleName in FakeAppRoles.Instance.Values())
+            {
+                await App.AddRole(roleName);
+            }
         }
     }
 }

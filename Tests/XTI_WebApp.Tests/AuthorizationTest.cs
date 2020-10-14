@@ -108,6 +108,24 @@ namespace XTI_WebApp.Tests
         }
 
         [Test]
+        public async Task ShouldAllowAccess_WhenTheUserIsAuthenticatedAndTheResourceAllowsAuthenticatedUsers()
+        {
+            var input = await setup();
+            var hasAccess = await input.Api.Home.HasAccess(AccessModifier.Default);
+            Assert.That(hasAccess, Is.True, "User should have access to app when they are authenticated and the resource allows authenticated users");
+        }
+
+        [Test]
+        public async Task ShouldNotAllowAccess_WhenTheUserIsNotAuthenticatedAndTheResourceAllowsAuthenticatedUsers()
+        {
+            var input = await setup();
+            var anonUser = await input.Factory.Users().User(AppUserName.Anon);
+            input.UserContext.SetUser(anonUser);
+            var hasAccess = await input.Api.Home.HasAccess(AccessModifier.Default);
+            Assert.That(hasAccess, Is.False, "User should not have access to app when they are not authenticated and the resource allows authenticated users");
+        }
+
+        [Test]
         public async Task ShouldHaveAccessToApp_WhenTheUserBelongsToAnyAppRoles()
         {
             var input = await setup();

@@ -1,14 +1,15 @@
 ﻿using System.Threading.Tasks;
+using XTI_Credentials;
 
 namespace XTI_WebAppClient
 {
     public sealed class XtiToken
     {
         private readonly IAuthClient authClient;
-        private readonly XtiCredentials credentials;
+        private readonly ICredentials credentials;
         private string token;
 
-        public XtiToken(IAuthClient authClient, XtiCredentials credentials)
+        public XtiToken(IAuthClient authClient, ICredentials credentials)
         {
             this.authClient = authClient;
             this.credentials = credentials;
@@ -20,10 +21,11 @@ namespace XTI_WebAppClient
         {
             if (string.IsNullOrWhiteSpace(token))
             {
-                var loginModel = new LoginModel
+                var value = await credentials.Value();
+                var loginModel = new LoginCredentials
                 {
-                    UserName = credentials.UserName,
-                    Password = credentials.Password
+                    UserName = value.UserName,
+                    Password = value.Password
                 };
                 var result = await authClient.AuthApi.Authenticate(loginModel);
                 token = result.Token;

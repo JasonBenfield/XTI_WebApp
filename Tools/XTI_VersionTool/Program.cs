@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using XTI_Configuration.Extensions;
 using XTI_ConsoleApp.Extensions;
-using XTI_Secrets;
 using XTI_Version;
 
 namespace XTI_VersionTool
@@ -21,7 +20,6 @@ namespace XTI_VersionTool
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddConsoleAppServices(hostContext.Configuration);
-                    services.AddFileSecretCredentials();
                     services.Configure<ManageVersionOptions>(hostContext.Configuration);
                     services.AddScoped<ManageVersionCommand>();
                     services.AddHostedService(sp =>

@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\Lib\XTI_WebApp.Extensions\XTI_WebApp.Extensions.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_WebApp.Fakes\XTI_WebApp.Fakes.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_WebApp.TagHelpers\XTI_WebApp.TagHelpers.csproj" />
+    <ProjectReference Include="..\XTI_WebApp.TestFakes\XTI_WebApp.TestFakes.csproj" />
   </ItemGroup>
 
 </Project>

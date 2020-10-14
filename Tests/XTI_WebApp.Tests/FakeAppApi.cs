@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
+using XTI_WebApp.Api;
 
 namespace XTI_WebApp.Tests
 {
 
-    public sealed class FakeAppApi : AppApi
+    public sealed class FakeAppApi : WebAppApi
     {
         private static readonly string AppKeyValue = "Fake";
         public static readonly AppKey AppKey = new AppKey(AppKeyValue);
@@ -37,14 +38,16 @@ namespace XTI_WebApp.Tests
         public HomeGroup(AppApi api, IAppApiUser user)
             : base
             (
-                  api,
-                  new NameFromGroupClassName(nameof(HomeGroup)).Value,
-                  true,
-                  ResourceAccess.AllowAuthenticated(),
-                  user
+                api,
+                new NameFromGroupClassName(nameof(HomeGroup)).Value,
+                true,
+                ResourceAccess.AllowAuthenticated(),
+                user,
+                (name, ra, u) => new WebAppApiActionCollection(name, ra, u)
             )
         {
-            Index = AddDefaultView();
+            var actions = Actions<WebAppApiActionCollection>();
+            Index = actions.AddDefaultView();
         }
         public AppApiAction<EmptyRequest, AppActionViewResult> Index { get; }
     }
@@ -54,14 +57,16 @@ namespace XTI_WebApp.Tests
         public LoginGroup(AppApi api, IAppApiUser user)
             : base
             (
-                  api,
-                  new NameFromGroupClassName(nameof(LoginGroup)).Value,
-                  true,
-                  ResourceAccess.AllowAnonymous(),
-                  user
+                api,
+                new NameFromGroupClassName(nameof(LoginGroup)).Value,
+                true,
+                ResourceAccess.AllowAnonymous(),
+                user,
+                (name, ra, u) => new WebAppApiActionCollection(name, ra, u)
             )
         {
-            Index = AddDefaultView();
+            var actions = Actions<WebAppApiActionCollection>();
+            Index = actions.AddDefaultView();
         }
         public AppApiAction<EmptyRequest, AppActionViewResult> Index { get; }
     }
@@ -71,23 +76,25 @@ namespace XTI_WebApp.Tests
         public EmployeeGroup(AppApi api, IAppApiUser user)
             : base
             (
-                  api,
-                  new NameFromGroupClassName(nameof(EmployeeGroup)).Value,
-                  true,
-                  api.Access
+                api,
+                new NameFromGroupClassName(nameof(EmployeeGroup)).Value,
+                true,
+                api.Access
                     .WithAllowed(FakeRoleNames.Instance.Manager)
                     .WithDenied(FakeRoleNames.Instance.Viewer),
-                  user
+                user,
+                (name, ra, u) => new WebAppApiActionCollection(name, ra, u)
             )
         {
-            Index = AddDefaultView();
-            AddEmployee = AddAction
+            var actions = Actions<WebAppApiActionCollection>();
+            Index = actions.AddDefaultView();
+            AddEmployee = actions.AddAction
             (
                 "AddEmployee",
                 () => new AddEmployeeValidation(),
                 () => new AddEmployeeAction()
             );
-            Employee = AddAction
+            Employee = actions.AddAction
             (
                 "Employee",
                 () => new EmployeeAction(),
@@ -150,22 +157,24 @@ namespace XTI_WebApp.Tests
                 true,
                 api.Access
                     .WithDenied(FakeRoleNames.Instance.Viewer),
-                user
+                user,
+                (name, ra, u) => new WebAppApiActionCollection(name, ra, u)
             )
         {
-            Index = AddDefaultView();
-            GetInfo = AddAction
+            var actions = Actions<WebAppApiActionCollection>();
+            Index = actions.AddDefaultView();
+            GetInfo = actions.AddAction
             (
                 "GetInfo",
                 () => new GetInfoAction()
             );
-            AddProduct = AddAction
+            AddProduct = actions.AddAction
             (
                 "AddProduct",
                 () => new AddProductValidation(),
                 () => new AddProductAction()
             );
-            Product = AddAction
+            Product = actions.AddAction
             (
                 "Product",
                 () => new ProductAction(),

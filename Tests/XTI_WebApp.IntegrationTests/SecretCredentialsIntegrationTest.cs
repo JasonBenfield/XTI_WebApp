@@ -5,7 +5,9 @@ using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
 using XTI_Configuration.Extensions;
+using XTI_Credentials;
 using XTI_Secrets;
+using XTI_Secrets.Extensions;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
 
@@ -18,7 +20,7 @@ namespace XTI_WebApp.IntegrationTests
         {
             var input = setup();
             var secretCredentials = input.Factory.Create("Test");
-            var storedCredentials = new XtiCredentials("Someone", "Password");
+            var storedCredentials = new CredentialValue("Someone", "Password");
             await secretCredentials.Update(storedCredentials);
             var retrievedCredentials = await secretCredentials.Value();
             Assert.That(retrievedCredentials, Is.EqualTo(storedCredentials), "Should store and retrieve credentials");

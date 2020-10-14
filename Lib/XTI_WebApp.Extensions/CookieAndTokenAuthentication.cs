@@ -26,38 +26,16 @@ namespace XTI_WebApp.Extensions
                 {
                     options.SlidingExpiration = true;
                     options.ExpireTimeSpan = TimeSpan.FromHours(4);
-                    var sp = services.BuildServiceProvider();
-                    var jwtOptions = sp.GetService<IOptions<JwtOptions>>().Value;
-                    var key = Encoding.ASCII.GetBytes(jwtOptions.Secret);
-                    options.TicketDataFormat = new JwtAuthTicketFormat
-                    (
-                        new TokenValidationParameters
-                        {
-                            ValidateIssuerSigningKey = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(key),
-                            ValidateIssuer = false,
-                            ValidateAudience = false
-                        },
-                        sp.GetService<IDataSerializer<AuthenticationTicket>>(),
-                        sp.GetDataProtector(new[] { "XTI_Apps_Auth1" })
-                    );
                     options.Cookie.Path = "/";
                     options.Cookie.Domain = "";
+                    options.TicketDataFormat = createAuthTicketFormat(services.BuildServiceProvider());
                     options.Events = new CookieAuthenticationEvents
                     {
-                        OnValidatePrincipal = x =>
-                        {
-                            return Task.CompletedTask;
-                        },
-                        OnSigningIn = x =>
-                        {
-                            return Task.CompletedTask;
-                        },
                         OnRedirectToLogin = x =>
                         {
                             if (x.Request.IsApiRequest())
                             {
-                                if ((x.HttpContext.User?.Identity.IsAuthenticated ?? false))
+                                if (x.HttpContext?.User?.Identity.IsAuthenticated ?? false)
                                 {
                                     x.Response.StatusCode = StatusCodes.Status403Forbidden;
                                 }
@@ -68,7 +46,7 @@ namespace XTI_WebApp.Extensions
                             }
                             else
                             {
-                                redirectToLogin(sp, x);
+                                redirectToLogin(x.HttpContext.RequestServices, x);
                             }
                             return Task.CompletedTask;
                         }
@@ -77,51 +55,77 @@ namespace XTI_WebApp.Extensions
                     options.AccessDeniedPath = options.LoginPath;
                     options.ReturnUrlParameter = "returnUrl";
                 })
-                .AddJwtBearer(x =>
+                .AddJwtBearer(options =>
                 {
-                    var sp = services.BuildServiceProvider();
-                    var jwtOptions = sp.GetService<IOptions<JwtOptions>>().Value;
-                    var key = Encoding.ASCII.GetBytes(jwtOptions.Secret);
-                    x.RequireHttpsMetadata = false;
-                    x.SaveToken = true;
-                    x.TokenValidationParameters = new TokenValidationParameters
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = createTokenValidationParameters(services.BuildServiceProvider());
+                    options.Events = new JwtBearerEvents
                     {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
+                        OnTokenValidated = c =>
+                        {
+                            return Task.CompletedTask;
+                        },
+                        OnChallenge = c =>
+                        {
+                            return Task.CompletedTask;
+                        }
                     };
                 });
             services.addAuthorization();
         }
 
-        private static void redirectToLogin(ServiceProvider sp, RedirectContext<CookieAuthenticationOptions> x)
+        private static TokenValidationParameters createTokenValidationParameters(IServiceProvider sp)
+        {
+            var jwtOptions = sp.GetService<IOptions<JwtOptions>>().Value;
+            var key = Encoding.ASCII.GetBytes(jwtOptions.Secret);
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+            return tokenValidationParameters;
+        }
+
+        private static JwtAuthTicketFormat createAuthTicketFormat(IServiceProvider sp)
+        {
+            var jwtOptions = sp.GetService<IOptions<JwtOptions>>().Value;
+            var key = Encoding.ASCII.GetBytes(jwtOptions.Secret);
+            var dataSerializer = sp.GetService<IDataSerializer<AuthenticationTicket>>();
+            var dataProtector = sp.GetDataProtector(new[] { "XTI_Apps_Auth1" });
+            var authTicketFormat = new JwtAuthTicketFormat
+            (
+                new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                },
+                dataSerializer,
+                dataProtector
+            );
+            return authTicketFormat;
+        }
+
+        private static void redirectToLogin(IServiceProvider sp, RedirectContext<CookieAuthenticationOptions> x)
         {
             var options = sp.GetService<IOptions<AppOptions>>().Value;
             string startUrl;
             string returnUrl;
             string loginUrl;
-            var isHub = x.Request.PathBase.Value.Equals("/Hub", StringComparison.OrdinalIgnoreCase);
-            if
-            (
-                !isHub &&
-                !$"{x.Request.Scheme}://{x.Request.Host.Value}".Equals(options.BaseUrl, StringComparison.OrdinalIgnoreCase)
-            )
+            var isHub = x.Request.PathBase.ToString().StartsWith("/Hub/", StringComparison.OrdinalIgnoreCase);
+            if (isHub || $"{x.Request.Scheme}://{x.Request.Host.Value}".Equals(options.BaseUrl, StringComparison.OrdinalIgnoreCase))
             {
-                startUrl = $"{x.Request.Scheme}://{x.Request.Host.Value}{x.Request.PathBase.Value}/User";
-                loginUrl = $"{options.BaseUrl}/";
+                loginUrl = "/Hub/Current";
+                startUrl = $"{x.Request.PathBase.Value}/User";
             }
             else
             {
-                if (isHub)
-                {
-                    loginUrl = "/";
-                }
-                else
-                {
-                    loginUrl = "/Hub/Current";
-                }
-                startUrl = $"{x.Request.PathBase.Value}/User";
+                loginUrl = $"{options.BaseUrl}/Hub/Current";
+                startUrl = $"{x.Request.Scheme}://{x.Request.Host.Value}{x.Request.PathBase.Value}/User";
             }
             if (x.Request.Path.HasValue)
             {

@@ -13,6 +13,7 @@ using XTI_App;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
 using XTI_WebApp.TagHelpers;
+using XTI_WebApp.TestFakes;
 
 namespace XTI_WebApp.AspTests
 {
@@ -93,7 +94,6 @@ namespace XTI_WebApp.AspTests
         {
             var services = new ServiceCollection();
             services.AddFakesForXtiWebApp();
-            services.AddHttpContextAccessor();
             services.AddSingleton(sp => (IWebHostEnvironment)sp.GetService<IHostEnvironment>());
             services.AddSingleton<IOptions<WebAppOptions>, FakeOptions<WebAppOptions>>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();

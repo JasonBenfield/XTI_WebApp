@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Lib\XTI_Configuration.Extensions\XTI_Configuration.Extensions.csproj" />
+    <ProjectReference Include="..\..\Lib\XTI_Secrets.Extensions\XTI_Secrets.Extensions.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_WebApp.Extensions\XTI_WebApp.Extensions.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_WebApp.Fakes\XTI_WebApp.Fakes.csproj" />
     <ProjectReference Include="..\..\Projects\XTI_Version\XTI_Version.csproj" />

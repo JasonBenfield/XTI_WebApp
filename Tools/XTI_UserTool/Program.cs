@@ -6,6 +6,7 @@ using XTI_App;
 using XTI_Configuration.Extensions;
 using XTI_ConsoleApp.Extensions;
 using XTI_Secrets;
+using XTI_Secrets.Extensions;
 
 namespace XTI_UserApp
 {

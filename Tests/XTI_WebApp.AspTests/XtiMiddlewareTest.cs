@@ -21,6 +21,7 @@ using XTI_App.EF;
 using XTI_Configuration.Extensions;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
+using XTI_WebApp.TestFakes;
 
 namespace XTI_WebApp.AspTests
 {
@@ -489,7 +490,6 @@ namespace XTI_WebApp.AspTests
                         .UseTestServer()
                         .ConfigureServices((context, services) =>
                         {
-                            services.AddXtiAspServices();
                             services.AddSingleton<TestAuthOptions>();
                             services
                                 .AddAuthentication("Test")
@@ -506,13 +506,11 @@ namespace XTI_WebApp.AspTests
                                         .Build();
                             });
                             services.AddFakesForXtiWebApp();
-                            services.AddHttpContextAccessor();
                             services.AddXtiContextServices();
                             services.AddScoped<FakeAppSetup>();
                         })
                         .Configure(app =>
                         {
-                            app.UseSession();
                             app.UseAuthentication();
                             app.UseAuthorization();
                             app.UseXti();
