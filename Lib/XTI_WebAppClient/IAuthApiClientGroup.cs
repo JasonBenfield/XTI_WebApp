@@ -4,6 +4,6 @@ namespace XTI_WebAppClient
 {
     public interface IAuthApiClientGroup
     {
-        public Task<LoginResult> Authenticate(LoginModel model);
+        public Task<LoginResult> Authenticate(LoginCredentials model);
     }
 }

@@ -1,42 +1,37 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using NUnit.Framework;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 using XTI_App;
-using XTI_App.Api;
-using XTI_App.EF;
-using XTI_Configuration.Extensions;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
-using XTI_WebApp.TestFakes;
 
 namespace XTI_WebApp.AspTests
 {
 #pragma warning disable CS0162
     public class XtiAuthenticationTest
     {
+
+        private static readonly string baseUrl = "https://webapps.xartogg.com";
         [Test]
         public async Task ShouldRedirectToLogin()
         {
             var pathBase = "/Hub/Current";
             var input = await setup(pathBase);
-            input.AppOptions.BaseUrl = $"https://webapps.xartogg.com";
-            input.Host.GetTestServer().BaseAddress = new Uri(input.AppOptions.BaseUrl);
+            input.Host.GetTestServer().BaseAddress = new Uri(baseUrl);
             var response = await input.GetAsync("/UserAdmin/Index");
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Found));
             var startUrl = HttpUtility.UrlEncode("/Hub/Current/User");
@@ -53,7 +48,7 @@ namespace XTI_WebApp.AspTests
         {
             var pathBase = "/Fake/Current";
             var input = await setup(pathBase);
-            input.Host.GetTestServer().BaseAddress = new Uri("https://webapps.xartogg.com");
+            input.Host.GetTestServer().BaseAddress = new Uri(baseUrl);
             var response = await input.GetAsync("/UserAdmin/Index");
             var startUrl = HttpUtility.UrlEncode("/Fake/Current/User");
             var returnUrl = HttpUtility.UrlEncode("/UserAdmin/Index");
@@ -136,9 +131,9 @@ namespace XTI_WebApp.AspTests
                         .ConfigureServices((context, services) =>
                         {
                             services.AddSingleton<TestAuthOptions>();
+                            services.Configure<JwtOptions>(context.Configuration.GetSection(JwtOptions.Jwt));
+                            services.Configure<AppOptions>(context.Configuration.GetSection(AppOptions.App));
                             services.ConfigureXtiCookieAndTokenAuthentication();
-                            services.AddSingleton<IOptions<JwtOptions>, FakeOptions<JwtOptions>>();
-                            services.AddSingleton<IOptions<AppOptions>, FakeOptions<AppOptions>>();
                             services.AddFakesForXtiWebApp();
                             services.AddXtiContextServices();
                             services.AddSingleton<MainApp>();
@@ -151,8 +146,6 @@ namespace XTI_WebApp.AspTests
                             app.Run(c =>
                             {
                                 c.Request.PathBase = pathBase;
-                                var appOptions = c.RequestServices.GetService<IOptions<AppOptions>>().Value;
-                                appOptions.BaseUrl = "https://webapps.xartogg.com";
                                 var mainApp = c.RequestServices.GetService<MainApp>();
                                 return mainApp.Execute(c);
                             });
@@ -160,11 +153,19 @@ namespace XTI_WebApp.AspTests
                 })
                 .ConfigureAppConfiguration
                 (
-                    (hostingContext, config) => config.UseXtiConfiguration(hostingContext.HostingEnvironment.EnvironmentName, new string[] { })
+                    (hostingContext, config) =>
+                    {
+                        config.Sources.Clear();
+                        config.AddInMemoryCollection(new[]
+                        {
+                            KeyValuePair.Create("Jwt:Secret", "Secret for token"),
+                            KeyValuePair.Create("App:BaseUrl", baseUrl)
+                        });
+                    }
                 )
                 .StartAsync();
             var jwtOptions = host.Services.GetService<IOptions<JwtOptions>>().Value;
-            jwtOptions.Secret = "Secret for token";
+            var appOptions = host.Services.GetService<IOptions<AppOptions>>().Value;
             return new TestInput(host);
         }
 
@@ -177,13 +178,11 @@ namespace XTI_WebApp.AspTests
                 Cookies = new CookieContainer();
                 HostEnvironment = (FakeHostEnvironment)host.Services.GetService<IHostEnvironment>();
                 HostEnvironment.EnvironmentName = "Production";
-                AppOptions = host.Services.GetService<IOptions<AppOptions>>().Value;
             }
             public IHost Host { get; }
             public MainApp MainApp { get; }
             public CookieContainer Cookies { get; }
             public FakeHostEnvironment HostEnvironment { get; }
-            public AppOptions AppOptions { get; }
 
             public async Task<HttpResponseMessage> GetAsync(string relativeUrl)
             {

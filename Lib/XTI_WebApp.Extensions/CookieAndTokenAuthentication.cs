@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -29,17 +28,9 @@ namespace XTI_WebApp.Extensions
                     options.ExpireTimeSpan = TimeSpan.FromHours(4);
                     options.Cookie.Path = "/";
                     options.Cookie.Domain = "";
+                    options.TicketDataFormat = createAuthTicketFormat(services.BuildServiceProvider());
                     options.Events = new CookieAuthenticationEvents
                     {
-                        OnValidatePrincipal = x =>
-                        {
-                            return Task.CompletedTask;
-                        },
-                        OnSigningIn = x =>
-                        {
-                            options.TicketDataFormat = createAuthTicketFormat(x);
-                            return Task.CompletedTask;
-                        },
                         OnRedirectToLogin = x =>
                         {
                             if (x.Request.IsApiRequest())
@@ -98,12 +89,12 @@ namespace XTI_WebApp.Extensions
             return tokenValidationParameters;
         }
 
-        private static JwtAuthTicketFormat createAuthTicketFormat(CookieSigningInContext x)
+        private static JwtAuthTicketFormat createAuthTicketFormat(IServiceProvider sp)
         {
-            var jwtOptions = x.HttpContext.RequestServices.GetService<IOptions<JwtOptions>>().Value;
+            var jwtOptions = sp.GetService<IOptions<JwtOptions>>().Value;
             var key = Encoding.ASCII.GetBytes(jwtOptions.Secret);
-            var dataSerializer = x.HttpContext.RequestServices.GetService<IDataSerializer<AuthenticationTicket>>();
-            var dataProtector = x.HttpContext.RequestServices.GetDataProtector(new[] { "XTI_Apps_Auth1" });
+            var dataSerializer = sp.GetService<IDataSerializer<AuthenticationTicket>>();
+            var dataProtector = sp.GetDataProtector(new[] { "XTI_Apps_Auth1" });
             var authTicketFormat = new JwtAuthTicketFormat
             (
                 new TokenValidationParameters

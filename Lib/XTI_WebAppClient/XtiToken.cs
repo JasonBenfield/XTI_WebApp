@@ -22,7 +22,7 @@ namespace XTI_WebAppClient
             if (string.IsNullOrWhiteSpace(token))
             {
                 var value = await credentials.Value();
-                var loginModel = new LoginModel
+                var loginModel = new LoginCredentials
                 {
                     UserName = value.UserName,
                     Password = value.Password
