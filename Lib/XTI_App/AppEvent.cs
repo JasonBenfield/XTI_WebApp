@@ -1,4 +1,6 @@
-﻿namespace XTI_App
+﻿using XTI_Core;
+
+namespace XTI_App
 {
     public sealed class AppEvent
     {

@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
+using XTI_Core.Fakes;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
 

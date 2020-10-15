@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using XTI_App;
+using XTI_Core;
 using XTI_WebApp.Fakes;
 
 namespace XTI_WebApp.TestFakes

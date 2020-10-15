@@ -8,6 +8,8 @@ using System;
 using XTI_App;
 using XTI_App.Api;
 using XTI_App.EF;
+using XTI_Core;
+using XTI_Core.Fakes;
 using XTI_Secrets;
 using XTI_WebApp.Extensions;
 

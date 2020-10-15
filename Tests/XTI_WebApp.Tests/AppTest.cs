@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_Core.Fakes;
 using XTI_WebApp.Fakes;
 
 namespace XTI_WebApp.Tests
