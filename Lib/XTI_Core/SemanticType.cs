@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XTI_App
+namespace XTI_Core
 {
     public abstract class SemanticType<T> : IEquatable<T>
     {

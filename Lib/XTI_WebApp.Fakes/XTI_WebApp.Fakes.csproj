@@ -13,6 +13,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\XTI_Core.Fakes\XTI_Core.Fakes.csproj" />
     <ProjectReference Include="..\XTI_Secrets\XTI_Secrets.csproj" />
     <ProjectReference Include="..\XTI_WebApp.Extensions\XTI_WebApp.Extensions.csproj" />
   </ItemGroup>

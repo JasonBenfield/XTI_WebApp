@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.IO;
 using Microsoft.AspNetCore.DataProtection;
 using XTI_Secrets;
+using XTI_Core;
 
 namespace XTI_ConsoleApp.Extensions
 {

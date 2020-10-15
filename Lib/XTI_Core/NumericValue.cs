@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using System;
+﻿using System;
 using System.Linq;
 
-namespace XTI_App
+namespace XTI_Core
 {
     public abstract class NumericValue : SemanticType<int>, IEquatable<int>
     {

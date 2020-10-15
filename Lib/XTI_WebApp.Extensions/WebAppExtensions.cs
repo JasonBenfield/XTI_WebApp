@@ -13,6 +13,7 @@ using System.IO;
 using XTI_App;
 using XTI_App.Api;
 using XTI_App.EF;
+using XTI_Core;
 using XTI_Secrets;
 
 namespace XTI_WebApp.Extensions

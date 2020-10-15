@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XTI_App
+namespace XTI_Core
 {
     public interface Clock
     {

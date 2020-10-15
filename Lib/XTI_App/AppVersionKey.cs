@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using XTI_Core;
 
 namespace XTI_App
 {

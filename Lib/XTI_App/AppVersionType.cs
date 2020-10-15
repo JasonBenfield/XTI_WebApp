@@ -1,4 +1,5 @@
 ﻿using System;
+using XTI_Core;
 
 namespace XTI_App
 {

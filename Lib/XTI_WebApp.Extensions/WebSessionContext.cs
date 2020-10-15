@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
+using XTI_Core;
 
 namespace XTI_WebApp.Extensions
 {
