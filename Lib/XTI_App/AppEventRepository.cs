@@ -19,11 +19,12 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        public async Task<AppEvent> LogEvent(AppRequest request, DateTime timeOccurred, AppEventSeverity severity, string caption, string message, string detail)
+        public async Task<AppEvent> LogEvent(AppRequest request, string eventKey, DateTime timeOccurred, AppEventSeverity severity, string caption, string message, string detail)
         {
             var record = new AppEventRecord
             {
                 RequestID = request.ID,
+                EventKey = eventKey,
                 TimeOccurred = timeOccurred,
                 Severity = severity.Value,
                 Caption = caption,

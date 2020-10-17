@@ -23,6 +23,12 @@ namespace XTI_App
             return factory.Session(record);
         }
 
+        public async Task<AppSession> Session(string sessionKey)
+        {
+            var record = await repo.Retrieve().FirstOrDefaultAsync(s => s.SessionKey == sessionKey);
+            return factory.Session(record);
+        }
+
         public async Task<IEnumerable<AppSession>> SessionsByTimeRange(DateTime startDate, DateTime endDate)
         {
             var records = await repo.Retrieve()
@@ -31,10 +37,11 @@ namespace XTI_App
             return records.Select(s => factory.Session(s));
         }
 
-        public async Task<AppSession> Create(IAppUser user, DateTime timeStarted, string requesterKey, string userAgent, string remoteAddress)
+        public async Task<AppSession> Create(string sessionKey, IAppUser user, DateTime timeStarted, string requesterKey, string userAgent, string remoteAddress)
         {
             var record = new AppSessionRecord
             {
+                SessionKey = sessionKey,
                 UserID = user.ID,
                 TimeStarted = timeStarted,
                 RequesterKey = requesterKey ?? "",

@@ -10,6 +10,8 @@ namespace XTI_App.EF
             builder.HasKey(r => r.ID);
             builder.Property(r => r.ID).ValueGeneratedOnAdd();
             builder.Property(r => r.Path).HasMaxLength(100);
+            builder.Property(r => r.RequestKey).HasMaxLength(100);
+            builder.HasIndex(s => s.RequestKey).IsUnique();
             builder
                 .HasOne<AppSessionRecord>()
                 .WithMany()

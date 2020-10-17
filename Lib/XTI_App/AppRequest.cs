@@ -31,11 +31,19 @@ namespace XTI_App
 
         public Task<IEnumerable<AppEvent>> Events() => factory.Events().RetrieveByRequest(this);
 
-        public Task LogException(AppEventSeverity severity, DateTime timeOccurred, Exception ex, string caption)
+        public Task<AppEvent> LogException(string eventKey, AppEventSeverity severity, DateTime timeOccurred, Exception ex, string caption)
+        {
+            return LogEvent
+            (
+                eventKey, severity, timeOccurred, caption, ex.Message, ex.StackTrace
+            );
+        }
+
+        public Task<AppEvent> LogEvent(string eventKey, AppEventSeverity severity, DateTime timeOccurred, string caption, string message, string detail)
         {
             return factory.Events().LogEvent
             (
-                this, timeOccurred, severity, caption, ex.Message, ex.StackTrace
+                this, eventKey, timeOccurred, severity, caption, message, detail
             );
         }
 
