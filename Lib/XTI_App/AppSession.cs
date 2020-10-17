@@ -22,6 +22,8 @@ namespace XTI_App
         public bool HasStarted() => new Timestamp(record.TimeStarted).IsValid();
         public bool HasEnded() => new Timestamp(record.TimeEnded).IsValid();
 
+        public Task<AppUser> User() => factory.Users().User(record.UserID);
+
         public Task<AppRequest> LogRequest(string requestKey, IAppVersion version, string path, DateTime timeRequested)
         {
             var requestRepo = factory.Requests();
