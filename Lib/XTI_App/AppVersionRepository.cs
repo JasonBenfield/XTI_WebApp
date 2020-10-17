@@ -52,6 +52,10 @@ namespace XTI_App
 
         public async Task<AppVersion> Version(AppVersionKey versionKey)
         {
+            if (versionKey.Equals(AppVersionKey.Current))
+            {
+                throw new ArgumentException("App is required when version key is current");
+            }
             var record = await repo.Retrieve()
                 .FirstOrDefaultAsync(v => v.VersionKey == versionKey.Value);
             return factory.Version(record);

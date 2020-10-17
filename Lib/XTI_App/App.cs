@@ -94,8 +94,17 @@ namespace XTI_App
 
         private async Task<IAppVersion> version(AppVersionKey versionKey)
         {
-            var versions = await Versions();
-            return versions.First(v => v.Key().Equals(versionKey));
+            AppVersion version;
+            if (versionKey.Equals(AppVersionKey.Current))
+            {
+                version = await CurrentVersion();
+            }
+            else
+            {
+                var versions = await Versions();
+                version = versions.First(v => v.Key().Equals(versionKey));
+            }
+            return version;
         }
 
         public Task<IEnumerable<AppVersion>> Versions() =>
