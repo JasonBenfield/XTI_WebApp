@@ -108,7 +108,7 @@ namespace XTI_WebApp.AspTests
         {
             var input = await setup();
             var user = await input.Factory.Users().User(new AppUserName("xartogg"));
-            var session = await input.Factory.Sessions().Create(user, input.Clock.Now(), "", "", "");
+            var session = await input.Factory.Sessions().Create(Guid.NewGuid().ToString("N"), user, input.Clock.Now(), "", "", "");
             input.TestAuthOptions.IsEnabled = true;
             input.TestAuthOptions.Session = session;
             input.TestAuthOptions.User = user;
@@ -456,7 +456,7 @@ namespace XTI_WebApp.AspTests
             var user = await input.Factory.Users().User(new AppUserName("xartogg"));
             var userAdminRole = await user.AddRole(adminRole);
             await user.AddRole(managerRole);
-            var session = await input.Factory.Sessions().Create(user, input.Clock.Now(), "", "", "");
+            var session = await input.Factory.Sessions().Create(Guid.NewGuid().ToString("N"), user, input.Clock.Now(), "", "", "");
             input.TestAuthOptions.IsEnabled = true;
             input.TestAuthOptions.Session = session;
             input.TestAuthOptions.User = user;

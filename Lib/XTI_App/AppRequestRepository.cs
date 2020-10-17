@@ -17,17 +17,25 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        internal async Task<AppRequest> Add(AppSession session, IAppVersion version, string path, DateTime timeRequested)
+        internal async Task<AppRequest> Add(AppSession session, string requestKey, IAppVersion version, string path, DateTime timeRequested)
         {
             var record = new AppRequestRecord
             {
                 SessionID = session.ID,
+                RequestKey = requestKey,
                 VersionID = version.ID,
                 Path = path ?? "",
                 TimeStarted = timeRequested
             };
             await repo.Create(record);
             return factory.Request(record);
+        }
+
+        public async Task<AppRequest> Request(string requestKey)
+        {
+            var requestRecord = await repo.Retrieve()
+                .FirstOrDefaultAsync(r => r.RequestKey == requestKey);
+            return factory.Request(requestRecord);
         }
 
         internal async Task<IEnumerable<AppRequest>> RetrieveBySession(AppSession session)
