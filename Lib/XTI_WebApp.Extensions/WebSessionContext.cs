@@ -91,15 +91,7 @@ namespace XTI_WebApp.Extensions
         private static async Task<IAppVersion> retrieveVersion(IAppContext appContext, XtiPath xtiPath)
         {
             var app = await appContext.App();
-            IAppVersion version;
-            if (xtiPath.IsCurrentVersion())
-            {
-                version = await app.CurrentVersion();
-            }
-            else
-            {
-                version = await app.Version(AppVersionKey.Parse(xtiPath.Version));
-            }
+            var version = await app.Version(AppVersionKey.Parse(xtiPath.Version));
             return version;
         }
 
