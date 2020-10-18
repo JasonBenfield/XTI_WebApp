@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
+using XTI_Core;
 
 namespace XTI_WebApp.Extensions
 {
@@ -78,7 +79,7 @@ namespace XTI_WebApp.Extensions
                 severity = AppEventSeverity.Values.CriticalError;
                 caption = "An unexpected error occurred";
             }
-            await request.LogException(severity, now, ex, caption);
+            await request.LogException(Guid.NewGuid().ToString("N"), severity, now, ex, caption);
         }
 
         private int getErrorStatusCode(Exception ex)

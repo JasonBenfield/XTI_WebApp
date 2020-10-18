@@ -1,7 +1,6 @@
 ﻿using System;
-using XTI_App;
 
-namespace XTI_WebApp.Fakes
+namespace XTI_Core.Fakes
 {
     public sealed class FakeClock : Clock
     {

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Linq;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_Core.Fakes;
 using XTI_WebApp.Fakes;
 
 namespace XTI_WebApp.Tests
@@ -187,6 +188,17 @@ namespace XTI_WebApp.Tests
             Assert.That(majorVersion.Version().Major, Is.EqualTo(1), "Should reset minor version and patch when major version is publishing");
             Assert.That(majorVersion.Version().Minor, Is.EqualTo(0), "Should reset minor version and patch when major version is publishing");
             Assert.That(majorVersion.Version().Build, Is.EqualTo(0), "Should reset minor version and patch when major version is publishing");
+        }
+
+        [Test]
+        public async Task ShouldGetCurrentVersion_WhenVersionKeyIsCurrent()
+        {
+            var input = await setup();
+            var patch = await input.App.StartNewPatch(input.Clock.Now());
+            await patch.Publishing();
+            await patch.Published();
+            var currentVersion = await input.App.Version(AppVersionKey.Current);
+            Assert.That(currentVersion.ID, Is.EqualTo(patch.ID), "Should get current version when version key is current");
         }
 
         private async Task<TestInput> setup()

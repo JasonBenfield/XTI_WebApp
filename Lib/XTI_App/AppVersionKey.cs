@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Threading;
+using XTI_Core;
 
 namespace XTI_App
 {
@@ -8,6 +10,7 @@ namespace XTI_App
         private static readonly Regex keyRegex = new Regex("V?(\\d+)");
 
         public static readonly AppVersionKey None = new AppVersionKey(0);
+        public static readonly AppVersionKey Current = new AppVersionKey("Current");
 
         public static AppVersionKey Parse(string str)
         {
@@ -15,6 +18,10 @@ namespace XTI_App
             if (string.IsNullOrWhiteSpace(str))
             {
                 key = None;
+            }
+            else if (str.Equals("Current", StringComparison.OrdinalIgnoreCase))
+            {
+                key = Current;
             }
             else
             {

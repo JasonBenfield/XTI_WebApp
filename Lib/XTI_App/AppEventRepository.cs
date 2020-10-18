@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XTI_Core;
 
 namespace XTI_App
 {
@@ -18,11 +19,12 @@ namespace XTI_App
             this.repo = repo;
         }
 
-        public async Task<AppEvent> LogEvent(AppRequest request, DateTime timeOccurred, AppEventSeverity severity, string caption, string message, string detail)
+        public async Task<AppEvent> LogEvent(AppRequest request, string eventKey, DateTime timeOccurred, AppEventSeverity severity, string caption, string message, string detail)
         {
             var record = new AppEventRecord
             {
                 RequestID = request.ID,
+                EventKey = eventKey,
                 TimeOccurred = timeOccurred,
                 Severity = severity.Value,
                 Caption = caption,

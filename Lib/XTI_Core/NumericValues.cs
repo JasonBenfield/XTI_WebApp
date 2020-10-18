@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace XTI_App
+namespace XTI_Core
 {
     public class NumericValues<T> where T : NumericValue
     {

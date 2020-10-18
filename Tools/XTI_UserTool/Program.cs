@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using XTI_App;
 using XTI_Configuration.Extensions;
 using XTI_ConsoleApp.Extensions;
+using XTI_Core;
 using XTI_Secrets;
 using XTI_Secrets.Extensions;
 

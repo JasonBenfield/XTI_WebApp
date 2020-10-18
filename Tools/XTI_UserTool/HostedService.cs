@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_Core;
 using XTI_Credentials;
 using XTI_Secrets;
 

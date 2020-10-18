@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using XTI_Core;
 
 namespace XTI_App
 {
@@ -12,10 +10,12 @@ namespace XTI_App
             {
                 NotFound = DefaultValue;
                 WebApp = Add(new AppType(10, "Web App"));
+                Service = Add(new AppType(15, "Service"));
                 Package = Add(new AppType(20, "Package"));
             }
             public AppType NotFound { get; }
             public AppType WebApp { get; }
+            public AppType Service { get; }
             public AppType Package { get; }
         }
 

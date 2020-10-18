@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
+using XTI_Core;
 
 namespace XTI_WebApp.Extensions
 {
@@ -74,7 +75,7 @@ namespace XTI_WebApp.Extensions
                 }
                 var userAgent = httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString();
                 var remoteAddress = httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
-                session = await sessionRepo.Create(user, clock.Now(), requesterKey, userAgent, remoteAddress);
+                session = await sessionRepo.Create(Guid.NewGuid().ToString("N"), user, clock.Now(), requesterKey, userAgent, remoteAddress);
                 anonClient.Persist(session.ID, requesterKey);
             }
             return session;
@@ -84,21 +85,13 @@ namespace XTI_WebApp.Extensions
         {
             var version = await retrieveVersion(appContext, xtiPath);
             var path = httpContextAccessor.HttpContext?.Request.Path;
-            CurrentRequest = await CurrentSession.LogRequest(version, path, clock.Now());
+            CurrentRequest = await CurrentSession.LogRequest(Guid.NewGuid().ToString("N"), version, path, clock.Now());
         }
 
         private static async Task<IAppVersion> retrieveVersion(IAppContext appContext, XtiPath xtiPath)
         {
             var app = await appContext.App();
-            IAppVersion version;
-            if (xtiPath.IsCurrentVersion())
-            {
-                version = await app.CurrentVersion();
-            }
-            else
-            {
-                version = await app.Version(AppVersionKey.Parse(xtiPath.Version));
-            }
+            var version = await app.Version(AppVersionKey.Parse(xtiPath.Version));
             return version;
         }
 

@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_Core.Fakes;
 using XTI_Version;
 using XTI_WebApp.Fakes;
 

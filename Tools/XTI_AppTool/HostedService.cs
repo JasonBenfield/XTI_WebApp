@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_Core;
 
 namespace XTI_AppTool
 {
