@@ -176,13 +176,13 @@ namespace XTI_WebApp.AspTests
                 Host = host;
                 MainApp = host.Services.GetService<MainApp>();
                 Cookies = new CookieContainer();
-                HostEnvironment = (FakeHostEnvironment)host.Services.GetService<IHostEnvironment>();
+                HostEnvironment = (FakeWebHostEnvironment)host.Services.GetService<IHostEnvironment>();
                 HostEnvironment.EnvironmentName = "Production";
             }
             public IHost Host { get; }
             public MainApp MainApp { get; }
             public CookieContainer Cookies { get; }
-            public FakeHostEnvironment HostEnvironment { get; }
+            public FakeWebHostEnvironment HostEnvironment { get; }
 
             public async Task<HttpResponseMessage> GetAsync(string relativeUrl)
             {

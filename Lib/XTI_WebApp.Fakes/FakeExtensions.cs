@@ -2,16 +2,18 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using XTI_App;
 using XTI_App.Api;
+using XTI_App.DB;
 using XTI_App.EF;
+using XTI_App.Fakes;
 using XTI_Core;
 using XTI_Core.Fakes;
-using XTI_Secrets;
-using XTI_WebApp.Extensions;
+using XTI_WebApp.Api;
 
 namespace XTI_WebApp.Fakes
 {
@@ -25,32 +27,18 @@ namespace XTI_WebApp.Fakes
                     .UseInMemoryDatabase(Guid.NewGuid().ToString())
                     .EnableSensitiveDataLogging();
             });
-            services
-                .AddDataProtection(options =>
-                {
-                    options.ApplicationDiscriminator = "XTI_WEB_APP";
-                })
-                .SetApplicationName("XTI_WEB_APP");
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
             services.AddHttpContextAccessor();
             services.AddDataProtection();
-            services.AddSingleton<Clock, FakeClock>();
-            services.AddSingleton(sp => (FakeClock)sp.GetService<Clock>());
+            services.AddSingleton<FakeClock>();
+            services.AddSingleton<Clock, FakeClock>(sp => sp.GetService<FakeClock>());
             services.AddSingleton<AppFactory, EfAppFactory>();
-            services.AddScoped<IUserContext, FakeUserContext>();
-            services.AddScoped<IAppContext, FakeAppContext>();
-            services.AddScoped<IAnonClient, FakeAnonClient>();
-            services.AddScoped(sp =>
-            {
-                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
-                var request = httpContextAccessor.HttpContext?.Request;
-                return XtiPath.Parse($"{request?.PathBase}{request?.Path}");
-            });
-            services.AddScoped<ISessionContext, WebSessionContext>();
+            services.AddSingleton<IAnonClient, FakeAnonClient>();
             services.AddScoped<IAppApiUser, XtiAppApiUser>();
-            services.AddSingleton<IHostEnvironment, FakeHostEnvironment>();
-            services.AddSingleton(sp => (IWebHostEnvironment)sp.GetService<IHostEnvironment>());
+            services.AddSingleton<FakeWebHostEnvironment>();
+            services.AddSingleton<IHostEnvironment, FakeWebHostEnvironment>();
+            services.AddSingleton<IWebHostEnvironment, FakeWebHostEnvironment>();
             services.AddScoped(sp =>
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
@@ -62,14 +50,32 @@ namespace XTI_WebApp.Fakes
             services.AddScoped<IHashedPasswordFactory, FakeHashedPasswordFactory>();
         }
 
-        public static void AddFakeSecretCredentials(this IServiceCollection services)
+        public static void AddFakeXtiContexts(this IServiceCollection services)
         {
-            services.AddScoped<SecretCredentialsFactory>(sp =>
+            services.AddScoped<IAppContext, FakeAppContext>();
+            services.AddScoped<IUserContext, FakeUserContext>();
+            services.AddScoped<ISessionContext, WebSessionContext>();
+        }
+
+        public static void AddXtiContextServices(this IServiceCollection services)
+        {
+            services.AddScoped<WebAppContext>();
+            services.AddScoped<IAppContext>(sp =>
             {
-                var hostEnv = sp.GetService<IHostEnvironment>();
-                var dataProtector = sp.GetDataProtector(new[] { "XTI_Secrets" });
-                return new FakeSecretCredentialsFactory(dataProtector);
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                var cache = sp.GetService<IMemoryCache>();
+                var appContext = sp.GetService<WebAppContext>();
+                return new CachedAppContext(httpContextAccessor, cache, appContext);
             });
+            services.AddScoped<WebUserContext>();
+            services.AddScoped<IUserContext>(sp =>
+            {
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                var cache = sp.GetService<IMemoryCache>();
+                var sessionContext = sp.GetService<WebUserContext>();
+                return new CachedUserContext(httpContextAccessor, cache, sessionContext);
+            });
+            services.AddScoped<ISessionContext, WebSessionContext>();
         }
     }
 }

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
+using XTI_App.Fakes;
 using XTI_Core.Fakes;
 using XTI_WebApp.Fakes;
 
@@ -160,6 +161,7 @@ namespace XTI_WebApp.Tests
         {
             var services = new ServiceCollection();
             services.AddFakesForXtiWebApp();
+            services.AddFakeXtiContexts();
             var sp = services.BuildServiceProvider();
             var factory = sp.GetService<AppFactory>();
             await new AppSetup(factory).Run();

@@ -134,7 +134,7 @@ namespace XTI_WebApp.AspTests
         {
             public TestInput(ServiceProvider sp)
             {
-                Environment = (FakeHostEnvironment)sp.GetService<IHostEnvironment>();
+                Environment = (FakeWebHostEnvironment)sp.GetService<IHostEnvironment>();
                 Environment.EnvironmentName = "Test";
                 TagHelper = sp.GetService<MainScriptTagHelper>();
                 TagHelper.PageName = "home";
@@ -158,7 +158,7 @@ namespace XTI_WebApp.AspTests
                 App = setup.App;
                 CurrentVersion = setup.CurrentVersion;
             }
-            public FakeHostEnvironment Environment { get; }
+            public FakeWebHostEnvironment Environment { get; }
             public FakeOptions<WebAppOptions> WebAppOptions { get; }
             public MainScriptTagHelper TagHelper { get; }
             public App App { get; }

@@ -2,19 +2,17 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using System;
-using System.IO;
 using XTI_App;
 using XTI_App.Api;
 using XTI_App.EF;
+using XTI_App.Extensions;
 using XTI_Core;
-using XTI_Secrets;
+using XTI_Secrets.Extensions;
+using XTI_WebApp.Api;
 
 namespace XTI_WebApp.Extensions
 {
@@ -33,18 +31,9 @@ namespace XTI_WebApp.Extensions
             services.AddHttpContextAccessor();
             services.Configure<AppOptions>(configuration.GetSection(AppOptions.App));
             services.Configure<WebAppOptions>(configuration.GetSection(WebAppOptions.WebApp));
-            services.Configure<DbOptions>(configuration.GetSection(DbOptions.DB));
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Jwt));
-            services.Configure<SecretOptions>(configuration.GetSection(SecretOptions.Secret));
-            var secretOptions = configuration.GetSection(SecretOptions.Secret).Get<SecretOptions>();
-            services
-                .AddDataProtection
-                (
-                    options => options.ApplicationDiscriminator = secretOptions.ApplicationName
-                )
-                .PersistKeysToFileSystem(new DirectoryInfo(secretOptions.KeyDirectoryPath))
-                .SetApplicationName(secretOptions.ApplicationName);
-            services.AddAppDbContext();
+            services.AddDataProtection(configuration);
+            services.AddAppDbContextForSqlServer(configuration);
             services.AddScoped<CacheBust>();
             services.AddScoped<IPageContext, PageContext>();
             services.AddSingleton<Clock, UtcClock>();
@@ -52,21 +41,7 @@ namespace XTI_WebApp.Extensions
             AddXtiContextServices(services);
         }
 
-        public static void AddAppDbContext(this IServiceCollection services)
-        {
-            services.AddDbContext<AppDbContext>(optionsAction: (sp, dbOptionsBuilder) =>
-            {
-                var appDbOptions = sp.GetService<IOptions<DbOptions>>().Value;
-                var hostingEnv = sp.GetService<IHostEnvironment>();
-                dbOptionsBuilder.UseSqlServer(new AppConnectionString(appDbOptions, hostingEnv.EnvironmentName).Value());
-                if (hostingEnv.IsDevOrTest())
-                {
-                    dbOptionsBuilder.EnableSensitiveDataLogging();
-                }
-            });
-        }
-
-        public static void AddXtiContextServices(this IServiceCollection services)
+        private static void AddXtiContextServices(this IServiceCollection services)
         {
             services.AddScoped<IAnonClient>(sp =>
             {
