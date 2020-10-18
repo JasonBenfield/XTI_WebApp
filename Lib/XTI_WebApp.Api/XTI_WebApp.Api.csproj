@@ -5,7 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\XTI_App.Api\XTI_App.Api.csproj" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="XTI_App.Api" Version="1.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\XTI_WebApp\XTI_WebApp.csproj" />
   </ItemGroup>
 

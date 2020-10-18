@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -6,19 +6,18 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.9" />
+    <PackageReference Include="XTI_App.DB.SqlServer" Version="1.6.0" />
+    <PackageReference Include="XTI_App.EF" Version="1.6.0" />
+    <PackageReference Include="XTI_Secrets.Extensions" Version="1.6.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\XTI_App.Api\XTI_App.Api.csproj" />
-    <ProjectReference Include="..\XTI_App.EF\XTI_App.EF.csproj" />
-    <ProjectReference Include="..\XTI_Secrets\XTI_Secrets.csproj" />
-    <ProjectReference Include="..\XTI_WebApp\XTI_WebApp.csproj" />
+    <ProjectReference Include="..\XTI_WebApp.Api\XTI_WebApp.Api.csproj" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,4 @@
-﻿using XTI_WebApp.Extensions;
-
-namespace XTI_WebApp.Fakes
+﻿namespace XTI_WebApp.Fakes
 {
     public sealed class FakeAnonClient : IAnonClient
     {

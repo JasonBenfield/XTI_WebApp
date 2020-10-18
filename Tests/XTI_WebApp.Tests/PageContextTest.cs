@@ -7,8 +7,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
+using XTI_App.Fakes;
 using XTI_Core.Fakes;
-using XTI_WebApp.Extensions;
+using XTI_WebApp.Api;
 using XTI_WebApp.Fakes;
 
 namespace XTI_WebApp.Tests
@@ -85,6 +86,7 @@ namespace XTI_WebApp.Tests
         {
             var services = new ServiceCollection();
             services.AddFakesForXtiWebApp();
+            services.AddFakeXtiContexts();
             var sp = services.BuildServiceProvider();
             var factory = sp.GetService<AppFactory>();
             await new AppSetup(factory).Run();
@@ -105,7 +107,7 @@ namespace XTI_WebApp.Tests
                 Clock = sp.GetService<FakeClock>();
                 AppContext = (FakeAppContext)sp.GetService<IAppContext>();
                 UserContext = (FakeUserContext)sp.GetService<IUserContext>();
-                HostEnvironment = (FakeHostEnvironment)sp.GetService<IHostEnvironment>();
+                HostEnvironment = (FakeWebHostEnvironment)sp.GetService<IHostEnvironment>();
                 AppOptions = sp.GetService<IOptions<AppOptions>>().Value;
                 PageContext = (PageContext)sp.GetService<IPageContext>();
 
@@ -115,7 +117,7 @@ namespace XTI_WebApp.Tests
             public FakeClock Clock { get; }
             public FakeAppContext AppContext { get; }
             public FakeUserContext UserContext { get; }
-            public FakeHostEnvironment HostEnvironment { get; }
+            public FakeWebHostEnvironment HostEnvironment { get; }
             public AppOptions AppOptions { get; }
             public PageContext PageContext { get; }
         }

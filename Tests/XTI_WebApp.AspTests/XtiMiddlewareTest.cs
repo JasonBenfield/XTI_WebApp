@@ -17,10 +17,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
-using XTI_App.EF;
+using XTI_App.DB;
+using XTI_App.Fakes;
 using XTI_Configuration.Extensions;
 using XTI_Core;
 using XTI_Core.Fakes;
+using XTI_WebApp.Api;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
 using XTI_WebApp.TestFakes;
@@ -507,6 +509,7 @@ namespace XTI_WebApp.AspTests
                                         .RequireAuthenticatedUser()
                                         .Build();
                             });
+                            services.AddAppDbContextForInMemory();
                             services.AddFakesForXtiWebApp();
                             services.AddXtiContextServices();
                             services.AddScoped<FakeAppSetup>();
@@ -543,7 +546,7 @@ namespace XTI_WebApp.AspTests
                 Cookies = new CookieContainer();
                 App = app;
                 CurrentVersion = currentVersion;
-                HostEnvironment = (FakeHostEnvironment)host.Services.GetService<IHostEnvironment>();
+                HostEnvironment = (FakeWebHostEnvironment)host.Services.GetService<IHostEnvironment>();
                 HostEnvironment.EnvironmentName = "Production";
             }
             public IHost Host { get; }
@@ -554,7 +557,7 @@ namespace XTI_WebApp.AspTests
             public TestAuthOptions TestAuthOptions { get; }
             public App App { get; }
             public AppVersion CurrentVersion { get; }
-            public FakeHostEnvironment HostEnvironment { get; }
+            public FakeWebHostEnvironment HostEnvironment { get; }
 
             public async Task<HttpResponseMessage> GetAsync(string relativeUrl)
             {
