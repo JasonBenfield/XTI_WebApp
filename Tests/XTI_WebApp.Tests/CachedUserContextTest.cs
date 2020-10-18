@@ -1,20 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualBasic.CompilerServices;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
-using XTI_App.EF;
+using XTI_App.DB;
+using XTI_App.Fakes;
 using XTI_Core;
-using XTI_WebApp.Extensions;
+using XTI_WebApp.Api;
 using XTI_WebApp.Fakes;
 using XTI_WebApp.TestFakes;
 
