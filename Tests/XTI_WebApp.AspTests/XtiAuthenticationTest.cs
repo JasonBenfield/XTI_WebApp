@@ -29,17 +29,17 @@ namespace XTI_WebApp.AspTests
         [Test]
         public async Task ShouldRedirectToLogin()
         {
-            var pathBase = "/Hub/Current";
+            var pathBase = "/Authenticator/Current";
             var input = await setup(pathBase);
             input.Host.GetTestServer().BaseAddress = new Uri(baseUrl);
             var response = await input.GetAsync("/UserAdmin/Index");
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Found));
-            var startUrl = HttpUtility.UrlEncode("/Hub/Current/User");
+            var startUrl = HttpUtility.UrlEncode("/Authenticator/Current/User");
             var returnUrl = HttpUtility.UrlEncode("/UserAdmin/Index");
             Assert.That
             (
                 response.Headers.Location.ToString(),
-                Is.EqualTo($"/Hub/Current/Auth?startUrl={startUrl}&returnUrl={returnUrl}")
+                Is.EqualTo($"/Authenticator/Current/Auth?startUrl={startUrl}&returnUrl={returnUrl}")
             );
         }
 
@@ -55,7 +55,7 @@ namespace XTI_WebApp.AspTests
             Assert.That
             (
                 response.Headers.Location.ToString(),
-                Is.EqualTo($"/Hub/Current/Auth?startUrl={startUrl}&returnUrl={returnUrl}")
+                Is.EqualTo($"/Authenticator/Current/Auth?startUrl={startUrl}&returnUrl={returnUrl}")
             );
         }
 
@@ -71,7 +71,7 @@ namespace XTI_WebApp.AspTests
             Assert.That
             (
                 response.Headers.Location.ToString(),
-                Is.EqualTo($"/Hub/Current/Auth?startUrl={startUrl}&returnUrl={returnUrl}")
+                Is.EqualTo($"/Authenticator/Current/Auth?startUrl={startUrl}&returnUrl={returnUrl}")
             );
         }
 
@@ -87,23 +87,23 @@ namespace XTI_WebApp.AspTests
             Assert.That
             (
                 response.Headers.Location.ToString(),
-                Is.EqualTo($"https://webapps.xartogg.com/Hub/Current/Auth?startUrl={startUrl}&returnUrl={returnUrl}")
+                Is.EqualTo($"https://webapps.xartogg.com/Authenticator/Current/Auth?startUrl={startUrl}&returnUrl={returnUrl}")
             );
         }
 
         [Test]
-        public async Task ShouldRedirectToLogin_WhenCalledFromHubWithADifferentDomain()
+        public async Task ShouldRedirectToLogin_WhenCalledFromAuthenticatorWithADifferentDomain()
         {
-            var pathBase = "/Hub/Current";
+            var pathBase = "/Authenticator/Current";
             var input = await setup(pathBase);
             input.Host.GetTestServer().BaseAddress = new Uri("https://webapps.xartogg.com:44303");
             var response = await input.GetAsync("/UserAdmin/Index");
-            var startUrl = HttpUtility.UrlEncode("/Hub/Current/User");
+            var startUrl = HttpUtility.UrlEncode("/Authenticator/Current/User");
             var returnUrl = HttpUtility.UrlEncode("/UserAdmin/Index");
             Assert.That
             (
                 response.Headers.Location.ToString(),
-                Is.EqualTo($"/Hub/Current/Auth?startUrl={startUrl}&returnUrl={returnUrl}")
+                Is.EqualTo($"/Authenticator/Current/Auth?startUrl={startUrl}&returnUrl={returnUrl}")
             );
         }
 
@@ -127,7 +127,7 @@ namespace XTI_WebApp.AspTests
                 {
                     webBuilder
                         .UseTestServer()
-                        .UseUrls("https://webapps.xartogg.com/Hub/Current")
+                        .UseUrls("https://webapps.xartogg.com/Authenticator/Current")
                         .ConfigureServices((context, services) =>
                         {
                             services.AddSingleton<TestAuthOptions>();
