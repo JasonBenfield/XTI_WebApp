@@ -51,7 +51,7 @@ namespace XTI_WebApp.Extensions
                             return Task.CompletedTask;
                         }
                     };
-                    options.LogoutPath = "/Hub/Current/Auth/Logout";
+                    options.LogoutPath = "/Authenticator/Current/Auth/Logout";
                     options.AccessDeniedPath = options.LoginPath;
                     options.ReturnUrlParameter = "returnUrl";
                 })
@@ -116,15 +116,15 @@ namespace XTI_WebApp.Extensions
             string startUrl;
             string returnUrl;
             string loginUrl;
-            var isHub = x.Request.PathBase.ToString().StartsWith("/Hub/", StringComparison.OrdinalIgnoreCase);
-            if (isHub || $"{x.Request.Scheme}://{x.Request.Host.Value}".Equals(options.BaseUrl, StringComparison.OrdinalIgnoreCase))
+            var isAuthenticator = x.Request.PathBase.ToString().StartsWith("/Authenticator/", StringComparison.OrdinalIgnoreCase);
+            if (isAuthenticator || $"{x.Request.Scheme}://{x.Request.Host.Value}".Equals(options.BaseUrl, StringComparison.OrdinalIgnoreCase))
             {
-                loginUrl = "/Hub/Current";
+                loginUrl = "/Authenticator/Current";
                 startUrl = $"{x.Request.PathBase.Value}/User";
             }
             else
             {
-                loginUrl = $"{options.BaseUrl}/Hub/Current";
+                loginUrl = $"{options.BaseUrl}/Authenticator/Current";
                 startUrl = $"{x.Request.Scheme}://{x.Request.Host.Value}{x.Request.PathBase.Value}/User";
             }
             if (x.Request.Path.HasValue)

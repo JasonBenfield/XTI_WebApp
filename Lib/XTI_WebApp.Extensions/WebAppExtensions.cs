@@ -24,7 +24,7 @@ namespace XTI_WebApp.Extensions
         {
             services.Configure<RazorViewEngineOptions>(o =>
             {
-                o.ViewLocationFormats.Add("/Views/Exports/Hub/{1}/{0}" + RazorViewEngine.ViewExtension);
+                o.ViewLocationFormats.Add("/Views/Exports/Shared/{1}/{0}" + RazorViewEngine.ViewExtension);
             });
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
