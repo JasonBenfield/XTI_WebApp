@@ -23,15 +23,7 @@ namespace XTI_WebApp.Api
         public int ID { get; }
         public string Title { get; }
 
-        public async Task<IAppVersion> CurrentVersion()
-        {
-            var currentVersion = await fetch("current_version", async (app) =>
-            {
-                var version = await app.CurrentVersion();
-                return new CachedAppVersion(version);
-            });
-            return currentVersion;
-        }
+        public Task<IAppVersion> CurrentVersion() => Version(AppVersionKey.Current);
 
         public async Task<IAppVersion> Version(AppVersionKey versionKey)
         {

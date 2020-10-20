@@ -62,6 +62,21 @@ namespace XTI_WebApp.Tests
             Assert.That(cachedAppRoles.Select(ar => ar.Name()), Is.EquivalentTo(expectedRoleNames), "Should retrieve app roles from source");
         }
 
+        [Test]
+        public async Task ShouldRetrieveAppVersionFromCache()
+        {
+            var input = await setup();
+            setHttpContext(input);
+            var originalApp = await input.CachedAppContext.App();
+            var originalVersion = await originalApp.Version(AppVersionKey.Current);
+            var newVersion = await input.FakeApp.StartNewMajorVersion(DateTime.UtcNow);
+            await newVersion.Publishing();
+            await newVersion.Published();
+            var cachedApp = await input.CachedAppContext.App();
+            var cachedVersion = await cachedApp.Version(AppVersionKey.Current);
+            Assert.That(cachedVersion.ID, Is.EqualTo(originalVersion.ID), "Should retrieve current version from cache");
+        }
+
         private IServiceScope scope;
 
         private async Task<TestInput> setup()
