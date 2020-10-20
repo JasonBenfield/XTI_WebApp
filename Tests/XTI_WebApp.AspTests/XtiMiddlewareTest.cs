@@ -422,53 +422,6 @@ namespace XTI_WebApp.AspTests
             Assert.That(pageContext?.CacheBust, Is.Null, "Should not set cacheBust when version is null");
         }
 
-        [Test]
-        public async Task ShouldCacheCurrentVersion()
-        {
-            IAppVersion versionFromContext = null;
-            var input = await setup(async (context) =>
-            {
-                var appContext = context.RequestServices.GetService<IAppContext>();
-                var app = await appContext.App();
-                versionFromContext = await app.CurrentVersion();
-            });
-            var uri = "/Fake/Current/Controller1/Action1";
-            await input.GetAsync(uri);
-            var version = await input.App.StartNewMajorVersion(DateTime.UtcNow);
-            await version.Publishing();
-            await version.Published();
-            await input.GetAsync(uri);
-            Assert.That(versionFromContext?.ID, Is.EqualTo(input.CurrentVersion.ID), "Should cache current version");
-        }
-
-        [Test]
-        public async Task ShouldCacheUserRoles()
-        {
-            IAppUserRole[] userRoles = new IAppUserRole[] { };
-            var input = await setup(async (context) =>
-            {
-                var userContext = context.RequestServices.GetService<IUserContext>();
-                var user = await userContext.User();
-                var appContext = context.RequestServices.GetService<IAppContext>();
-                var app = await appContext.App();
-                userRoles = (await user.RolesForApp(app)).ToArray();
-            });
-            var adminRole = await input.App.AddRole(new AppRoleName("Admin"));
-            var managerRole = await input.App.AddRole(new AppRoleName("Manager"));
-            var user = await input.Factory.Users().User(new AppUserName("xartogg"));
-            var userAdminRole = await user.AddRole(adminRole);
-            await user.AddRole(managerRole);
-            var session = await input.Factory.Sessions().Create(Guid.NewGuid().ToString("N"), user, input.Clock.Now(), "", "", "");
-            input.TestAuthOptions.IsEnabled = true;
-            input.TestAuthOptions.Session = session;
-            input.TestAuthOptions.User = user;
-            var uri = "/Fake/Current/Controller1/Action1";
-            await input.GetAsync(uri);
-            await user.RemoveRole(userAdminRole);
-            await input.GetAsync(uri);
-            Assert.That(userRoles.Length, Is.EqualTo(2), "Should cache user roles");
-        }
-
         private sealed class TestAppException : AppException
         {
             public TestAppException() : base("Detailed message", "Message for user")
