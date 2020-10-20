@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -12,20 +11,18 @@ namespace XTI_WebApp.Extensions
 {
     public sealed class XtiMiddleware
     {
+        private readonly RequestDelegate _next;
+
         public XtiMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
-        private readonly RequestDelegate _next;
-
         public async Task InvokeAsync
         (
             HttpContext context,
             ISessionContext sessionLog,
-            Clock clock,
-            IAppContext appContext,
-            XtiPath xtiPath
+            Clock clock
         )
         {
             await sessionLog.StartSession();
