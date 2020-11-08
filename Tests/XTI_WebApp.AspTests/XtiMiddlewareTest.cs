@@ -117,7 +117,7 @@ namespace XTI_WebApp.AspTests
             await input.GetAsync("/Fake/Current/Controller1/Action1");
             var sessions = await input.AppDbContext.Sessions.ToArrayAsync();
             Assert.That(sessions.Length, Is.EqualTo(1), "Should use session for authenticated user");
-            Assert.That(sessions[0].UserID, Is.EqualTo(user.ID), "Should create session for authenticated user");
+            Assert.That(sessions[0].UserID, Is.EqualTo(user.ID.Value), "Should create session for authenticated user");
         }
 
         [Test]
@@ -127,7 +127,7 @@ namespace XTI_WebApp.AspTests
             await input.GetAsync("/Fake/Current/Controller1/Action1");
             var sessions = await input.AppDbContext.Sessions.ToArrayAsync();
             var anonUser = await input.Factory.Users().User(AppUserName.Anon);
-            Assert.That(sessions[0].UserID, Is.EqualTo(anonUser.ID), "Should create session with anonymous user");
+            Assert.That(sessions[0].UserID, Is.EqualTo(anonUser.ID.Value), "Should create session with anonymous user");
         }
 
         [Test]
@@ -170,7 +170,7 @@ namespace XTI_WebApp.AspTests
         {
             var input = await setup();
             var explicitVersion = await input.App.StartNewPatch(input.Clock.Now());
-            var uri = $"/Fake/V{explicitVersion.ID}/Controller1/Action1";
+            var uri = $"/Fake/{explicitVersion.Key().Value}/Controller1/Action1";
             await input.GetAsync(uri);
             var sessions = await retrieveSessionsForToday(input);
             var requests = (await sessions[0].Requests()).ToArray();
@@ -290,7 +290,7 @@ namespace XTI_WebApp.AspTests
             Assert.That(events.Length, Is.EqualTo(1), "Should log access denied");
             Assert.That(events[0].Severity, Is.EqualTo(AppEventSeverity.Values.AccessDenied), "Should log access denied");
             Assert.That(events[0].Caption, Is.EqualTo("Access Denied"), "Should log access denied");
-            Assert.That(events[0].Message, Is.EqualTo("Access denied to Fake/Current/Controller1/Action1"), "Should log access denied");
+            Assert.That(events[0].Message, Is.EqualTo("Access denied to Fake/Current/controller1/action1"), "Should log access denied");
             Assert.That(events[0].Detail, Is.EqualTo(exception.StackTrace), "Should log access denied");
         }
 
@@ -417,7 +417,7 @@ namespace XTI_WebApp.AspTests
                 pageContext = context.RequestServices.GetService<PageContext>();
                 await pageContext.Serialize();
             });
-            var uri = $"/Fake/V{input.CurrentVersion.ID}/Controller1/Action1";
+            var uri = $"/Fake/{input.CurrentVersion.Key().Value}/Controller1/Action1";
             await input.GetAsync(uri);
             Assert.That(pageContext?.CacheBust, Is.Null, "Should not set cacheBust when version is null");
         }
@@ -464,6 +464,7 @@ namespace XTI_WebApp.AspTests
                             });
                             services.AddAppDbContextForInMemory();
                             services.AddFakesForXtiWebApp();
+                            services.AddSingleton(sp => FakeAppKey.AppKey);
                             services.AddXtiContextServices();
                             services.AddScoped<FakeAppSetup>();
                         })
@@ -481,7 +482,8 @@ namespace XTI_WebApp.AspTests
                 )
                 .StartAsync();
             var factory = host.Services.GetService<AppFactory>();
-            await new AppSetup(factory).Run();
+            var clock = host.Services.GetService<Clock>();
+            await new FakeAppSetup(factory, clock).Run();
             var setup = host.Services.GetService<FakeAppSetup>();
             await setup.Run();
             return new TestInput(host, setup.App, setup.CurrentVersion);

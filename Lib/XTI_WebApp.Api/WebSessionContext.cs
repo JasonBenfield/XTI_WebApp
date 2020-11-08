@@ -76,7 +76,7 @@ namespace XTI_WebApp.Api
                 var userAgent = httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString();
                 var remoteAddress = httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
                 session = await sessionRepo.Create(Guid.NewGuid().ToString("N"), user, clock.Now(), requesterKey, userAgent, remoteAddress);
-                anonClient.Persist(session.ID, requesterKey);
+                anonClient.Persist(session.ID.Value, requesterKey);
             }
             return session;
         }
@@ -85,7 +85,10 @@ namespace XTI_WebApp.Api
         {
             var version = await retrieveVersion(appContext, xtiPath);
             var path = httpContextAccessor.HttpContext?.Request.Path;
-            CurrentRequest = await CurrentSession.LogRequest(Guid.NewGuid().ToString("N"), version, path, clock.Now());
+            var app = await appContext.App();
+            var resourceGroup = await app.ResourceGroup(xtiPath.Group);
+            var resource = await resourceGroup.Resource(xtiPath.Action);
+            CurrentRequest = await CurrentSession.LogRequest(Guid.NewGuid().ToString("N"), version, resource, null, path, clock.Now());
         }
 
         private static async Task<IAppVersion> retrieveVersion(IAppContext appContext, XtiPath xtiPath)

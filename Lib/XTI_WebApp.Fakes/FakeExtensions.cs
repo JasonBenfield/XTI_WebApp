@@ -52,19 +52,19 @@ namespace XTI_WebApp.Fakes
 
         public static void AddFakeXtiContexts(this IServiceCollection services)
         {
-            services.AddScoped<IAppContext, FakeAppContext>();
+            services.AddScoped<IAppContext, DefaultAppContext>();
             services.AddScoped<IUserContext, FakeUserContext>();
             services.AddScoped<ISessionContext, WebSessionContext>();
         }
 
         public static void AddXtiContextServices(this IServiceCollection services)
         {
-            services.AddScoped<WebAppContext>();
+            services.AddScoped<DefaultAppContext>();
             services.AddScoped<IAppContext>(sp =>
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 var cache = sp.GetService<IMemoryCache>();
-                var appContext = sp.GetService<WebAppContext>();
+                var appContext = sp.GetService<DefaultAppContext>();
                 return new CachedAppContext(httpContextAccessor, cache, appContext);
             });
             services.AddScoped<WebUserContext>();

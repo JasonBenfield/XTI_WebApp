@@ -9,6 +9,6 @@ namespace XTI_WebApp.Api
             ID = appVersion.ID;
         }
 
-        public int ID { get; }
+        public EntityID ID { get; }
     }
 }

@@ -17,8 +17,8 @@ namespace XTI_WebApp
 
         public IEnumerable<Claim> Values() => new[]
         {
-            new Claim("UserID", user.ID.ToString()),
-            new Claim("SessionID", session.ID.ToString())
+            new Claim("UserID", user.ID.Value.ToString()),
+            new Claim("SessionID", session.ID.Value.ToString())
         };
     }
 }

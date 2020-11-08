@@ -32,7 +32,7 @@ namespace XTI_WebApp.Extensions
             services.Configure<AppOptions>(configuration.GetSection(AppOptions.App));
             services.Configure<WebAppOptions>(configuration.GetSection(WebAppOptions.WebApp));
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Jwt));
-            services.AddDataProtection(configuration);
+            services.AddXtiDataProtection();
             services.AddAppDbContextForSqlServer(configuration);
             services.AddScoped<CacheBust>();
             services.AddScoped<IPageContext, PageContext>();
@@ -59,11 +59,11 @@ namespace XTI_WebApp.Extensions
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 var cache = sp.GetService<IMemoryCache>();
-                var appContext = sp.GetService<WebAppContext>();
+                var appContext = sp.GetService<DefaultAppContext>();
                 return new CachedAppContext(httpContextAccessor, cache, appContext);
             });
             services.AddScoped<IAppApiUser, XtiAppApiUser>();
-            services.AddScoped<WebAppContext>();
+            services.AddScoped<DefaultAppContext>();
             services.AddScoped<IUserContext>(sp =>
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();

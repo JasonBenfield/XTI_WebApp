@@ -36,7 +36,7 @@ namespace XTI_WebApp.Tests
             setHttpContext(input);
             var originalUser = await input.CachedUserContext.User();
             var originalUserName = originalUser.UserName();
-            var userRecord = await input.AppDbContext.Users.FirstAsync(u => u.ID == input.User.ID);
+            var userRecord = await input.AppDbContext.Users.FirstAsync(u => u.ID == input.User.ID.Value);
             input.AppDbContext.Users.Update(userRecord);
             userRecord.UserName = "changed.user";
             await input.AppDbContext.SaveChangesAsync();
@@ -51,8 +51,8 @@ namespace XTI_WebApp.Tests
             setHttpContext(input);
             var user = await input.CachedUserContext.User();
             var userRoles = await user.RolesForApp(input.FakeApp);
-            var viewerRole = await input.FakeApp.Role(FakeRoleNames.Instance.Viewer);
-            Assert.That(userRoles.Select(ur => ur.RoleID), Is.EquivalentTo(new[] { viewerRole.ID }), "Should retrieve user roles from source");
+            var viewerRole = await input.FakeApp.Role(FakeAppRoles.Instance.Viewer);
+            Assert.That(userRoles.Select(ur => ur.RoleID), Is.EquivalentTo(new[] { viewerRole.ID.Value }), "Should retrieve user roles from source");
         }
 
         [Test]
@@ -62,12 +62,12 @@ namespace XTI_WebApp.Tests
             setHttpContext(input);
             var user = await input.CachedUserContext.User();
             var userRoles = await user.RolesForApp(input.FakeApp);
-            var adminRole = await input.FakeApp.Role(FakeRoleNames.Instance.Admin);
+            var adminRole = await input.FakeApp.Role(FakeAppRoles.Instance.Admin);
             await input.User.AddRole(adminRole);
             var cachedUser = await input.CachedUserContext.User();
             var cachedUserRoles = await cachedUser.RolesForApp(input.FakeApp);
-            var viewerRole = await input.FakeApp.Role(FakeRoleNames.Instance.Viewer);
-            Assert.That(userRoles.Select(ur => ur.RoleID), Is.EquivalentTo(new[] { viewerRole.ID }), "Should retrieve user roles from source");
+            var viewerRole = await input.FakeApp.Role(FakeAppRoles.Instance.Viewer);
+            Assert.That(userRoles.Select(ur => ur.RoleID), Is.EquivalentTo(new[] { viewerRole.ID.Value }), "Should retrieve user roles from source");
         }
 
         private async Task<TestInput> setup()
@@ -75,6 +75,7 @@ namespace XTI_WebApp.Tests
             var services = new ServiceCollection();
             services.AddFakesForXtiWebApp();
             services.AddXtiContextServices();
+            services.AddSingleton(sp => FakeAppKey.AppKey);
             services.AddScoped(sp => XtiPath.Parse("/Fake/Current/Employees/Index"));
             services.AddScoped<FakeAppSetup>();
             var sp = services.BuildServiceProvider();
@@ -88,7 +89,7 @@ namespace XTI_WebApp.Tests
                 new FakeHashedPassword("Testing12345"),
                 clock.Now()
             );
-            var viewerRole = await fakeSetup.App.Role(FakeRoleNames.Instance.Viewer);
+            var viewerRole = await fakeSetup.App.Role(FakeAppRoles.Instance.Viewer);
             await user.AddRole(viewerRole);
             var input = new TestInput(sp, fakeSetup.App, user);
             await input.Session.StartSession();

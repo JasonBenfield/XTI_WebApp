@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
-    <PackageReference Include="XTI_App.Api" Version="1.6.2" />
+    <PackageReference Include="XTI_App.Api" Version="1.6.3-dev201031110410891" />
   </ItemGroup>
 
   <ItemGroup>

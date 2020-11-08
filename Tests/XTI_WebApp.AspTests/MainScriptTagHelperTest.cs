@@ -94,6 +94,8 @@ namespace XTI_WebApp.AspTests
         {
             var services = new ServiceCollection();
             services.AddFakesForXtiWebApp();
+            services.AddFakeXtiContexts();
+            services.AddSingleton(sp => FakeAppKey.AppKey);
             services.AddSingleton(sp => (IWebHostEnvironment)sp.GetService<IHostEnvironment>());
             services.AddSingleton<IOptions<WebAppOptions>, FakeOptions<WebAppOptions>>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
