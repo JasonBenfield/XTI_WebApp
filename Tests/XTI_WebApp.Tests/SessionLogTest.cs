@@ -10,6 +10,7 @@ using XTI_App.Api;
 using XTI_Core;
 using XTI_Core.Fakes;
 using XTI_WebApp.Fakes;
+using XTI_WebApp.TestFakes;
 
 namespace XTI_WebApp.Tests
 {
@@ -50,7 +51,10 @@ namespace XTI_WebApp.Tests
         private async Task<AppRequest> createRequest(TestInput input, AppSession session, string key)
         {
             var currentVersion = await input.FakeApp.CurrentVersion();
-            var createdRequest = await session.LogRequest(key, currentVersion, "test1/action1", DateTime.Now);
+            var action = input.Api.Employee.AddEmployee;
+            var resourceGroup = await input.FakeApp.ResourceGroup(action.Path.Group);
+            var resource = await resourceGroup.Resource(action.Path.Action);
+            var createdRequest = await session.LogRequest(key, currentVersion, resource, null, action.Path.Value(), DateTime.Now);
             return createdRequest;
         }
 
@@ -61,7 +65,10 @@ namespace XTI_WebApp.Tests
             var createdSession = await createSession(input, generateKey());
             var key = generateKey();
             var currentVersion = await input.FakeApp.CurrentVersion();
-            var createdRequest = await createdSession.LogRequest(key, currentVersion, "test1/action1", DateTime.Now);
+            var action = input.Api.Employee.AddEmployee;
+            var resourceGroup = await input.FakeApp.ResourceGroup(action.Path.Group);
+            var resource = await resourceGroup.Resource(action.Path.Action);
+            var createdRequest = await createdSession.LogRequest(key, currentVersion, resource, null, action.Path.Value(), DateTime.Now);
             var foundRequest = await input.Factory.Requests().Request(key);
             Assert.That(foundRequest.ID, Is.EqualTo(createdRequest.ID), "Should get request by key");
         }
@@ -79,14 +86,23 @@ namespace XTI_WebApp.Tests
         {
             var services = new ServiceCollection();
             services.AddFakesForXtiWebApp();
+            services.AddFakeXtiContexts();
+            services.AddSingleton(sp => FakeAppKey.AppKey);
+            services.AddScoped
+            (
+                sp => new FakeAppApi
+                (
+                    FakeAppKey.AppKey,
+                    AppVersionKey.Current,
+                    sp.GetService<IAppApiUser>()
+                )
+            );
             var sp = services.BuildServiceProvider();
             var factory = sp.GetService<AppFactory>();
-            var setup = new AppSetup(factory);
+            var clock = sp.GetService<Clock>();
+            var setup = new FakeAppSetup(factory, clock);
             await setup.Run();
-            var app = await factory.Apps().AddApp(new AppKey("Fake"), AppType.Values.WebApp, "Fake", DateTime.Now);
-            var version = await app.StartNewMajorVersion(DateTime.Now);
-            await version.Publishing();
-            await version.Published();
+            var app = await factory.Apps().App(FakeAppKey.AppKey);
             return new TestInput(sp, app);
         }
 
@@ -96,11 +112,13 @@ namespace XTI_WebApp.Tests
             {
                 Factory = sp.GetService<AppFactory>();
                 Clock = sp.GetService<FakeClock>();
+                Api = sp.GetService<FakeAppApi>();
                 FakeApp = app;
             }
 
             public AppFactory Factory { get; }
             public FakeClock Clock { get; }
+            public FakeAppApi Api { get; }
             public App FakeApp { get; }
         }
     }

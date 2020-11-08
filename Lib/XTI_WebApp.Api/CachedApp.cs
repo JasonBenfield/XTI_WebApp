@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Api;
 
 namespace XTI_WebApp.Api
 {
@@ -20,7 +21,7 @@ namespace XTI_WebApp.Api
             Title = app.Title;
         }
 
-        public int ID { get; }
+        public EntityID ID { get; }
         public string Title { get; }
 
         public Task<IAppVersion> CurrentVersion() => Version(AppVersionKey.Current);
@@ -59,8 +60,18 @@ namespace XTI_WebApp.Api
 
         private Task<IApp> appFromContext()
         {
-            var appContext = httpContextAccessor.HttpContext.RequestServices.GetService<WebAppContext>();
+            var appContext = httpContextAccessor.HttpContext.RequestServices.GetService<DefaultAppContext>();
             return appContext.App();
+        }
+
+        public async Task<IResourceGroup> ResourceGroup(ResourceGroupName name)
+        {
+            var requestedGroup = await fetch($"group_{name.Value}", async (app) =>
+            {
+                var group = await app.ResourceGroup(name);
+                return new CachedResourceGroup(httpContextAccessor, group);
+            });
+            return requestedGroup;
         }
     }
 }

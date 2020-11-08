@@ -12,9 +12,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.9" />
-    <PackageReference Include="XTI_App.DB.SqlServer" Version="1.6.2" />
-    <PackageReference Include="XTI_App.EF" Version="1.6.2" />
-    <PackageReference Include="XTI_Secrets.Extensions" Version="1.6.2" />
+    <PackageReference Include="XTI_App.DB.SqlServer" Version="1.6.3-dev201031110410891" />
+    <PackageReference Include="XTI_App.EF" Version="1.6.3-dev201031110410891" />
+    <PackageReference Include="XTI_Secrets.Extensions" Version="1.6.3-dev201031110410891" />
   </ItemGroup>
 
   <ItemGroup>

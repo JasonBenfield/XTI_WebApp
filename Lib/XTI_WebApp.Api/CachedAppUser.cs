@@ -20,19 +20,19 @@ namespace XTI_WebApp.Api
             userName = source.UserName();
         }
 
-        public int ID { get; }
+        public EntityID ID { get; }
 
         public AppUserName UserName() => userName;
 
         public async Task<IEnumerable<IAppUserRole>> RolesForApp(IApp app)
         {
             var cache = httpContextAccessor.HttpContext.RequestServices.GetService<IMemoryCache>();
-            var key = $"user_{ID}_roles_app_{app.ID}";
+            var key = $"user_{ID.Value}_roles_app_{app.ID}";
             var cachedUserRoles = cache.Get<IEnumerable<CachedAppUserRole>>(key);
             if (cachedUserRoles == null)
             {
                 var sessionContext = httpContextAccessor.HttpContext.RequestServices.GetService<WebUserContext>();
-                var user = await sessionContext.User(ID);
+                var user = await sessionContext.User(ID.Value);
                 var userRoles = await user.RolesForApp(app);
                 cachedUserRoles = userRoles
                     .Select(ur => new CachedAppUserRole(ur))
@@ -40,6 +40,16 @@ namespace XTI_WebApp.Api
                 cache.Set(key, cachedUserRoles);
             }
             return cachedUserRoles;
+        }
+
+        public Task<bool> IsModCategoryAdmin(IModifierCategory modCategory)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> HasModifier(ModifierKey modKey)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -11,7 +11,7 @@
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
-    <PackageReference Include="XTI_Configuration.Extensions" Version="1.6.2" />
+    <PackageReference Include="XTI_Configuration.Extensions" Version="1.6.3-dev201031110410891" />
   </ItemGroup>
 
   <ItemGroup>

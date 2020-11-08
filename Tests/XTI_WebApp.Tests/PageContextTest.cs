@@ -11,6 +11,7 @@ using XTI_App.Fakes;
 using XTI_Core.Fakes;
 using XTI_WebApp.Api;
 using XTI_WebApp.Fakes;
+using XTI_WebApp.TestFakes;
 
 namespace XTI_WebApp.Tests
 {
@@ -87,13 +88,14 @@ namespace XTI_WebApp.Tests
             var services = new ServiceCollection();
             services.AddFakesForXtiWebApp();
             services.AddFakeXtiContexts();
+            services.AddSingleton(sp => FakeAppKey.AppKey);
+            services.AddSingleton<IAppContext, DefaultAppContext>();
             var sp = services.BuildServiceProvider();
             var factory = sp.GetService<AppFactory>();
-            await new AppSetup(factory).Run();
             var clock = sp.GetService<FakeClock>();
+            await new FakeAppSetup(factory, clock).Run();
             var input = new TestInput(sp);
-            var app = await factory.Apps().AddApp(new AppKey("Fake"), AppType.Values.WebApp, "Fake", clock.Now());
-            input.AppContext.SetApp(app);
+            var app = await factory.Apps().App(FakeAppKey.AppKey);
             var user = await factory.Users().Add(new AppUserName("someone"), new FakeHashedPassword("Password"), clock.Now());
             input.UserContext.SetUser(user);
             return input;
@@ -105,7 +107,7 @@ namespace XTI_WebApp.Tests
             {
                 Factory = sp.GetService<AppFactory>();
                 Clock = sp.GetService<FakeClock>();
-                AppContext = (FakeAppContext)sp.GetService<IAppContext>();
+                AppContext = sp.GetService<IAppContext>();
                 UserContext = (FakeUserContext)sp.GetService<IUserContext>();
                 HostEnvironment = (FakeWebHostEnvironment)sp.GetService<IHostEnvironment>();
                 AppOptions = sp.GetService<IOptions<AppOptions>>().Value;
@@ -115,7 +117,7 @@ namespace XTI_WebApp.Tests
 
             public AppFactory Factory { get; }
             public FakeClock Clock { get; }
-            public FakeAppContext AppContext { get; }
+            public IAppContext AppContext { get; }
             public FakeUserContext UserContext { get; }
             public FakeWebHostEnvironment HostEnvironment { get; }
             public AppOptions AppOptions { get; }

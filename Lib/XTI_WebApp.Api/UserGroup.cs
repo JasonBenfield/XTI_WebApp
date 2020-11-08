@@ -1,4 +1,5 @@
-﻿using XTI_App.Api;
+﻿using XTI_App;
+using XTI_App.Api;
 
 namespace XTI_WebApp.Api
 {
@@ -13,7 +14,7 @@ namespace XTI_WebApp.Api
             (
                 api,
                 new NameFromGroupClassName(nameof(UserGroup)).Value,
-                false,
+                ModifierCategoryName.Default,
                 ResourceAccess.AllowAuthenticated(),
                 user,
                 (name, ra, u) => new WebAppApiActionCollection(name, ra, u)

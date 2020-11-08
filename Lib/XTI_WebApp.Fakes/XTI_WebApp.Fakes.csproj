@@ -8,11 +8,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.9" />
-    <PackageReference Include="XTI_App.Db.InMemory" Version="1.6.2" />
-    <PackageReference Include="XTI_App.Ef" Version="1.6.2" />
-    <PackageReference Include="XTI_Secrets.Fakes" Version="1.6.2" />
-    <PackageReference Include="XTI_App.Fakes" Version="1.6.2" />
-    <PackageReference Include="XTI_Core.Fakes" Version="1.6.2" />
+    <PackageReference Include="XTI_App.Db.InMemory" Version="1.6.3-dev201031110410891" />
+    <PackageReference Include="XTI_App.Ef" Version="1.6.3-dev201031110410891" />
+    <PackageReference Include="XTI_Secrets.Fakes" Version="1.6.3-dev201031110410891" />
+    <PackageReference Include="XTI_App.Fakes" Version="1.6.3-dev201031110410891" />
+    <PackageReference Include="XTI_Core.Fakes" Version="1.6.3-dev201031110410891" />
   </ItemGroup>
 
   <ItemGroup>
