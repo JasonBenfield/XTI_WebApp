@@ -38,7 +38,7 @@ namespace XTI_WebApp
                     {
                         var app = await appFactory.Apps().App(new AppKey(xtiPath.App, AppType.Values.WebApp));
                         var version = await app.CurrentVersion();
-                        value = $"V{version.ID}";
+                        value = version.Key().DisplayText;
                     }
                 }
                 else

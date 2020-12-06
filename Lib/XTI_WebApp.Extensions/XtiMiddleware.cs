@@ -3,9 +3,9 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using XTI_App;
 using XTI_App.Api;
 using XTI_Core;
+using XTI_TempLog;
 
 namespace XTI_WebApp.Extensions
 {
@@ -18,32 +18,54 @@ namespace XTI_WebApp.Extensions
             _next = next;
         }
 
-        public async Task InvokeAsync
-        (
-            HttpContext context,
-            ISessionContext sessionLog,
-            Clock clock
-        )
+        public async Task InvokeAsync(HttpContext context, CurrentSession currentSession, TempLogSession sessionLog, IAnonClient anonClient, Clock clock)
         {
-            await sessionLog.StartSession();
-            await sessionLog.StartRequest();
+            anonClient.Load();
+            if (isAnonSessionExpired(anonClient, clock))
+            {
+                expireAnonSession(anonClient);
+            }
+            if (context.User.Identity.IsAuthenticated)
+            {
+                currentSession.SessionKey = new XtiClaims(context).SessionKey();
+            }
+            else
+            {
+                currentSession.SessionKey = anonClient.SessionKey;
+            }
+            var session = await sessionLog.StartSession();
+            if (anonClient.SessionKey != session.SessionKey)
+            {
+                anonClient.Persist(session.SessionKey, clock.Now().AddHours(4), session.RequesterKey);
+            }
+            await sessionLog.StartRequest($"{context.Request.PathBase}{context.Request.Path}");
             try
             {
                 await _next(context);
             }
             catch (Exception ex)
             {
-                await handleError(context, clock, sessionLog.CurrentRequest, ex);
+                await handleError(context, sessionLog, ex);
             }
             finally
             {
-                await sessionLog.CurrentRequest.End(clock.Now());
+                await sessionLog.EndRequest();
             }
         }
 
-        private async Task handleError(HttpContext context, Clock clock, AppRequest request, Exception ex)
+        private static bool isAnonSessionExpired(IAnonClient anonClient, Clock clock)
         {
-            await logException(clock, request, ex);
+            return !string.IsNullOrWhiteSpace(anonClient.SessionKey) && clock.Now().ToUniversalTime() > anonClient.SessionExpirationTime.ToUniversalTime();
+        }
+
+        private static void expireAnonSession(IAnonClient anonClient)
+        {
+            anonClient.Persist("", Timestamp.MinValue.Value, anonClient.RequesterKey);
+        }
+
+        private async Task handleError(HttpContext context, TempLogSession sessionLog, Exception ex)
+        {
+            await logException(sessionLog, ex);
             context.Response.StatusCode = getErrorStatusCode(ex);
             context.Response.ContentType = "application/json";
             var errors = new ResultContainer<ErrorModel[]>(getErrors(ex));
@@ -51,11 +73,10 @@ namespace XTI_WebApp.Extensions
             await context.Response.WriteAsync(serializedErrors);
         }
 
-        private static async Task logException(Clock clock, AppRequest request, Exception ex)
+        private static async Task logException(TempLogSession sessionLog, Exception ex)
         {
             AppEventSeverity severity;
             string caption;
-            var now = clock.Now();
             if (ex is ValidationFailedException)
             {
                 severity = AppEventSeverity.Values.ValidationFailed;
@@ -76,7 +97,7 @@ namespace XTI_WebApp.Extensions
                 severity = AppEventSeverity.Values.CriticalError;
                 caption = "An unexpected error occurred";
             }
-            await request.LogException(Guid.NewGuid().ToString("N"), severity, now, ex, caption);
+            await sessionLog.LogException(severity, ex, caption);
         }
 
         private int getErrorStatusCode(Exception ex)

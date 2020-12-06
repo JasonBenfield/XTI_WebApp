@@ -1,11 +1,14 @@
-﻿namespace XTI_WebApp
+﻿using System;
+
+namespace XTI_WebApp
 {
     public interface IAnonClient
     {
         string RequesterKey { get; }
-        int SessionID { get; }
+        string SessionKey { get; }
+        DateTime SessionExpirationTime { get; }
 
         void Load();
-        void Persist(int sessionID, string requesterKey);
+        void Persist(string sessionKey, DateTime sessionExpirationTime, string requesterKey);
     }
 }

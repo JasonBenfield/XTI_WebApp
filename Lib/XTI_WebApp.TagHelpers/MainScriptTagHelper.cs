@@ -14,14 +14,14 @@ namespace XTI_WebApp.TagHelpers
     [HtmlTargetElement("xti-main-script", TagStructure = TagStructure.WithoutEndTag)]
     public class MainScriptTagHelper : TagHelper
     {
-        public MainScriptTagHelper(IWebHostEnvironment host, IUrlHelperFactory urlHelperFactory, CacheBust cacheBust)
+        public MainScriptTagHelper(IHostEnvironment host, IUrlHelperFactory urlHelperFactory, CacheBust cacheBust)
         {
             this.host = host;
             this.urlHelperFactory = urlHelperFactory;
             this.cacheBust = cacheBust;
         }
 
-        private readonly IWebHostEnvironment host;
+        private readonly IHostEnvironment host;
         private readonly IUrlHelperFactory urlHelperFactory;
         private readonly CacheBust cacheBust;
 

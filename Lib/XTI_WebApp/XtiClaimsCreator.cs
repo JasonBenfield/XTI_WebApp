@@ -6,19 +6,19 @@ namespace XTI_WebApp
 {
     public sealed class XtiClaimsCreator
     {
-        private readonly AppSession session;
+        private readonly string sessionKey;
         private readonly IAppUser user;
 
-        public XtiClaimsCreator(AppSession session, IAppUser user)
+        public XtiClaimsCreator(string sessionKey, IAppUser user)
         {
-            this.session = session;
+            this.sessionKey = sessionKey;
             this.user = user;
         }
 
         public IEnumerable<Claim> Values() => new[]
         {
             new Claim("UserID", user.ID.Value.ToString()),
-            new Claim("SessionID", session.ID.Value.ToString())
+            new Claim("SessionKey", sessionKey)
         };
     }
 }

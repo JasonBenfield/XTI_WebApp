@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Text.Json;
+using XTI_Core;
 using XTI_Secrets;
 
 namespace XTI_WebApp.Extensions
@@ -18,30 +20,35 @@ namespace XTI_WebApp.Extensions
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        public int SessionID { get; private set; }
-        public string RequesterKey { get; private set; }
+        public string SessionKey { get; private set; } = "";
+        public DateTime SessionExpirationTime { get; private set; } = Timestamp.MinValue.Value;
+        public string RequesterKey { get; private set; } = "";
 
         public void Load()
         {
             var cookieText = httpContextAccessor.HttpContext?.Request.Cookies[cookieName];
             if (string.IsNullOrWhiteSpace(cookieText))
             {
-                SessionID = 0;
+                SessionKey = "";
+                SessionExpirationTime = Timestamp.MinValue.Value;
+                RequesterKey = "";
             }
             else
             {
                 var unprotectedText = new DecryptedValue(protector, cookieText).Value();
                 var info = JsonSerializer.Deserialize<AnonInfo>(unprotectedText);
-                SessionID = info.SessionID;
+                SessionKey = info.SessionKey;
+                SessionExpirationTime = info.SessionExpirationTime;
                 RequesterKey = info.RequesterKey;
             }
         }
 
-        public void Persist(int sessionID, string requesterKey)
+        public void Persist(string sessionKey, DateTime sessionExpirationTime, string requesterKey)
         {
             var cookieText = JsonSerializer.Serialize(new AnonInfo
             {
-                SessionID = sessionID,
+                SessionKey = sessionKey,
+                SessionExpirationTime = sessionExpirationTime,
                 RequesterKey = requesterKey
             });
             var protectedText = new EncryptedValue(protector, cookieText).Value();
@@ -53,11 +60,15 @@ namespace XTI_WebApp.Extensions
                 SameSite = SameSiteMode.Lax
             };
             httpContextAccessor.HttpContext?.Response.Cookies.Append(cookieName, protectedText, options);
+            SessionKey = sessionKey;
+            SessionExpirationTime = sessionExpirationTime;
+            RequesterKey = requesterKey;
         }
 
         private class AnonInfo
         {
-            public int SessionID { get; set; }
+            public string SessionKey { get; set; }
+            public DateTime SessionExpirationTime { get; set; }
             public string RequesterKey { get; set; }
         }
     }

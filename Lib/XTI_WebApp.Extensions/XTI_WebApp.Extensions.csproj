@@ -1,20 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MainDB.EF.SqlServer" Version="1.7.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.9" />
-    <PackageReference Include="XTI_App.DB.SqlServer" Version="1.6.3-dev201031110410891" />
-    <PackageReference Include="XTI_App.EF" Version="1.6.3-dev201031110410891" />
-    <PackageReference Include="XTI_Secrets.Extensions" Version="1.6.3-dev201031110410891" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+    <PackageReference Include="XTI_App.EF" Version="1.6.3" />
+    <PackageReference Include="XTI_Secrets.Extensions" Version="1.7.2" />
+    <PackageReference Include="XTI_TempLog.Extensions" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>

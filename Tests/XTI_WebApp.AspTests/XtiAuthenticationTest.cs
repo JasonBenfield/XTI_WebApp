@@ -133,9 +133,9 @@ namespace XTI_WebApp.AspTests
                             services.AddSingleton<TestAuthOptions>();
                             services.Configure<JwtOptions>(context.Configuration.GetSection(JwtOptions.Jwt));
                             services.Configure<AppOptions>(context.Configuration.GetSection(AppOptions.App));
-                            services.ConfigureXtiCookieAndTokenAuthentication();
-                            services.AddFakesForXtiWebApp();
-                            services.AddXtiContextServices();
+                            services.AddDataProtection();
+                            services.ConfigureXtiCookieAndTokenAuthentication(context.Configuration);
+                            services.AddFakesForXtiWebApp(context.Configuration);
                             services.AddSingleton<MainApp>();
                         })
                         .Configure(app =>
@@ -174,15 +174,10 @@ namespace XTI_WebApp.AspTests
             public TestInput(IHost host)
             {
                 Host = host;
-                MainApp = host.Services.GetService<MainApp>();
                 Cookies = new CookieContainer();
-                HostEnvironment = (FakeWebHostEnvironment)host.Services.GetService<IHostEnvironment>();
-                HostEnvironment.EnvironmentName = "Production";
             }
             public IHost Host { get; }
-            public MainApp MainApp { get; }
             public CookieContainer Cookies { get; }
-            public FakeWebHostEnvironment HostEnvironment { get; }
 
             public async Task<HttpResponseMessage> GetAsync(string relativeUrl)
             {

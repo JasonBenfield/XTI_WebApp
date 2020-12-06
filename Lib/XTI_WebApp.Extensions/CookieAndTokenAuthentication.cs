@@ -4,22 +4,24 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using XTI_App;
+using XTI_Core;
 
 namespace XTI_WebApp.Extensions
 {
     public static class CookieAndTokenAuthentication
     {
-        public static void ConfigureXtiCookieAndTokenAuthentication(this IServiceCollection services)
+        public static void ConfigureXtiCookieAndTokenAuthentication(this IServiceCollection services, IConfiguration config)
         {
-            services.AddScoped<IDataSerializer<AuthenticationTicket>, TicketSerializer>();
             services
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -28,7 +30,7 @@ namespace XTI_WebApp.Extensions
                     options.ExpireTimeSpan = TimeSpan.FromHours(4);
                     options.Cookie.Path = "/";
                     options.Cookie.Domain = "";
-                    options.TicketDataFormat = createAuthTicketFormat(services.BuildServiceProvider());
+                    options.TicketDataFormat = createAuthTicketFormat(options.DataProtectionProvider, config);
                     options.Events = new CookieAuthenticationEvents
                     {
                         OnRedirectToLogin = x =>
@@ -59,7 +61,7 @@ namespace XTI_WebApp.Extensions
                 {
                     options.RequireHttpsMetadata = false;
                     options.SaveToken = true;
-                    options.TokenValidationParameters = createTokenValidationParameters(services.BuildServiceProvider());
+                    options.TokenValidationParameters = createTokenValidationParameters(config);
                     options.Events = new JwtBearerEvents
                     {
                         OnTokenValidated = c =>
@@ -75,9 +77,9 @@ namespace XTI_WebApp.Extensions
             services.addAuthorization();
         }
 
-        private static TokenValidationParameters createTokenValidationParameters(IServiceProvider sp)
+        private static TokenValidationParameters createTokenValidationParameters(IConfiguration config)
         {
-            var jwtOptions = sp.GetService<IOptions<JwtOptions>>().Value;
+            var jwtOptions = config.GetSection(JwtOptions.Jwt).Get<JwtOptions>();
             var key = Encoding.ASCII.GetBytes(jwtOptions.Secret);
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -89,12 +91,19 @@ namespace XTI_WebApp.Extensions
             return tokenValidationParameters;
         }
 
-        private static JwtAuthTicketFormat createAuthTicketFormat(IServiceProvider sp)
+        private static JwtAuthTicketFormat createAuthTicketFormat(IDataProtectionProvider dataProtectionProvider, IConfiguration config)
         {
-            var jwtOptions = sp.GetService<IOptions<JwtOptions>>().Value;
+            var jwtOptions = config.GetSection(JwtOptions.Jwt).Get<JwtOptions>();
             var key = Encoding.ASCII.GetBytes(jwtOptions.Secret);
-            var dataSerializer = sp.GetService<IDataSerializer<AuthenticationTicket>>();
-            var dataProtector = sp.GetDataProtector(new[] { "XTI_Apps_Auth1" });
+            var dataSerializer = new TicketSerializer();
+            if (dataProtectionProvider == null)
+            {
+                var keyDirPath = new AppDataFolder()
+                    .WithSubFolder("Keys")
+                    .Path();
+                dataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo(keyDirPath));
+            }
+            var dataProtector = dataProtectionProvider.CreateProtector(new[] { "XTI_Apps_Auth1" });
             var authTicketFormat = new JwtAuthTicketFormat
             (
                 new TokenValidationParameters

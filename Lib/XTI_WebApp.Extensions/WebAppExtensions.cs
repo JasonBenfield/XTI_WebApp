@@ -9,10 +9,12 @@ using Microsoft.Extensions.Hosting;
 using XTI_App;
 using XTI_App.Api;
 using XTI_App.EF;
-using XTI_App.Extensions;
+using MainDB.Extensions;
 using XTI_Core;
 using XTI_Secrets.Extensions;
+using XTI_TempLog;
 using XTI_WebApp.Api;
+using XTI_TempLog.Extensions;
 
 namespace XTI_WebApp.Extensions
 {
@@ -38,6 +40,17 @@ namespace XTI_WebApp.Extensions
             services.AddScoped<IPageContext, PageContext>();
             services.AddSingleton<Clock, UtcClock>();
             services.AddScoped<AppFactory, EfAppFactory>();
+            services.AddSingleton(sp =>
+            {
+                var hostEnv = sp.GetService<IHostEnvironment>();
+                var appKey = sp.GetService<AppKey>();
+                return new AppDataFolder()
+                    .WithHostEnvironment(hostEnv)
+                    .WithSubFolder("WebApps")
+                    .WithSubFolder(appKey.Name.DisplayText);
+            });
+            services.AddScoped<CurrentSession>();
+            services.AddTempLogServices();
             AddXtiContextServices(services);
         }
 
@@ -72,7 +85,7 @@ namespace XTI_WebApp.Extensions
                 return new CachedUserContext(httpContextAccessor, cache, sessionContext);
             });
             services.AddScoped<WebUserContext>();
-            services.AddScoped<ISessionContext, WebSessionContext>();
+            services.AddScoped<IAppEnvironmentContext, WebAppEnvironmentContext>();
         }
 
     }

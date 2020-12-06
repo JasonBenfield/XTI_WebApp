@@ -21,34 +21,22 @@ namespace XTI_WebApp.Api
 
         public void RefreshUser(IAppUser user)
         {
-            cache.Set($"user_{user.ID}", new CachedAppUser(httpContextAccessor, user));
+            cache.Set($"user_{user.ID.Value}", new CachedAppUser(httpContextAccessor, user));
             source.RefreshUser(user);
         }
 
-        public async Task<IAppUser> User(int userID)
+        public async Task<IAppUser> User()
         {
-            string userKey;
-            if (userID == 0)
-            {
-                userKey = "user_anon";
-            }
-            else
-            {
-                userKey = $"user_{userID}";
-            }
-            if (!cache.TryGetValue(userKey, out IAppUser cachedUser))
+            var claims = new XtiClaims(httpContextAccessor);
+            var userID = claims.UserID();
+            var userKey = $"user_{userID}";
+            if (!cache.TryGetValue(userKey, out CachedAppUser cachedUser))
             {
                 var user = await source.User();
                 cachedUser = new CachedAppUser(httpContextAccessor, user);
                 cache.Set(userKey, cachedUser);
             }
             return cachedUser;
-        }
-
-        public Task<IAppUser> User()
-        {
-            var claims = new XtiClaims(httpContextAccessor);
-            return User(claims.UserID());
         }
     }
 }
