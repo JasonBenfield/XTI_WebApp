@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,26 +19,52 @@ namespace XTI_WebApp.Api
             userName = source.UserName();
         }
 
-        public int ID { get; }
+        public EntityID ID { get; }
 
         public AppUserName UserName() => userName;
 
+        private IEnumerable<IAppUserRole> cachedUserRoles;
+
         public async Task<IEnumerable<IAppUserRole>> RolesForApp(IApp app)
         {
-            var cache = httpContextAccessor.HttpContext.RequestServices.GetService<IMemoryCache>();
-            var key = $"user_{ID}_roles_app_{app.ID}";
-            var cachedUserRoles = cache.Get<IEnumerable<CachedAppUserRole>>(key);
             if (cachedUserRoles == null)
             {
-                var sessionContext = httpContextAccessor.HttpContext.RequestServices.GetService<WebUserContext>();
-                var user = await sessionContext.User(ID);
-                var userRoles = await user.RolesForApp(app);
+                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
+                var user = await factory.Users().User(ID.Value);
+                var userRoles = await ((IAppUser)user).RolesForApp(app);
                 cachedUserRoles = userRoles
                     .Select(ur => new CachedAppUserRole(ur))
                     .ToArray();
-                cache.Set(key, cachedUserRoles);
             }
             return cachedUserRoles;
+        }
+
+        private readonly Dictionary<int, bool> isModCategoryAdminLookup = new Dictionary<int, bool>();
+
+        public async Task<bool> IsModCategoryAdmin(IModifierCategory modCategory)
+        {
+            if (!isModCategoryAdminLookup.TryGetValue(modCategory.ID.Value, out var cachedIsAdmin))
+            {
+                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
+                var user = await factory.Users().User(ID.Value);
+                cachedIsAdmin = await user.IsModCategoryAdmin(modCategory);
+                isModCategoryAdminLookup.Add(modCategory.ID.Value, cachedIsAdmin);
+            }
+            return cachedIsAdmin;
+        }
+
+        private readonly Dictionary<string, bool> hasModifierLookup = new Dictionary<string, bool>();
+
+        public async Task<bool> HasModifier(ModifierKey modKey)
+        {
+            if (!hasModifierLookup.TryGetValue(modKey.Value, out var cachedHasModifier))
+            {
+                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
+                var user = await factory.Users().User(ID.Value);
+                cachedHasModifier = await user.HasModifier(modKey);
+                hasModifierLookup.Add(modKey.Value, cachedHasModifier);
+            }
+            return cachedHasModifier;
         }
     }
 }

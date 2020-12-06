@@ -40,17 +40,24 @@ namespace XTI_WebAppClient
             var response = await client.PostAsync(url, content);
             var responseContent = await response.Content.ReadAsStringAsync();
             TResult result;
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var resultContainer = JsonSerializer.Deserialize<ResultContainer<TResult>>(responseContent);
-                result = resultContainer.Data;
+                if (response.IsSuccessStatusCode)
+                {
+                    var resultContainer = JsonSerializer.Deserialize<ResultContainer<TResult>>(responseContent);
+                    result = resultContainer.Data;
+                }
+                else
+                {
+                    var resultContainer = string.IsNullOrWhiteSpace(responseContent)
+                        ? new ResultContainer<ErrorModel[]>() { Data = new ErrorModel[] { } }
+                        : JsonSerializer.Deserialize<ResultContainer<ErrorModel[]>>(responseContent);
+                    throw new AppClientException(url, response.StatusCode, resultContainer.Data);
+                }
             }
-            else
+            catch (JsonException ex)
             {
-                var resultContainer = string.IsNullOrWhiteSpace(responseContent)
-                    ? new ResultContainer<ErrorModel[]>() { Data = new ErrorModel[] { } }
-                    : JsonSerializer.Deserialize<ResultContainer<ErrorModel[]>>(responseContent);
-                throw new AppClientException(url, response.StatusCode, resultContainer.Data);
+                throw new AppClientException(url, response.StatusCode, new ErrorModel[] { new ErrorModel { Message = ex.Message } });
             }
             return result;
         }

@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
@@ -11,6 +13,7 @@ using XTI_App.Fakes;
 using XTI_Core.Fakes;
 using XTI_WebApp.Api;
 using XTI_WebApp.Fakes;
+using XTI_WebApp.TestFakes;
 
 namespace XTI_WebApp.Tests
 {
@@ -28,26 +31,30 @@ namespace XTI_WebApp.Tests
         [Test]
         public async Task ShouldSetBaseUrl()
         {
-            var input = await setup();
-            input.AppOptions.BaseUrl = "https://webapps.xartogg.com";
+            var baseUrl = "https://webapps.xartogg.com";
+            var input = await setup(baseUrl: baseUrl);
             var pageContext = await execute(input);
-            Assert.That(pageContext.BaseUrl, Is.EqualTo(input.AppOptions.BaseUrl), "Should set app title");
+            Assert.That(pageContext.BaseUrl, Is.EqualTo(baseUrl), "Should set app title");
         }
 
         [Test]
         public async Task ShouldSetEnvironmentName()
         {
+            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Staging");
             var input = await setup();
-            input.HostEnvironment.EnvironmentName = "Staging";
             var pageContext = await execute(input);
-            Assert.That(pageContext.EnvironmentName, Is.EqualTo(input.HostEnvironment.EnvironmentName), "Should set environment name");
+            Assert.That(pageContext.EnvironmentName, Is.EqualTo("Staging"), "Should set environment name");
         }
 
         [Test]
         public async Task ShouldSetUserName()
         {
             var input = await setup();
-            var user = await input.UserContext.User();
+            var user = await input.Factory.Users().User(new AppUserName("someone"));
+            input.HttpContextAccessor.HttpContext = new DefaultHttpContext
+            {
+                User = new FakeHttpUser().Create("", user)
+            };
             var pageContext = await execute(input);
             Assert.That(pageContext.IsAuthenticated, Is.True, "Should be authenticated");
             Assert.That(pageContext.UserName, Is.EqualTo(user.UserName().Value), "Should set user name");
@@ -57,11 +64,30 @@ namespace XTI_WebApp.Tests
         public async Task ShouldSetUserNameToBlankForAnon()
         {
             var input = await setup();
-            var anonUser = await input.Factory.Users().User(AppUserName.Anon);
-            input.UserContext.SetUser(anonUser);
+            input.HttpContextAccessor.HttpContext = new DefaultHttpContext();
             var pageContext = await execute(input);
             Assert.That(pageContext.IsAuthenticated, Is.False, "Should not be authenticated");
             Assert.That(pageContext.UserName, Is.EqualTo(""), "Should set user name to blank for anon");
+        }
+
+        [Test]
+        public async Task ShouldSetCacheBustToCurrentVersion()
+        {
+            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Production");
+            var input = await setup();
+            var pageContext = await execute(input);
+            var app = await input.Factory.Apps().App(FakeAppKey.AppKey);
+            var currentVersion = await app.CurrentVersion();
+            Assert.That(pageContext?.CacheBust, Is.EqualTo(currentVersion.Key().DisplayText), "Should set cacheBust to current version");
+        }
+
+        [Test]
+        public async Task ShouldNotSetCacheBust_WhenVersionIsNotCurrent()
+        {
+            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Production");
+            var input = await setup(new AppVersionKey(2));
+            var pageContext = await execute(input);
+            Assert.That(pageContext?.CacheBust, Is.Null, "Should not set cacheBust when version is null");
         }
 
         private static async Task<PageContextRecord> execute(TestInput input)
@@ -82,20 +108,47 @@ namespace XTI_WebApp.Tests
             public string EnvironmentName { get; set; }
         }
 
-        private async Task<TestInput> setup()
+        private async Task<TestInput> setup(AppVersionKey versionKey = null, string baseUrl = "https://www.xartogg.com")
         {
-            var services = new ServiceCollection();
-            services.AddFakesForXtiWebApp();
-            services.AddFakeXtiContexts();
-            var sp = services.BuildServiceProvider();
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureAppConfiguration
+                (
+                    config =>
+                    {
+                        config.AddInMemoryCollection
+                        (
+                            new[]
+                            {
+                                KeyValuePair.Create("App:BaseUrl", baseUrl)
+                            }
+                        );
+                    }
+                )
+                .ConfigureServices
+                (
+                    (hostContext, services) =>
+                    {
+                        services.AddFakesForXtiWebApp(hostContext.Configuration);
+                        services.AddSingleton(sp => FakeAppKey.AppKey);
+                        services.AddSingleton
+                        (
+                            sp => new XtiPath
+                            (
+                                FakeAppKey.AppKey.Name.DisplayText,
+                                versionKey ?? AppVersionKey.Current.DisplayText
+                            )
+                        );
+                    }
+                )
+                .Build();
+            var scope = host.Services.CreateScope();
+            var sp = scope.ServiceProvider;
             var factory = sp.GetService<AppFactory>();
-            await new AppSetup(factory).Run();
             var clock = sp.GetService<FakeClock>();
+            await new FakeAppSetup(factory, clock).Run();
             var input = new TestInput(sp);
-            var app = await factory.Apps().AddApp(new AppKey("Fake"), AppType.Values.WebApp, "Fake", clock.Now());
-            input.AppContext.SetApp(app);
-            var user = await factory.Users().Add(new AppUserName("someone"), new FakeHashedPassword("Password"), clock.Now());
-            input.UserContext.SetUser(user);
+            await factory.Apps().App(FakeAppKey.AppKey);
+            await factory.Users().Add(new AppUserName("someone"), new FakeHashedPassword("Password"), clock.Now());
             return input;
         }
 
@@ -104,21 +157,14 @@ namespace XTI_WebApp.Tests
             public TestInput(IServiceProvider sp)
             {
                 Factory = sp.GetService<AppFactory>();
-                Clock = sp.GetService<FakeClock>();
-                AppContext = (FakeAppContext)sp.GetService<IAppContext>();
-                UserContext = (FakeUserContext)sp.GetService<IUserContext>();
-                HostEnvironment = (FakeWebHostEnvironment)sp.GetService<IHostEnvironment>();
-                AppOptions = sp.GetService<IOptions<AppOptions>>().Value;
+                AppContext = sp.GetService<IAppContext>();
+                HttpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 PageContext = (PageContext)sp.GetService<IPageContext>();
-
             }
 
             public AppFactory Factory { get; }
-            public FakeClock Clock { get; }
-            public FakeAppContext AppContext { get; }
-            public FakeUserContext UserContext { get; }
-            public FakeWebHostEnvironment HostEnvironment { get; }
-            public AppOptions AppOptions { get; }
+            public IAppContext AppContext { get; }
+            public IHttpContextAccessor HttpContextAccessor { get; }
             public PageContext PageContext { get; }
         }
     }

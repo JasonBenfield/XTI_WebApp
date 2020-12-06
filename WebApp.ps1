@@ -3,7 +3,7 @@ Import-Module PowershellForXti -Force
 $script:webAppConfig = [PSCustomObject]@{
     RepoOwner = "JasonBenfield"
     RepoName = "XTI_WebApp"
-    AppKey = "XTI_WebApp"
+    AppName = "XTI_WebApp"
     AppType = "Package"
     ProjectDir = "C:\XTI\src\XTI_WebApp\Apps\XTI_WebApp"
 }

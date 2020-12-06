@@ -12,7 +12,7 @@ namespace XTI_WebApp.Api
             name = source.Name();
         }
 
-        public int ID { get; }
+        public EntityID ID { get; }
 
         public AppRoleName Name() => name;
     }

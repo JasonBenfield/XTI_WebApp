@@ -36,9 +36,9 @@ namespace XTI_WebApp
                     }
                     else if (xtiPath.IsCurrentVersion())
                     {
-                        var app = await appFactory.Apps().WebApp(new AppKey(xtiPath.App));
+                        var app = await appFactory.Apps().App(new AppKey(xtiPath.App, AppType.Values.WebApp));
                         var version = await app.CurrentVersion();
-                        value = $"V{version.ID}";
+                        value = version.Key().DisplayText;
                     }
                 }
                 else

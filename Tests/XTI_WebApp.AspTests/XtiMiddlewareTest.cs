@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -17,12 +17,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
-using XTI_App.DB;
+using XTI_App.EF;
 using XTI_App.Fakes;
 using XTI_Configuration.Extensions;
 using XTI_Core;
 using XTI_Core.Fakes;
-using XTI_WebApp.Api;
+using XTI_TempLog;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
 using XTI_WebApp.TestFakes;
@@ -37,12 +37,11 @@ namespace XTI_WebApp.AspTests
         {
             var input = await setup();
             await input.GetAsync("/Fake/Current/Controller1/Action1");
-            var sessions = await input.AppDbContext.Sessions.ToArrayAsync();
-            Assert.That(sessions.Length, Is.EqualTo(1), "Should create session");
+            var session = await getFirstStartSession(input);
             Assert.That
             (
-                sessions[0].UserAgent,
-                Is.EqualTo("Mozilla/5.0,(Windows NT 6.1; WOW64),AppleWebKit/537.36,(KHTML, like Gecko),Chrome/28.0.1500.52,Safari/537.36,OPR/15.0.1147.100"),
+                session.UserAgent,
+                Is.EqualTo("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.52 Safari/537.36 OPR/15.0.1147.100"),
                 "Should create session with user agent from request"
             );
         }
@@ -52,8 +51,28 @@ namespace XTI_WebApp.AspTests
         {
             var input = await setup();
             await input.GetAsync("/Fake/Current/Controller1/Action1");
-            var sessions = await input.AppDbContext.Sessions.ToArrayAsync();
-            Assert.That(string.IsNullOrWhiteSpace(sessions[0].RequesterKey), Is.False, "Should log requester with session");
+            var session = await getFirstStartSession(input);
+            Assert.That(string.IsNullOrWhiteSpace(session.RequesterKey), Is.False, "Should log requester with session");
+        }
+
+        private static async Task<StartSessionModel> getFirstStartSession(TestInput input)
+        {
+            var sessions = await getStartSessions(input);
+            Assert.That(sessions.Length, Is.EqualTo(1), "Should create session");
+            return sessions[0];
+        }
+
+        private static async Task<StartSessionModel[]> getStartSessions(TestInput input)
+        {
+            var sessionFiles = input.CurrentAction.TempLog.StartSessionFiles(input.Clock.Now().AddMinutes(1));
+            var sessions = new List<StartSessionModel>();
+            foreach (var sessionFile in sessionFiles)
+            {
+                var serializedSession = await sessionFile.Read();
+                var session = JsonSerializer.Deserialize<StartSessionModel>(serializedSession);
+                sessions.Add(session);
+            }
+            return sessions.ToArray();
         }
 
         [Test]
@@ -61,63 +80,46 @@ namespace XTI_WebApp.AspTests
         {
             var input = await setup();
             await input.GetAsync("/Fake/Current/Controller1/Action1");
-            var sessions = await retrieveSessionsForToday(input);
-            var session = sessions.First();
-            input.Clock.Add(TimeSpan.FromHours(1));
-            await session.End(input.Clock.Now());
+            input.Clock.Set(input.Clock.Now().AddHours(4).AddMinutes(1));
             await input.GetAsync("/Fake/Current/Controller1/Action1");
-            var sessionRecords = await input.AppDbContext.Sessions.ToArrayAsync();
-            Assert.That(sessionRecords[0].RequesterKey, Is.EqualTo(sessionRecords[1].RequesterKey), "Should reuse requester key with new session");
-
+            var sessions = await getStartSessions(input);
+            Assert.That(sessions.Length, Is.EqualTo(2));
+            Assert.That(sessions[1].RequesterKey, Is.EqualTo(sessions[0].RequesterKey), "Should reuse requester key");
         }
 
         [Test]
-        public async Task ShouldReuseSession()
+        public async Task ShouldNotStartAnonSession_WhenAnonSessionWasAlreadyStarted()
         {
             var input = await setup();
             await input.GetAsync("/Fake/Current/Controller1/Action1");
             await input.GetAsync("/Fake/Current/Controller1/Action1");
-            var sessions = await input.AppDbContext.Sessions.ToArrayAsync();
-            Assert.That(sessions.Length, Is.EqualTo(1), "Should create session");
+            var sessions = await getStartSessions(input);
+            Assert.That(sessions.Length, Is.EqualTo(1), "Should not start new session when anon session has already started");
         }
 
         [Test]
-        public async Task ShouldNotReuseSession_WhenSessionHasEnded()
+        public async Task ShouldNotReuseAnonymousSession_WhenSessionHasExpired()
         {
             var input = await setup();
             await input.GetAsync("/Fake/Current/Controller1/Action1");
-            var sessions = await retrieveSessionsForToday(input);
-            var session = sessions.First();
-            input.Clock.Add(TimeSpan.FromHours(1));
-            await session.End(input.Clock.Now());
+            input.Clock.Set(input.Clock.Now().AddHours(4).AddMinutes(1));
             await input.GetAsync("/Fake/Current/Controller1/Action1");
-            sessions = await retrieveSessionsForToday(input);
-            Assert.That(sessions.Length, Is.EqualTo(2), "Should create session");
-        }
-
-        private static async Task<AppSession[]> retrieveSessionsForToday(TestInput input)
-        {
-            return
-            (
-                await input.Factory.Sessions()
-                    .SessionsByTimeRange(input.Clock.Now().AddDays(-1), input.Clock.Now().AddDays(1))
-            )
-            .ToArray();
+            var sessions = await getStartSessions(input);
+            Assert.That(sessions.Length, Is.EqualTo(2), "Should not reuse anonymous session when it has expired");
+            Assert.That(sessions[1].SessionKey, Is.Not.EqualTo(sessions[0].SessionKey), "Should not reuse anonymous session when it has expired");
         }
 
         [Test]
-        public async Task ShouldUseSessionForAuthenticatedUser()
+        public async Task ShouldNotStartNewSession_WhenSessionHasAlreadyBeenStarted()
         {
             var input = await setup();
             var user = await input.Factory.Users().User(new AppUserName("xartogg"));
-            var session = await input.Factory.Sessions().Create(Guid.NewGuid().ToString("N"), user, input.Clock.Now(), "", "", "");
             input.TestAuthOptions.IsEnabled = true;
-            input.TestAuthOptions.Session = session;
+            input.TestAuthOptions.SessionKey = Guid.NewGuid().ToString("N");
             input.TestAuthOptions.User = user;
             await input.GetAsync("/Fake/Current/Controller1/Action1");
-            var sessions = await input.AppDbContext.Sessions.ToArrayAsync();
-            Assert.That(sessions.Length, Is.EqualTo(1), "Should use session for authenticated user");
-            Assert.That(sessions[0].UserID, Is.EqualTo(user.ID), "Should create session for authenticated user");
+            var sessionFiles = input.CurrentAction.TempLog.StartSessionFiles(input.Clock.Now().AddMinutes(1)).ToArray();
+            Assert.That(sessionFiles.Length, Is.EqualTo(0), "Should not start session when session key exists");
         }
 
         [Test]
@@ -125,9 +127,12 @@ namespace XTI_WebApp.AspTests
         {
             var input = await setup();
             await input.GetAsync("/Fake/Current/Controller1/Action1");
-            var sessions = await input.AppDbContext.Sessions.ToArrayAsync();
             var anonUser = await input.Factory.Users().User(AppUserName.Anon);
-            Assert.That(sessions[0].UserID, Is.EqualTo(anonUser.ID), "Should create session with anonymous user");
+            var sessionFiles = input.CurrentAction.TempLog.StartSessionFiles(input.Clock.Now().AddMinutes(1)).ToArray();
+            Assert.That(sessionFiles.Length, Is.EqualTo(1), "Should use session for authenticated user");
+            var serializedSession = await sessionFiles[0].Read();
+            var session = JsonSerializer.Deserialize<StartSessionModel>(serializedSession);
+            Assert.That(session.UserName, Is.EqualTo(anonUser.UserName().Value), "Should create session with anonymous user");
         }
 
         [Test]
@@ -136,10 +141,8 @@ namespace XTI_WebApp.AspTests
             var input = await setup();
             var uri = "/Fake/Current/Controller1/Action1";
             await input.GetAsync(uri);
-            var sessions = await retrieveSessionsForToday(input);
-            var requests = (await sessions[0].Requests()).ToArray();
-            Assert.That(requests.Length, Is.EqualTo(1), "Should log request");
-            Assert.That(requests[0].ResourceName, Is.EqualTo(XtiPath.Parse(uri)), "Should log resource key for request");
+            var request = await getStartRequest(input);
+            Assert.That(request.Path, Is.EqualTo(uri), "Should log resource key for request");
         }
 
         [Test]
@@ -148,9 +151,8 @@ namespace XTI_WebApp.AspTests
             var input = await setup();
             var uri = "/Fake/Current/Controller1/Action1";
             await input.GetAsync(uri);
-            var sessions = await retrieveSessionsForToday(input);
-            var requests = (await sessions[0].Requests()).ToArray();
-            Assert.That(requests[0].HasEnded(), Is.True, "Should log end of request");
+            var requestFiles = input.CurrentAction.TempLog.EndRequestFiles(input.Clock.Now().AddMinutes(1)).ToArray();
+            Assert.That(requestFiles.Length, Is.EqualTo(1), "Should log end of request");
         }
 
         [Test]
@@ -159,30 +161,39 @@ namespace XTI_WebApp.AspTests
             var input = await setup();
             var uri = "/Fake/Current/Controller1/Action1";
             await input.GetAsync(uri);
-            var sessions = await retrieveSessionsForToday(input);
-            var requests = (await sessions[0].Requests()).ToArray();
-            var version = await requests[0].Version();
-            Assert.That(version.ID, Is.EqualTo(input.CurrentVersion.ID));
+            var request = await getStartRequest(input);
+            var path = XtiPath.Parse(request.Path);
+            Assert.That(path.Version, Is.EqualTo(AppVersionKey.Current), "Should log current version");
         }
 
         [Test]
         public async Task ShouldLogExplicitVersionWithRequest()
         {
             var input = await setup();
-            var explicitVersion = await input.App.StartNewPatch(input.Clock.Now());
-            var uri = $"/Fake/V{explicitVersion.ID}/Controller1/Action1";
+            var app = await input.Factory.Apps().App(FakeAppKey.AppKey);
+            var explicitVersion = await app.StartNewPatch(input.Clock.Now());
+            var uri = $"/Fake/{explicitVersion.Key().Value}/Controller1/Action1";
             await input.GetAsync(uri);
-            var sessions = await retrieveSessionsForToday(input);
-            var requests = (await sessions[0].Requests()).ToArray();
-            var requestVersion = await requests[0].Version();
-            Assert.That(requestVersion.ID, Is.EqualTo(explicitVersion.ID));
+            var request = await getStartRequest(input);
+            var path = XtiPath.Parse(request.Path);
+            Assert.That(path.Version, Is.EqualTo(explicitVersion.Key()), "Should log explicit version");
+        }
+
+        private static async Task<StartRequestModel> getStartRequest(TestInput input)
+        {
+            var requestFiles = input.CurrentAction.TempLog.StartRequestFiles(input.Clock.Now().AddMinutes(1)).ToArray();
+            Assert.That(requestFiles.Length, Is.EqualTo(1), "Should log end of request");
+            var serializedRequest = await requestFiles[0].Read();
+            var request = JsonSerializer.Deserialize<StartRequestModel>(serializedRequest);
+            return request;
         }
 
         [Test]
         public async Task ShouldLogUnexpectedError()
         {
             Exception exception = null;
-            var input = await setup(c =>
+            var input = await setup();
+            input.CurrentAction.Action = c =>
             {
                 try
                 {
@@ -194,24 +205,31 @@ namespace XTI_WebApp.AspTests
                     throw;
                 }
                 return Task.CompletedTask;
-            });
+            };
             var uri = "/Fake/Current/Controller1/Action1";
             await input.GetAsync(uri);
-            var session = (await retrieveSessionsForToday(input)).First();
-            var request = (await session.Requests()).First();
-            var events = (await request.Events()).ToArray();
-            Assert.That(events.Length, Is.EqualTo(1), "Should log critical error");
-            Assert.That(events[0].Severity, Is.EqualTo(AppEventSeverity.Values.CriticalError), "Should log critical error");
-            Assert.That(events[0].Caption, Is.EqualTo("An unexpected error occurred"), "Should log critical error");
-            Assert.That(events[0].Message, Is.EqualTo(exception.Message), "Should log critical error");
-            Assert.That(events[0].Detail, Is.EqualTo(exception.StackTrace), "Should log critical error");
+            var evt = await getEvent(input);
+            Assert.That(evt.Severity, Is.EqualTo(AppEventSeverity.Values.CriticalError.Value), "Should log critical error");
+            Assert.That(evt.Caption, Is.EqualTo("An unexpected error occurred"), "Should log critical error");
+            Assert.That(evt.Message, Is.EqualTo(exception.Message), "Should log critical error");
+            Assert.That(evt.Detail, Is.EqualTo(exception.StackTrace), "Should log critical error");
+        }
+
+        private static async Task<LogEventModel> getEvent(TestInput input)
+        {
+            var eventFiles = input.CurrentAction.TempLog.LogEventFiles(input.Clock.Now().AddMinutes(1)).ToArray();
+            Assert.That(eventFiles.Length, Is.EqualTo(1), "Should log event");
+            var serializedEvent = await eventFiles[0].Read();
+            var evt = JsonSerializer.Deserialize<LogEventModel>(serializedEvent);
+            return evt;
         }
 
         [Test]
         public async Task ShouldLogValidationError()
         {
             Exception exception = null;
-            var input = await setup(c =>
+            var input = await setup();
+            input.CurrentAction.Action = c =>
             {
                 try
                 {
@@ -223,24 +241,22 @@ namespace XTI_WebApp.AspTests
                     throw;
                 }
                 return Task.CompletedTask;
-            });
+            };
             var uri = "/Fake/Current/Controller1/Action1";
             await input.GetAsync(uri);
-            var session = (await retrieveSessionsForToday(input)).First();
-            var request = (await session.Requests()).First();
-            var events = (await request.Events()).ToArray();
-            Assert.That(events.Length, Is.EqualTo(1), "Should log validation failed");
-            Assert.That(events[0].Severity, Is.EqualTo(AppEventSeverity.Values.ValidationFailed), "Should log validation failed");
-            Assert.That(events[0].Caption, Is.EqualTo("Validation Failed"), "Should log validation failed");
-            Assert.That(events[0].Message, Is.EqualTo("Validation failed with the following errors:\r\nUser name is required"), "Should log validation failed");
-            Assert.That(events[0].Detail, Is.EqualTo(exception.StackTrace), "Should log validation failed");
+            var evt = await getEvent(input);
+            Assert.That(evt.Severity, Is.EqualTo(AppEventSeverity.Values.ValidationFailed.Value), "Should log validation failed");
+            Assert.That(evt.Caption, Is.EqualTo("Validation Failed"), "Should log validation failed");
+            Assert.That(evt.Message, Is.EqualTo("Validation failed with the following errors:\r\nUser name is required"), "Should log validation failed");
+            Assert.That(evt.Detail, Is.EqualTo(exception.StackTrace), "Should log validation failed");
         }
 
         [Test]
         public async Task ShouldLogAppError()
         {
             Exception exception = null;
-            var input = await setup(c =>
+            var input = await setup();
+            input.CurrentAction.Action = c =>
             {
                 try
                 {
@@ -252,17 +268,14 @@ namespace XTI_WebApp.AspTests
                     throw;
                 }
                 return Task.CompletedTask;
-            });
+            };
             var uri = "/Fake/Current/Controller1/Action1";
             await input.GetAsync(uri);
-            var session = (await retrieveSessionsForToday(input)).First();
-            var request = (await session.Requests()).First();
-            var events = (await request.Events()).ToArray();
-            Assert.That(events.Length, Is.EqualTo(1), "Should log app error");
-            Assert.That(events[0].Severity, Is.EqualTo(AppEventSeverity.Values.AppError), "Should log app error");
-            Assert.That(events[0].Caption, Is.EqualTo("Display Message"), "Should log app error");
-            Assert.That(events[0].Message, Is.EqualTo("Full Message"), "Should log app error");
-            Assert.That(events[0].Detail, Is.EqualTo(exception.StackTrace), "Should log app error");
+            var evt = await getEvent(input);
+            Assert.That(evt.Severity, Is.EqualTo(AppEventSeverity.Values.AppError.Value), "Should log app error");
+            Assert.That(evt.Caption, Is.EqualTo("Display Message"), "Should log app error");
+            Assert.That(evt.Message, Is.EqualTo("Full Message"), "Should log app error");
+            Assert.That(evt.Detail, Is.EqualTo(exception.StackTrace), "Should log app error");
         }
 
         [Test]
@@ -270,7 +283,8 @@ namespace XTI_WebApp.AspTests
         {
             Exception exception = null;
             var uri = "/Fake/Current/Controller1/Action1";
-            var input = await setup(c =>
+            var input = await setup();
+            input.CurrentAction.Action = c =>
             {
                 try
                 {
@@ -282,23 +296,21 @@ namespace XTI_WebApp.AspTests
                     throw;
                 }
                 return Task.CompletedTask;
-            });
+            };
             await input.GetAsync(uri);
-            var session = (await retrieveSessionsForToday(input)).First();
-            var request = (await session.Requests()).First();
-            var events = (await request.Events()).ToArray();
-            Assert.That(events.Length, Is.EqualTo(1), "Should log access denied");
-            Assert.That(events[0].Severity, Is.EqualTo(AppEventSeverity.Values.AccessDenied), "Should log access denied");
-            Assert.That(events[0].Caption, Is.EqualTo("Access Denied"), "Should log access denied");
-            Assert.That(events[0].Message, Is.EqualTo("Access denied to Fake/Current/Controller1/Action1"), "Should log access denied");
-            Assert.That(events[0].Detail, Is.EqualTo(exception.StackTrace), "Should log access denied");
+            var evt = await getEvent(input);
+            Assert.That(evt.Severity, Is.EqualTo(AppEventSeverity.Values.AccessDenied.Value), "Should log access denied");
+            Assert.That(evt.Caption, Is.EqualTo("Access Denied"), "Should log access denied");
+            Assert.That(evt.Message, Is.EqualTo("Access denied to Fake/Current/Controller1/Action1"), "Should log access denied");
+            Assert.That(evt.Detail, Is.EqualTo(exception.StackTrace), "Should log access denied");
         }
 
         [Test]
         public async Task ShouldReturnServerError_WhenAnUnexpectedErrorOccurs()
         {
             Exception exception = null;
-            var input = await setup(c =>
+            var input = await setup();
+            input.CurrentAction.Action = c =>
             {
                 try
                 {
@@ -310,7 +322,7 @@ namespace XTI_WebApp.AspTests
                     throw;
                 }
                 return Task.CompletedTask;
-            });
+            };
             var uri = "/Fake/Current/Controller1/Action1";
             var response = await input.GetAsync(uri);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.InternalServerError));
@@ -329,11 +341,12 @@ namespace XTI_WebApp.AspTests
         public async Task ShouldReturnBadRequestError400_WhenAValidationErrorOccurs()
         {
             var errors = new[] { new ErrorModel("Field is required") };
-            var input = await setup(c =>
+            var input = await setup();
+            input.CurrentAction.Action = c =>
             {
                 throw new ValidationFailedException(errors);
                 return Task.CompletedTask;
-            });
+            };
             var uri = "/Fake/Current/Controller1/Action1";
             var response = await input.GetAsync(uri);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
@@ -347,7 +360,8 @@ namespace XTI_WebApp.AspTests
         {
             AccessDeniedException exception = null;
             var uri = "/Fake/Current/Controller1/Action1";
-            var input = await setup(c =>
+            var input = await setup();
+            input.CurrentAction.Action = c =>
             {
                 try
                 {
@@ -359,7 +373,7 @@ namespace XTI_WebApp.AspTests
                     throw;
                 }
                 return Task.CompletedTask;
-            });
+            };
             var response = await input.GetAsync(uri);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
             var result = await response.Content.ReadAsStringAsync();
@@ -373,7 +387,8 @@ namespace XTI_WebApp.AspTests
         {
             TestAppException exception = null;
             var uri = "/Fake/Current/Controller1/Action1";
-            var input = await setup(c =>
+            var input = await setup();
+            input.CurrentAction.Action = c =>
             {
                 try
                 {
@@ -385,88 +400,13 @@ namespace XTI_WebApp.AspTests
                     throw;
                 }
                 return Task.CompletedTask;
-            });
+            };
             var response = await input.GetAsync(uri);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
             var result = await response.Content.ReadAsStringAsync();
             var errors = new[] { new ErrorModel(exception.DisplayMessage) };
             var expectedResult = JsonSerializer.Serialize(new ResultContainer<ErrorModel[]>(errors));
             Assert.That(result, Is.EqualTo(expectedResult), "Should return errors");
-        }
-
-        [Test]
-        public async Task ShouldSetCacheBustToCurrentVersion()
-        {
-            PageContext pageContext = null;
-            var input = await setup(async (context) =>
-            {
-                pageContext = (PageContext)context.RequestServices.GetService<IPageContext>();
-                await pageContext.Serialize();
-            });
-            var uri = "/Fake/Current/Controller1/Action1";
-            await input.GetAsync(uri);
-            Assert.That(pageContext?.CacheBust, Is.EqualTo($"V{input.CurrentVersion.ID}"), "Should set cacheBust to current version");
-        }
-
-        [Test]
-        public async Task ShouldNotSetCacheBust_WhenVersionIsNotCurrent()
-        {
-            PageContext pageContext = null;
-            var input = await setup(async (context) =>
-            {
-                pageContext = context.RequestServices.GetService<PageContext>();
-                await pageContext.Serialize();
-            });
-            var uri = $"/Fake/V{input.CurrentVersion.ID}/Controller1/Action1";
-            await input.GetAsync(uri);
-            Assert.That(pageContext?.CacheBust, Is.Null, "Should not set cacheBust when version is null");
-        }
-
-        [Test]
-        public async Task ShouldCacheCurrentVersion()
-        {
-            IAppVersion versionFromContext = null;
-            var input = await setup(async (context) =>
-            {
-                var appContext = context.RequestServices.GetService<IAppContext>();
-                var app = await appContext.App();
-                versionFromContext = await app.CurrentVersion();
-            });
-            var uri = "/Fake/Current/Controller1/Action1";
-            await input.GetAsync(uri);
-            var version = await input.App.StartNewMajorVersion(DateTime.UtcNow);
-            await version.Publishing();
-            await version.Published();
-            await input.GetAsync(uri);
-            Assert.That(versionFromContext?.ID, Is.EqualTo(input.CurrentVersion.ID), "Should cache current version");
-        }
-
-        [Test]
-        public async Task ShouldCacheUserRoles()
-        {
-            IAppUserRole[] userRoles = new IAppUserRole[] { };
-            var input = await setup(async (context) =>
-            {
-                var userContext = context.RequestServices.GetService<IUserContext>();
-                var user = await userContext.User();
-                var appContext = context.RequestServices.GetService<IAppContext>();
-                var app = await appContext.App();
-                userRoles = (await user.RolesForApp(app)).ToArray();
-            });
-            var adminRole = await input.App.AddRole(new AppRoleName("Admin"));
-            var managerRole = await input.App.AddRole(new AppRoleName("Manager"));
-            var user = await input.Factory.Users().User(new AppUserName("xartogg"));
-            var userAdminRole = await user.AddRole(adminRole);
-            await user.AddRole(managerRole);
-            var session = await input.Factory.Sessions().Create(Guid.NewGuid().ToString("N"), user, input.Clock.Now(), "", "", "");
-            input.TestAuthOptions.IsEnabled = true;
-            input.TestAuthOptions.Session = session;
-            input.TestAuthOptions.User = user;
-            var uri = "/Fake/Current/Controller1/Action1";
-            await input.GetAsync(uri);
-            await user.RemoveRole(userAdminRole);
-            await input.GetAsync(uri);
-            Assert.That(userRoles.Length, Is.EqualTo(2), "Should cache user roles");
         }
 
         private sealed class TestAppException : AppException
@@ -476,16 +416,23 @@ namespace XTI_WebApp.AspTests
             }
         }
 
-        private async Task<TestInput> setup(Func<HttpContext, Task> mainApp = null)
+        private sealed class CurrentAction
         {
-            if (mainApp == null)
+            public CurrentAction()
             {
-                mainApp = c =>
+                Action = (c) =>
                 {
                     c.Response.StatusCode = StatusCodes.Status200OK;
                     return Task.CompletedTask;
                 };
             }
+            public TempLog TempLog { get; set; }
+            public Func<HttpContext, Task> Action { get; set; }
+        }
+
+        private async Task<TestInput> setup()
+        {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
             var hostBuilder = new HostBuilder();
             var host = await hostBuilder
                 .ConfigureWebHost(webBuilder =>
@@ -494,6 +441,7 @@ namespace XTI_WebApp.AspTests
                         .UseTestServer()
                         .ConfigureServices((context, services) =>
                         {
+                            services.AddSingleton<CurrentAction>();
                             services.AddSingleton<TestAuthOptions>();
                             services
                                 .AddAuthentication("Test")
@@ -509,9 +457,10 @@ namespace XTI_WebApp.AspTests
                                         .RequireAuthenticatedUser()
                                         .Build();
                             });
-                            services.AddAppDbContextForInMemory();
-                            services.AddFakesForXtiWebApp();
-                            services.AddXtiContextServices();
+                            services.AddFakesForXtiWebApp(context.Configuration);
+                            services.AddSingleton(sp => FakeAppKey.AppKey);
+                            services.AddSingleton<AppFactory, EfAppFactory>();
+                            services.AddSingleton<IAnonClient, FakeAnonClient>();
                             services.AddScoped<FakeAppSetup>();
                         })
                         .Configure(app =>
@@ -519,45 +468,45 @@ namespace XTI_WebApp.AspTests
                             app.UseAuthentication();
                             app.UseAuthorization();
                             app.UseXti();
-                            app.Run(c => mainApp(c));
+                            app.Run(async (c) =>
+                            {
+                                var currentAction = c.RequestServices.GetService<CurrentAction>();
+                                currentAction.TempLog = c.RequestServices.GetService<TempLog>();
+                                await currentAction.Action(c);
+                            });
                         });
                 })
                 .ConfigureAppConfiguration
                 (
-                    (hostingContext, config) => config.UseXtiConfiguration(hostingContext.HostingEnvironment.EnvironmentName, new string[] { })
+                    (hostingContext, config) =>
+                    {
+                        config.UseXtiConfiguration(hostingContext.HostingEnvironment, new string[] { });
+                    }
                 )
                 .StartAsync();
             var factory = host.Services.GetService<AppFactory>();
-            await new AppSetup(factory).Run();
-            var setup = host.Services.GetService<FakeAppSetup>();
-            await setup.Run();
-            return new TestInput(host, setup.App, setup.CurrentVersion);
+            var clock = host.Services.GetService<Clock>();
+            await new FakeAppSetup(factory, clock).Run();
+            return new TestInput(host);
         }
 
         private sealed class TestInput
         {
-            public TestInput(IHost host, App app, AppVersion currentVersion)
+            public TestInput(IHost host)
             {
                 Host = host;
-                AppDbContext = host.Services.GetService<AppDbContext>();
                 Factory = host.Services.GetService<AppFactory>();
                 Clock = (FakeClock)host.Services.GetService<Clock>();
                 TestAuthOptions = host.Services.GetService<TestAuthOptions>();
                 Cookies = new CookieContainer();
-                App = app;
-                CurrentVersion = currentVersion;
-                HostEnvironment = (FakeWebHostEnvironment)host.Services.GetService<IHostEnvironment>();
-                HostEnvironment.EnvironmentName = "Production";
+                CurrentAction = host.Services.GetService<CurrentAction>();
             }
             public IHost Host { get; }
             public CookieContainer Cookies { get; }
-            public AppDbContext AppDbContext { get; }
             public AppFactory Factory { get; }
             public FakeClock Clock { get; }
             public TestAuthOptions TestAuthOptions { get; }
-            public App App { get; }
-            public AppVersion CurrentVersion { get; }
-            public FakeWebHostEnvironment HostEnvironment { get; }
+            public CurrentAction CurrentAction { get; }
 
             public async Task<HttpResponseMessage> GetAsync(string relativeUrl)
             {

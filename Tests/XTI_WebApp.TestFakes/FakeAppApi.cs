@@ -4,52 +4,30 @@ using XTI_App;
 using XTI_App.Api;
 using XTI_WebApp.Api;
 
-namespace XTI_WebApp.Tests
+namespace XTI_WebApp.TestFakes
 {
-
     public sealed class FakeAppApi : WebAppApi
     {
-        private static readonly string AppKeyValue = "Fake";
-        public static readonly AppKey AppKey = new AppKey(AppKeyValue);
 
-        public FakeAppApi(string version, IAppApiUser user)
+        public FakeAppApi(AppKey appKey, AppVersionKey versionKey, IAppApiUser user)
             : base
             (
-                  AppKeyValue,
-                  version,
-                  user,
-                  ResourceAccess.AllowAuthenticated()
-                    .WithAllowed(FakeRoleNames.Instance.Admin)
+                appKey,
+                versionKey,
+                user,
+                ResourceAccess.AllowAuthenticated()
+                    .WithAllowed(FakeAppRoles.Instance.Admin)
             )
         {
-            Login = AddGroup(u => new LoginGroup(this, u));
             Home = AddGroup(u => new HomeGroup(this, u));
+            Login = AddGroup(u => new LoginGroup(this, u));
             Employee = AddGroup(u => new EmployeeGroup(this, u));
             Product = AddGroup(u => new ProductGroup(this, u));
         }
-        public LoginGroup Login { get; }
         public HomeGroup Home { get; }
+        public LoginGroup Login { get; }
         public EmployeeGroup Employee { get; }
         public ProductGroup Product { get; }
-    }
-
-    public sealed class HomeGroup : AppApiGroup
-    {
-        public HomeGroup(AppApi api, IAppApiUser user)
-            : base
-            (
-                api,
-                new NameFromGroupClassName(nameof(HomeGroup)).Value,
-                true,
-                ResourceAccess.AllowAuthenticated(),
-                user,
-                (name, ra, u) => new WebAppApiActionCollection(name, ra, u)
-            )
-        {
-            var actions = Actions<WebAppApiActionCollection>();
-            Index = actions.AddDefaultView();
-        }
-        public AppApiAction<EmptyRequest, AppActionViewResult> Index { get; }
     }
 
     public sealed class LoginGroup : AppApiGroup
@@ -57,18 +35,45 @@ namespace XTI_WebApp.Tests
         public LoginGroup(AppApi api, IAppApiUser user)
             : base
             (
-                api,
-                new NameFromGroupClassName(nameof(LoginGroup)).Value,
-                true,
-                ResourceAccess.AllowAnonymous(),
-                user,
-                (name, ra, u) => new WebAppApiActionCollection(name, ra, u)
+                  api,
+                  new NameFromGroupClassName(nameof(LoginGroup)).Value,
+                  ModifierCategoryName.Default,
+                  ResourceAccess.AllowAnonymous(),
+                  user,
+                  (p, a, u) => new AppApiActionCollection(p, a, u)
             )
         {
-            var actions = Actions<WebAppApiActionCollection>();
-            Index = actions.AddDefaultView();
+            var actions = Actions<AppApiActionCollection>();
+            Authenticate = actions.Add
+            (
+                nameof(Authenticate),
+                () => new EmptyAppAction<EmptyRequest, EmptyActionResult>()
+            );
         }
-        public AppApiAction<EmptyRequest, AppActionViewResult> Index { get; }
+        public AppApiAction<EmptyRequest, EmptyActionResult> Authenticate { get; }
+    }
+
+    public sealed class HomeGroup : AppApiGroup
+    {
+        public HomeGroup(AppApi api, IAppApiUser user)
+            : base
+            (
+                  api,
+                  new NameFromGroupClassName(nameof(HomeGroup)).Value,
+                  ModifierCategoryName.Default,
+                  ResourceAccess.AllowAuthenticated(),
+                  user,
+                  (n, a, u) => new AppApiActionCollection(n, a, u)
+            )
+        {
+            var actions = Actions<AppApiActionCollection>();
+            DoSomething = actions.Add
+            (
+                nameof(DoSomething),
+                () => new EmptyAppAction<EmptyRequest, EmptyActionResult>()
+            );
+        }
+        public AppApiAction<EmptyRequest, EmptyActionResult> DoSomething { get; }
     }
 
     public sealed class EmployeeGroup : AppApiGroup
@@ -76,32 +81,28 @@ namespace XTI_WebApp.Tests
         public EmployeeGroup(AppApi api, IAppApiUser user)
             : base
             (
-                api,
-                new NameFromGroupClassName(nameof(EmployeeGroup)).Value,
-                true,
-                api.Access
-                    .WithAllowed(FakeRoleNames.Instance.Manager)
-                    .WithDenied(FakeRoleNames.Instance.Viewer),
-                user,
-                (name, ra, u) => new WebAppApiActionCollection(name, ra, u)
+                  api,
+                  new NameFromGroupClassName(nameof(EmployeeGroup)).Value,
+                  new ModifierCategoryName("Department"),
+                  api.Access,
+                  user,
+                  (n, a, u) => new AppApiActionCollection(n, a, u)
             )
         {
-            var actions = Actions<WebAppApiActionCollection>();
-            Index = actions.AddDefaultView();
-            AddEmployee = actions.AddAction
+            var actions = Actions<AppApiActionCollection>();
+            AddEmployee = actions.Add
             (
-                "AddEmployee",
+                nameof(AddEmployee),
                 () => new AddEmployeeValidation(),
                 () => new AddEmployeeAction()
             );
-            Employee = actions.AddAction
+            Employee = actions.Add
             (
-                "Employee",
+                nameof(Employee),
                 () => new EmployeeAction(),
                 "Get Employee Information"
             );
         }
-        public AppApiAction<EmptyRequest, AppActionViewResult> Index { get; }
         public AppApiAction<AddEmployeeModel, int> AddEmployee { get; }
         public AppApiAction<int, Employee> Employee { get; }
     }
@@ -154,34 +155,32 @@ namespace XTI_WebApp.Tests
             (
                 api,
                 new NameFromGroupClassName(nameof(ProductGroup)).Value,
-                true,
+                ModifierCategoryName.Default,
                 api.Access
-                    .WithDenied(FakeRoleNames.Instance.Viewer),
+                  .WithDenied(FakeAppRoles.Instance.Viewer),
                 user,
-                (name, ra, u) => new WebAppApiActionCollection(name, ra, u)
+                (n, a, u) => new AppApiActionCollection(n, a, u)
             )
         {
-            var actions = Actions<WebAppApiActionCollection>();
-            Index = actions.AddDefaultView();
-            GetInfo = actions.AddAction
+            var actions = Actions<AppApiActionCollection>();
+            GetInfo = actions.Add
             (
                 "GetInfo",
                 () => new GetInfoAction()
             );
-            AddProduct = actions.AddAction
+            AddProduct = actions.Add
             (
-                "AddProduct",
+                nameof(AddProduct),
                 () => new AddProductValidation(),
                 () => new AddProductAction()
             );
-            Product = actions.AddAction
+            Product = actions.Add
             (
                 "Product",
                 () => new ProductAction(),
                 "Get Product Information"
             );
         }
-        public AppApiAction<EmptyRequest, AppActionViewResult> Index { get; }
         public AppApiAction<EmptyRequest, string> GetInfo { get; }
         public AppApiAction<AddProductModel, int> AddProduct { get; }
         public AppApiAction<int, Product> Product { get; }

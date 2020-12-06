@@ -6,13 +6,14 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_WebApp.Extensions;
+using XTI_WebApp.Fakes;
 
 namespace XTI_WebApp.AspTests
 {
     public sealed class TestAuthOptions
     {
         public bool IsEnabled { get; set; }
-        public AppSession Session { get; set; }
+        public string SessionKey { get; set; }
         public AppUser User { get; set; }
     }
 
@@ -32,9 +33,7 @@ namespace XTI_WebApp.AspTests
             AuthenticateResult result;
             if (testOptions.IsEnabled)
             {
-                var claims = new XtiClaimsCreator(testOptions.Session, testOptions.User).Values();
-                var identity = new ClaimsIdentity(claims, "Test");
-                var principal = new ClaimsPrincipal(identity);
+                var principal = new FakeHttpUser().Create(testOptions.SessionKey, testOptions.User);
                 var ticket = new AuthenticationTicket(principal, "Test");
                 result = AuthenticateResult.Success(ticket);
             }

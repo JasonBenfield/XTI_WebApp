@@ -26,7 +26,7 @@ namespace XTI_WebApp.Api
             if (httpUser?.Identity.IsAuthenticated == true)
             {
                 var xtiClaims = new XtiClaims(httpContextAccessor);
-                user = await User(xtiClaims.UserID());
+                user = await appFactory.Users().User(xtiClaims.UserID());
             }
             else
             {

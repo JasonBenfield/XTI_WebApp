@@ -2,15 +2,14 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using XTI_App;
-using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
 using XTI_WebApp.TagHelpers;
 using XTI_WebApp.TestFakes;
@@ -49,8 +48,8 @@ namespace XTI_WebApp.AspTests
         [Test]
         public async Task ShouldIncludeCacheBustFromWebAppOptions()
         {
-            var input = await setup();
-            input.WebAppOptions.Value.CacheBust = "X";
+            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Production");
+            var input = await setup(cacheBust: "X");
             var result = await execute(input);
             var src = result.Attributes[0].Value;
             Assert.That(src, Does.EndWith("?cacheBust=X"));
@@ -59,18 +58,18 @@ namespace XTI_WebApp.AspTests
         [Test]
         public async Task ShouldIncludeVersionIfPathIsCurrent()
         {
+            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Production");
             var input = await setup("/Fake/Current/Group/Action");
-            input.Environment.EnvironmentName = "Production";
             var result = await execute(input);
             var src = result.Attributes[0].Value;
-            Assert.That(src, Does.EndWith($"?cacheBust=V{input.CurrentVersion.ID}"));
+            Assert.That(src, Does.EndWith($"?cacheBust={input.CurrentVersion.Key().DisplayText}"));
         }
 
         [Test]
         public async Task ShouldNotIncludeVersionIfPathHasExplicitVersion()
         {
+            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Production");
             var input = await setup("/Fake/V1/Group/Action");
-            input.Environment.EnvironmentName = "Production";
             var result = await execute(input);
             var src = result.Attributes[0].Value;
             Assert.That(src, Does.EndWith($".js"));
@@ -83,25 +82,42 @@ namespace XTI_WebApp.AspTests
         [TestCase("Production", "dist")]
         public async Task ShouldChangePathBasedOnEnvironment(string envName, string expectedPath)
         {
+            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", envName);
             var input = await setup();
-            input.Environment.EnvironmentName = envName;
             var result = await execute(input);
             var src = result.Attributes[0].Value;
             Assert.That(src, Does.StartWith($"/js/{expectedPath}/"));
         }
 
-        private async Task<TestInput> setup(string path = "/Fake/Current/Group/Action")
+        private async Task<TestInput> setup(string path = "/Fake/Current/Group/Action", string cacheBust = "")
         {
-            var services = new ServiceCollection();
-            services.AddFakesForXtiWebApp();
-            services.AddSingleton(sp => (IWebHostEnvironment)sp.GetService<IHostEnvironment>());
-            services.AddSingleton<IOptions<WebAppOptions>, FakeOptions<WebAppOptions>>();
-            services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
-            services.AddSingleton<CacheBust>();
-            services.AddSingleton(sp => XtiPath.Parse(path));
-            services.AddSingleton<MainScriptTagHelper>();
-            services.AddScoped<FakeAppSetup>();
-            var sp = services.BuildServiceProvider();
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureAppConfiguration
+                (
+                    config =>
+                    {
+                        config.AddInMemoryCollection(new[]
+                        {
+                            KeyValuePair.Create("WebApp:CacheBust", cacheBust)
+                        });
+                    }
+                )
+                .ConfigureServices
+                (
+                    (hostContext, services) =>
+                    {
+                        services.AddFakesForXtiWebApp(hostContext.Configuration);
+                        services.AddSingleton(sp => FakeAppKey.AppKey);
+                        services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
+                        services.AddScoped<CacheBust>();
+                        services.AddSingleton(sp => XtiPath.Parse(path));
+                        services.AddScoped<MainScriptTagHelper>();
+                        services.AddScoped<FakeAppSetup>();
+                    }
+                )
+                .Build();
+            var scope = host.Services.CreateScope();
+            var sp = scope.ServiceProvider;
             var setup = sp.GetService<FakeAppSetup>();
             await setup.Run();
             return new TestInput(sp);
@@ -132,10 +148,8 @@ namespace XTI_WebApp.AspTests
 
         private sealed class TestInput
         {
-            public TestInput(ServiceProvider sp)
+            public TestInput(IServiceProvider sp)
             {
-                Environment = (FakeWebHostEnvironment)sp.GetService<IHostEnvironment>();
-                Environment.EnvironmentName = "Test";
                 TagHelper = sp.GetService<MainScriptTagHelper>();
                 TagHelper.PageName = "home";
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
@@ -152,16 +166,10 @@ namespace XTI_WebApp.AspTests
                     HttpContext = httpContextAccessor.HttpContext,
                     RouteData = new Microsoft.AspNetCore.Routing.RouteData()
                 };
-                WebAppOptions = (FakeOptions<WebAppOptions>)sp.GetService<IOptions<WebAppOptions>>();
-                WebAppOptions.Value.CacheBust = "";
                 var setup = sp.GetService<FakeAppSetup>();
-                App = setup.App;
                 CurrentVersion = setup.CurrentVersion;
             }
-            public FakeWebHostEnvironment Environment { get; }
-            public FakeOptions<WebAppOptions> WebAppOptions { get; }
             public MainScriptTagHelper TagHelper { get; }
-            public App App { get; }
             public AppVersion CurrentVersion { get; }
         }
     }
