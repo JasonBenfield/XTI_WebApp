@@ -5,18 +5,19 @@ namespace XTI_WebApp
 {
     public sealed class XtiClaims
     {
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly HttpContext httpContext;
 
         public XtiClaims(IHttpContextAccessor httpContextAccessor)
+            : this(httpContextAccessor.HttpContext)
         {
-            this.httpContextAccessor = httpContextAccessor;
         }
 
-        public int SessionID()
+        public XtiClaims(HttpContext httpContext)
         {
-            var sessionIDValue = claim("SessionID");
-            return string.IsNullOrWhiteSpace(sessionIDValue) ? 0 : int.Parse(sessionIDValue);
+            this.httpContext = httpContext;
         }
+
+        public string SessionKey() => claim("SessionKey");
 
         public int UserID()
         {
@@ -26,7 +27,7 @@ namespace XTI_WebApp
 
         private string claim(string type)
         {
-            var httpUser = httpContextAccessor.HttpContext?.User;
+            var httpUser = httpContext?.User;
             return httpUser?.Identity.IsAuthenticated == true
                 ? httpUser.Claims.First(c => c.Type == type).Value
                 : "";

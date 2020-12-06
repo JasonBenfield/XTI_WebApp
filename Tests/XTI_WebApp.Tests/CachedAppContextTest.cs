@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
-using XTI_App.DB;
+using XTI_Configuration.Extensions;
 using XTI_WebApp.Api;
 using XTI_WebApp.Fakes;
 using XTI_WebApp.TestFakes;
@@ -126,21 +127,33 @@ namespace XTI_WebApp.Tests
             Assert.That(resource.Name(), Is.EqualTo(new ResourceName("AddEmployee")), "Should retrieve resource from source");
         }
 
-        private IServiceScope scope;
-
         private async Task<TestInput> setup()
         {
-            var services = new ServiceCollection();
-            services.AddFakesForXtiWebApp();
-            services.AddXtiContextServices();
-            services.AddSingleton(sp => FakeAppKey.AppKey);
-            services.AddScoped(sp => XtiPath.Parse("/Fake/Current/Employees/Index"));
-            services.AddScoped<FakeAppSetup>();
-            var sp = services.BuildServiceProvider();
-            scope = sp.CreateScope();
-            var fakeSetup = scope.ServiceProvider.GetService<FakeAppSetup>();
+            Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Test");
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureAppConfiguration
+                (
+                    (hostContext, config) =>
+                    {
+                        config.UseXtiConfiguration(hostContext.HostingEnvironment, new string[] { });
+                    }
+                )
+                .ConfigureServices
+                (
+                    (hostContext, services) =>
+                    {
+                        services.AddFakesForXtiWebApp(hostContext.Configuration);
+                        services.AddSingleton(sp => FakeAppKey.AppKey);
+                        services.AddScoped(sp => XtiPath.Parse("/Fake/Current/Employees/Index"));
+                        services.AddScoped<FakeAppSetup>();
+                    }
+                )
+                .Build();
+            var scope = host.Services.CreateScope();
+            var sp = scope.ServiceProvider;
+            var fakeSetup = sp.GetService<FakeAppSetup>();
             await fakeSetup.Run();
-            return new TestInput(scope.ServiceProvider, fakeSetup.App);
+            return new TestInput(sp, fakeSetup.App);
         }
 
         private void setHttpContext(TestInput input)
@@ -155,13 +168,11 @@ namespace XTI_WebApp.Tests
             public TestInput(IServiceProvider sp, App fakeApp)
             {
                 CachedAppContext = (CachedAppContext)sp.GetService<IAppContext>();
-                AppDbContext = sp.GetService<AppDbContext>();
                 AppFactory = sp.GetService<AppFactory>();
                 FakeApp = fakeApp;
                 Services = sp;
             }
             public CachedAppContext CachedAppContext { get; }
-            public AppDbContext AppDbContext { get; }
             public AppFactory AppFactory { get; }
             public App FakeApp { get; }
             public IServiceProvider Services { get; }

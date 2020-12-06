@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,36 +24,31 @@ namespace XTI_WebApp.Api
 
         public Task<IAppVersion> CurrentVersion() => Version(AppVersionKey.Current);
 
+        private readonly Dictionary<string, IAppVersion> cachedVersionLookup = new Dictionary<string, IAppVersion>();
+
         public async Task<IAppVersion> Version(AppVersionKey versionKey)
         {
-            var requestedVersion = await fetch($"version_{versionKey.Value}", async (app) =>
+            if (!cachedVersionLookup.TryGetValue(versionKey.Value, out var cachedVersion))
             {
+                var app = await appFromContext();
                 var version = await app.Version(versionKey);
-                return new CachedAppVersion(version);
-            });
-            return requestedVersion;
+                cachedVersion = new CachedAppVersion(version);
+                cachedVersionLookup.Add(versionKey.Value, cachedVersion);
+            }
+            return cachedVersion;
         }
+
+        private IEnumerable<IAppRole> cachedAppRoles;
 
         public async Task<IEnumerable<IAppRole>> Roles()
         {
-            var appRoles = await fetch("app_roles", async (app) =>
-            {
-                var roles = await app.Roles();
-                return roles.Select(r => new CachedAppRole(r)).ToArray();
-            });
-            return appRoles;
-        }
-
-        private async Task<T> fetch<T>(string key, Func<IApp, Task<T>> createValue)
-        {
-            var cache = httpContextAccessor.HttpContext.RequestServices.GetService<IMemoryCache>();
-            if (!cache.TryGetValue(key, out T cachedValue))
+            if (cachedAppRoles == null)
             {
                 var app = await appFromContext();
-                cachedValue = await createValue(app);
-                cache.Set(key, cachedValue);
+                var appRoles = await app.Roles();
+                cachedAppRoles = appRoles.Select(r => new CachedAppRole(r)).ToArray();
             }
-            return cachedValue;
+            return cachedAppRoles;
         }
 
         private Task<IApp> appFromContext()
@@ -64,14 +57,18 @@ namespace XTI_WebApp.Api
             return appContext.App();
         }
 
+        private readonly Dictionary<string, IResourceGroup> resourceGroupLookup = new Dictionary<string, IResourceGroup>();
+
         public async Task<IResourceGroup> ResourceGroup(ResourceGroupName name)
         {
-            var requestedGroup = await fetch($"group_{name.Value}", async (app) =>
+            if (!resourceGroupLookup.TryGetValue(name.Value, out var cachedResourceGroup))
             {
+                var app = await appFromContext();
                 var group = await app.ResourceGroup(name);
-                return new CachedResourceGroup(httpContextAccessor, group);
-            });
-            return requestedGroup;
+                cachedResourceGroup = new CachedResourceGroup(httpContextAccessor, group);
+                resourceGroupLookup.Add(name.Value, cachedResourceGroup);
+            }
+            return cachedResourceGroup;
         }
     }
 }
