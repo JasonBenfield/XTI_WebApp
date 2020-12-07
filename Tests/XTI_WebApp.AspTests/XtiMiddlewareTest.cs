@@ -17,8 +17,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
-using XTI_App.EF;
-using XTI_App.Fakes;
 using XTI_Configuration.Extensions;
 using XTI_Core;
 using XTI_Core.Fakes;
@@ -459,7 +457,7 @@ namespace XTI_WebApp.AspTests
                             });
                             services.AddFakesForXtiWebApp(context.Configuration);
                             services.AddSingleton(sp => FakeAppKey.AppKey);
-                            services.AddSingleton<AppFactory, EfAppFactory>();
+                            services.AddSingleton<AppFactory>();
                             services.AddSingleton<IAnonClient, FakeAnonClient>();
                             services.AddScoped<FakeAppSetup>();
                         })

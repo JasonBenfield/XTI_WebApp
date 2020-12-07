@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using MainDB.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using XTI_App;
 using XTI_App.Api;
-using MainDB.Extensions;
-using XTI_App.EF;
 using XTI_App.Fakes;
 using XTI_Core;
 using XTI_Core.Fakes;
@@ -30,7 +27,7 @@ namespace XTI_WebApp.Fakes
             services.Configure<WebAppOptions>(configuration.GetSection(WebAppOptions.WebApp));
             services.AddSingleton<FakeClock>();
             services.AddSingleton<Clock, FakeClock>(sp => sp.GetService<FakeClock>());
-            services.AddScoped<AppFactory, EfAppFactory>();
+            services.AddScoped<AppFactory>();
             services.AddScoped<IAnonClient, FakeAnonClient>();
             services.AddScoped<IAppApiUser, XtiAppApiUser>();
             services.AddScoped(sp =>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using MainDB.Extensions;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -8,13 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using XTI_App;
 using XTI_App.Api;
-using XTI_App.EF;
-using MainDB.Extensions;
 using XTI_Core;
 using XTI_Secrets.Extensions;
 using XTI_TempLog;
-using XTI_WebApp.Api;
 using XTI_TempLog.Extensions;
+using XTI_WebApp.Api;
 
 namespace XTI_WebApp.Extensions
 {
@@ -39,7 +38,7 @@ namespace XTI_WebApp.Extensions
             services.AddScoped<CacheBust>();
             services.AddScoped<IPageContext, PageContext>();
             services.AddSingleton<Clock, UtcClock>();
-            services.AddScoped<AppFactory, EfAppFactory>();
+            services.AddScoped<AppFactory>();
             services.AddSingleton(sp =>
             {
                 var hostEnv = sp.GetService<IHostEnvironment>();
