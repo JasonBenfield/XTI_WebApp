@@ -7,7 +7,7 @@ namespace XTI_WebAppClient
         protected readonly IHttpClientFactory httpClientFactory;
         protected readonly string url;
 
-        protected XtiToken xtiToken;
+        protected IXtiToken xtiToken;
 
         protected AppClient(IHttpClientFactory httpClientFactory, string baseUrl, string appKey, string version)
         {

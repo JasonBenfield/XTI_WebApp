@@ -40,6 +40,14 @@ function WebApp-New-XtiVersion {
     $script:webAppConfig | New-XtiVersion @PsBoundParameters
 }
 
+function WebApp-Xti-Merge {
+    param(
+        [Parameter(Position=0)]
+        [string] $CommitMessage
+    )
+    $script:webAppConfig | Xti-Merge @PsBoundParameters
+}
+
 function WebApp-New-XtiPullRequest {
     param(
         [Parameter(Position=0)]
