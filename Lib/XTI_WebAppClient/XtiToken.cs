@@ -3,11 +3,10 @@ using XTI_Credentials;
 
 namespace XTI_WebAppClient
 {
-    public sealed class XtiToken
+    public sealed class XtiToken : IXtiToken
     {
         private readonly IAuthClient authClient;
         private readonly ICredentials credentials;
-        private string token;
 
         public XtiToken(IAuthClient authClient, ICredentials credentials)
         {
@@ -15,22 +14,18 @@ namespace XTI_WebAppClient
             this.credentials = credentials;
         }
 
-        public void Reset() => token = null;
+        public void Reset() { }
 
         public async Task<string> Value()
         {
-            if (string.IsNullOrWhiteSpace(token))
+            var value = await credentials.Value();
+            var loginModel = new LoginCredentials
             {
-                var value = await credentials.Value();
-                var loginModel = new LoginCredentials
-                {
-                    UserName = value.UserName,
-                    Password = value.Password
-                };
-                var result = await authClient.AuthApi.Authenticate(loginModel);
-                token = result.Token;
-            }
-            return token;
+                UserName = value.UserName,
+                Password = value.Password
+            };
+            var result = await authClient.AuthApi.Authenticate(loginModel);
+            return result.Token;
         }
     }
 }
