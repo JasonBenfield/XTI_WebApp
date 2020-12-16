@@ -10,11 +10,11 @@ namespace XTI_WebAppClient
     public class AppClientGroup
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly XtiToken xtiToken;
+        private readonly IXtiToken xtiToken;
         private readonly string baseUrl;
         private readonly string name;
 
-        protected AppClientGroup(IHttpClientFactory httpClientFactory, XtiToken xtiToken, string baseUrl, string name)
+        protected AppClientGroup(IHttpClientFactory httpClientFactory, IXtiToken xtiToken, string baseUrl, string name)
         {
             this.httpClientFactory = httpClientFactory;
             this.xtiToken = xtiToken;
