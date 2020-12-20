@@ -67,4 +67,7 @@ function WebApp-Publish {
         [switch] $Prod
     )
     $script:webAppConfig | Xti-PublishPackage @PsBoundParameters
+    if($Prod) {
+        $script:webAppConfig | Xti-Merge
+    }
 }
