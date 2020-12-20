@@ -138,6 +138,7 @@ namespace XTI_WebApp.TestFakes
         public int ID { get; set; }
         public string Name { get; set; }
         public DateTime BirthDate { get; set; }
+        public EmployeeType EmployeeType { get; set; }
     }
 
     public sealed class EmployeeAction : AppAction<int, Employee>
