@@ -135,7 +135,10 @@ namespace XTI_WebApp.Tests
                             sp => new XtiPath
                             (
                                 FakeAppKey.AppKey.Name.DisplayText,
-                                versionKey ?? AppVersionKey.Current.DisplayText
+                                versionKey ?? AppVersionKey.Current.DisplayText,
+                                "",
+                                "",
+                                ModifierKey.Default
                             )
                         );
                     }

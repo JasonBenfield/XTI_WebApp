@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="5.0.0" />
-    <PackageReference Include="XTI_App.Api" Version="1.6.6-dev201219152633905" />
-    <PackageReference Include="XTI_TempLog" Version="1.2.1" />
+    <PackageReference Include="XTI_App.Api" Version="1.6.6-dev201229072419406" />
+    <PackageReference Include="XTI_TempLog" Version="1.2.4-dev201228070157013" />
   </ItemGroup>
 
   <ItemGroup>

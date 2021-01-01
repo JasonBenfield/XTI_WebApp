@@ -19,9 +19,13 @@ namespace XTI_WebApp.Api
         public async Task<IAppUser> User(int id) =>
             await appFactory.Users().User(id);
 
-        public async Task<IAppUser> User()
+        public async Task<IAppUser> User() => await retrieveUser();
+
+        public Task<AppUser> UncachedUser() => retrieveUser();
+
+        private async Task<AppUser> retrieveUser()
         {
-            IAppUser user;
+            AppUser user;
             var httpUser = httpContextAccessor.HttpContext?.User;
             if (httpUser?.Identity.IsAuthenticated == true)
             {
@@ -38,5 +42,6 @@ namespace XTI_WebApp.Api
         public void RefreshUser(IAppUser user)
         {
         }
+
     }
 }

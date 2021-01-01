@@ -7,8 +7,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-    <PackageReference Include="XTI_App" Version="1.6.6-dev201219152633905" />
-    <PackageReference Include="XTI_Core.Extensions" Version="1.8.3-dev201219094947885" />
+    <PackageReference Include="XTI_App" Version="1.6.6-dev201229072419406" />
+    <PackageReference Include="XTI_Core.Extensions" Version="1.8.3" />
   </ItemGroup>
 
 </Project>

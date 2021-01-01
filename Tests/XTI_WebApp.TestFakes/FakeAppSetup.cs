@@ -23,16 +23,14 @@ namespace XTI_WebApp.TestFakes
 
         public async Task Run()
         {
-            var fakeTemplateFactory = new FakeAppApiTemplateFactory();
-            var template = fakeTemplateFactory.Create();
+            var fakeApiFactory = new FakeAppApiFactory();
+            var template = fakeApiFactory.CreateTemplate();
             var setup = new DefaultAppSetup
             (
                 appFactory,
                 clock,
                 template,
-                "",
-                FakeAppRoles.Instance.Values(),
-                new[] { new ModifierCategoryName("Department") }
+                ""
             );
             await setup.Run();
             App = await appFactory.Apps().App(template.AppKey);

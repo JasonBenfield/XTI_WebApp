@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
@@ -38,5 +39,14 @@ namespace XTI_WebApp.Api
             }
             return cachedUser;
         }
+
+        public Task<AppUser> UncachedUser()
+        {
+            var claims = new XtiClaims(httpContextAccessor);
+            var userID = claims.UserID();
+            var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
+            return factory.Users().User(userID);
+        }
+
     }
 }
