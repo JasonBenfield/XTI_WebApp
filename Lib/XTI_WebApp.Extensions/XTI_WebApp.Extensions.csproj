@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MainDB.EF.SqlServer" Version="1.7.6" />
+    <PackageReference Include="MainDB.EF.SqlServer" Version="1.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0" />
@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="XTI_Secrets.Extensions" Version="1.7.3" />
-    <PackageReference Include="XTI_TempLog.Extensions" Version="1.2.1" />
+    <PackageReference Include="XTI_TempLog.Extensions" Version="1.2.4-dev201228070157013" />
   </ItemGroup>
 
   <ItemGroup>

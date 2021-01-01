@@ -49,6 +49,12 @@ namespace XTI_WebApp.Extensions
                     .WithSubFolder(appKey.Name.DisplayText);
             });
             services.AddScoped<CurrentSession>();
+            services.AddScoped(sp =>
+            {
+                var factory = sp.GetService<AppApiFactory>();
+                var user = sp.GetService<IAppApiUser>();
+                return factory.Create(user);
+            });
             services.AddTempLogServices();
             AddXtiContextServices(services);
         }

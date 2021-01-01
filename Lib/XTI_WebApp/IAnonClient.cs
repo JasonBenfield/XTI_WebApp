@@ -6,9 +6,9 @@ namespace XTI_WebApp
     {
         string RequesterKey { get; }
         string SessionKey { get; }
-        DateTime SessionExpirationTime { get; }
+        DateTimeOffset SessionExpirationTime { get; }
 
         void Load();
-        void Persist(string sessionKey, DateTime sessionExpirationTime, string requesterKey);
+        void Persist(string sessionKey, DateTimeOffset sessionExpirationTime, string requesterKey);
     }
 }

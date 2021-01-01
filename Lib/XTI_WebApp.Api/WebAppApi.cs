@@ -5,8 +5,8 @@ namespace XTI_WebApp.Api
 {
     public class WebAppApi : AppApi
     {
-        protected WebAppApi(AppKey appKey, AppVersionKey versionKey, IAppApiUser user, ResourceAccess access)
-            : base(appKey, versionKey, user, access)
+        protected WebAppApi(AppKey appKey, IAppApiUser user, ResourceAccess access)
+            : base(appKey, user, access)
         {
             User = AddGroup(u => new UserGroup(this, u));
         }

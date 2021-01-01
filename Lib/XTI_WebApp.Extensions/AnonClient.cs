@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Text.Json;
-using XTI_Core;
 using XTI_Secrets;
 
 namespace XTI_WebApp.Extensions
@@ -21,7 +20,7 @@ namespace XTI_WebApp.Extensions
         }
 
         public string SessionKey { get; private set; } = "";
-        public DateTime SessionExpirationTime { get; private set; } = Timestamp.MinValue.Value;
+        public DateTimeOffset SessionExpirationTime { get; private set; } = DateTimeOffset.MinValue;
         public string RequesterKey { get; private set; } = "";
 
         public void Load()
@@ -30,7 +29,7 @@ namespace XTI_WebApp.Extensions
             if (string.IsNullOrWhiteSpace(cookieText))
             {
                 SessionKey = "";
-                SessionExpirationTime = Timestamp.MinValue.Value;
+                SessionExpirationTime = DateTimeOffset.MinValue;
                 RequesterKey = "";
             }
             else
@@ -43,7 +42,7 @@ namespace XTI_WebApp.Extensions
             }
         }
 
-        public void Persist(string sessionKey, DateTime sessionExpirationTime, string requesterKey)
+        public void Persist(string sessionKey, DateTimeOffset sessionExpirationTime, string requesterKey)
         {
             var cookieText = JsonSerializer.Serialize(new AnonInfo
             {
@@ -68,7 +67,7 @@ namespace XTI_WebApp.Extensions
         private class AnonInfo
         {
             public string SessionKey { get; set; }
-            public DateTime SessionExpirationTime { get; set; }
+            public DateTimeOffset SessionExpirationTime { get; set; }
             public string RequesterKey { get; set; }
         }
     }
