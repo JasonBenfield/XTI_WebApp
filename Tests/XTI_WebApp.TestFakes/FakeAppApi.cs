@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
+using XTI_Core;
 using XTI_WebApp.Api;
 
 namespace XTI_WebApp.TestFakes
