@@ -3,7 +3,7 @@ using XTI_App.Api;
 
 namespace XTI_WebApp.Api
 {
-    public sealed class TitledViewAppAction<TModel> : AppAction<TModel, AppActionViewResult>
+    public sealed class TitledViewAppAction<TModel> : AppAction<TModel, WebViewResult>
     {
         private readonly IPageContext pageContext;
         private readonly string viewName;
@@ -16,10 +16,10 @@ namespace XTI_WebApp.Api
             this.pageTitle = pageTitle?.Trim() ?? "";
         }
 
-        public Task<AppActionViewResult> Execute(TModel model)
+        public Task<WebViewResult> Execute(TModel model)
         {
             pageContext.PageTitle = pageTitle;
-            return Task.FromResult(new AppActionViewResult(viewName));
+            return Task.FromResult(new WebViewResult(viewName));
         }
     }
 }

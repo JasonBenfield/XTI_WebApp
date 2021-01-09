@@ -24,6 +24,6 @@ namespace XTI_WebApp.Api
             Index = actions.AddDefaultView<UserStartRequest>();
         }
 
-        public AppApiAction<UserStartRequest, AppActionViewResult> Index { get; }
+        public AppApiAction<UserStartRequest, WebViewResult> Index { get; }
     }
 }
