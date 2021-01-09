@@ -1,8 +1,8 @@
 ﻿namespace XTI_WebApp.Api
 {
-    public sealed class AppActionRedirectResult
+    public sealed class WebRedirectResult
     {
-        public AppActionRedirectResult(string url)
+        public WebRedirectResult(string url)
         {
             Url = url;
         }
