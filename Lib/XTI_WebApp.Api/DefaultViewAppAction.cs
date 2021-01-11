@@ -5,10 +5,8 @@ namespace XTI_WebApp.Api
 {
     public sealed class DefaultViewAppAction<TModel> : AppAction<TModel, WebViewResult>
     {
-        public Task<WebViewResult> Execute(TModel model)
-        {
-            var result = new WebViewResult("Index");
-            return Task.FromResult(result);
-        }
+        private readonly ViewAppAction<TModel> action = new ViewAppAction<TModel>("Index");
+
+        public Task<WebViewResult> Execute(TModel model) => action.Execute(model);
     }
 }

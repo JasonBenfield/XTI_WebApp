@@ -20,7 +20,7 @@ namespace XTI_WebApp.Api
             => actions.Action<TModel, TResult>(actionName);
 
         public AppApiAction<TModel, TResult> Add<TModel, TResult>(AppApiAction<TModel, TResult> action)
-            => actions.Add<TModel, TResult>(action);
+            => actions.Add(action);
 
         public AppApiAction<EmptyRequest, WebViewResult> AddDefaultView() =>
             AddDefaultView(AppApiActionCollection.defaultCreateValidation<EmptyRequest>());
