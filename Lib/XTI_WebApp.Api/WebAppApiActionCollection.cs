@@ -20,15 +20,15 @@ namespace XTI_WebApp.Api
             => actions.Action<TModel, TResult>(actionName);
 
         public AppApiAction<TModel, TResult> Add<TModel, TResult>(AppApiAction<TModel, TResult> action)
-            => actions.Add<TModel, TResult>(action);
+            => actions.Add(action);
 
-        public AppApiAction<EmptyRequest, AppActionViewResult> AddDefaultView() =>
+        public AppApiAction<EmptyRequest, WebViewResult> AddDefaultView() =>
             AddDefaultView(AppApiActionCollection.defaultCreateValidation<EmptyRequest>());
 
-        public AppApiAction<TModel, AppActionViewResult> AddDefaultView<TModel>() =>
+        public AppApiAction<TModel, WebViewResult> AddDefaultView<TModel>() =>
             AddDefaultView(AppApiActionCollection.defaultCreateValidation<TModel>());
 
-        public AppApiAction<TModel, AppActionViewResult> AddDefaultView<TModel>
+        public AppApiAction<TModel, WebViewResult> AddDefaultView<TModel>
         (
             Func<AppActionValidation<TModel>> createValidation
         )
@@ -41,20 +41,20 @@ namespace XTI_WebApp.Api
             );
         }
 
-        public AppApiAction<TModel, AppActionViewResult> AddView<TModel>
+        public AppApiAction<TModel, WebViewResult> AddView<TModel>
         (
             string actionName,
-            Func<AppAction<TModel, AppActionViewResult>> createAction
+            Func<AppAction<TModel, WebViewResult>> createAction
         )
         {
             return AddView(actionName, AppApiActionCollection.defaultCreateValidation<TModel>(), createAction);
         }
 
-        public AppApiAction<TModel, AppActionViewResult> AddView<TModel>
+        public AppApiAction<TModel, WebViewResult> AddView<TModel>
         (
             string actionName,
             Func<AppActionValidation<TModel>> createValidation,
-            Func<AppAction<TModel, AppActionViewResult>> createAction
+            Func<AppAction<TModel, WebViewResult>> createAction
         )
         {
             return AddAction
@@ -66,12 +66,12 @@ namespace XTI_WebApp.Api
             );
         }
 
-        public AppApiAction<TModel, AppActionViewResult> AddView<TModel>
+        public AppApiAction<TModel, WebViewResult> AddView<TModel>
         (
             string actionName,
             ResourceAccess access,
             Func<AppActionValidation<TModel>> createValidation,
-            Func<AppAction<TModel, AppActionViewResult>> createAction
+            Func<AppAction<TModel, WebViewResult>> createAction
         )
         {
             return AddAction
@@ -84,20 +84,20 @@ namespace XTI_WebApp.Api
             );
         }
 
-        public AppApiAction<TModel, AppActionRedirectResult> AddRedirect<TModel>
+        public AppApiAction<TModel, WebPartialViewResult> AddPartialView<TModel>
         (
             string actionName,
-            Func<AppAction<TModel, AppActionRedirectResult>> createAction
+            Func<AppAction<TModel, WebPartialViewResult>> createAction
         )
         {
-            return AddRedirect(actionName, AppApiActionCollection.defaultCreateValidation<TModel>(), createAction);
+            return AddPartialView(actionName, AppApiActionCollection.defaultCreateValidation<TModel>(), createAction);
         }
 
-        public AppApiAction<TModel, AppActionRedirectResult> AddRedirect<TModel>
+        public AppApiAction<TModel, WebPartialViewResult> AddPartialView<TModel>
         (
             string actionName,
             Func<AppActionValidation<TModel>> createValidation,
-            Func<AppAction<TModel, AppActionRedirectResult>> createAction
+            Func<AppAction<TModel, WebPartialViewResult>> createAction
         )
         {
             return AddAction
@@ -109,12 +109,55 @@ namespace XTI_WebApp.Api
             );
         }
 
-        public AppApiAction<TModel, AppActionRedirectResult> AddRedirect<TModel>
+        public AppApiAction<TModel, WebPartialViewResult> AddPartialView<TModel>
         (
             string actionName,
             ResourceAccess access,
             Func<AppActionValidation<TModel>> createValidation,
-            Func<AppAction<TModel, AppActionRedirectResult>> createAction
+            Func<AppAction<TModel, WebPartialViewResult>> createAction
+        )
+        {
+            return AddAction
+            (
+                actionName,
+                access,
+                createValidation,
+                createAction,
+                ""
+            );
+        }
+
+        public AppApiAction<TModel, WebRedirectResult> AddRedirect<TModel>
+        (
+            string actionName,
+            Func<AppAction<TModel, WebRedirectResult>> createAction
+        )
+        {
+            return AddRedirect(actionName, AppApiActionCollection.defaultCreateValidation<TModel>(), createAction);
+        }
+
+        public AppApiAction<TModel, WebRedirectResult> AddRedirect<TModel>
+        (
+            string actionName,
+            Func<AppActionValidation<TModel>> createValidation,
+            Func<AppAction<TModel, WebRedirectResult>> createAction
+        )
+        {
+            return AddAction
+            (
+                actionName,
+                createValidation,
+                createAction,
+                ""
+            );
+        }
+
+        public AppApiAction<TModel, WebRedirectResult> AddRedirect<TModel>
+        (
+            string actionName,
+            ResourceAccess access,
+            Func<AppActionValidation<TModel>> createValidation,
+            Func<AppAction<TModel, WebRedirectResult>> createAction
         )
         {
             return AddAction

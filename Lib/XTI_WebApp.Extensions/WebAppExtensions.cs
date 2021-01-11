@@ -1,12 +1,15 @@
 ﻿using MainDB.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using XTI_App;
 using XTI_App.Api;
 using XTI_Core;
@@ -49,6 +52,12 @@ namespace XTI_WebApp.Extensions
                     .WithSubFolder(appKey.Name.DisplayText);
             });
             services.AddScoped<CurrentSession>();
+            services.AddScoped(sp =>
+            {
+                var factory = sp.GetService<AppApiFactory>();
+                var user = sp.GetService<IAppApiUser>();
+                return factory.Create(user);
+            });
             services.AddTempLogServices();
             AddXtiContextServices(services);
         }
@@ -87,5 +96,38 @@ namespace XTI_WebApp.Extensions
             services.AddScoped<IAppEnvironmentContext, WebAppEnvironmentContext>();
         }
 
+        public static void SetDefaultJsonOptions(this JsonOptions options)
+        {
+            options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            options.JsonSerializerOptions.PropertyNamingPolicy = null;
+            options.JsonSerializerOptions.IgnoreNullValues = true;
+        }
+
+        public static void SetDefaultMvcOptions(this MvcOptions options)
+        {
+            options.CacheProfiles.Add("Default", new CacheProfile
+            {
+                Duration = 2592000,
+                Location = ResponseCacheLocation.Any,
+                NoStore = false
+            });
+            options.ModelBinderProviders.Insert(0, new FormModelBinderProvider());
+        }
+
+        public static void UseDefaultResponseCaching(this IApplicationBuilder app)
+        {
+            app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl =
+                    new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                    {
+                        Public = true,
+                        MaxAge = TimeSpan.FromDays(30)
+                    };
+                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =
+                    new string[] { "Accept-Encoding" };
+                await next();
+            });
+        }
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace XTI_WebApp.Api
 {
-    public sealed class AppActionViewResult
+    public sealed class WebViewResult
     {
-        public AppActionViewResult(string viewName)
+        public WebViewResult(string viewName)
         {
             ViewName = viewName;
         }

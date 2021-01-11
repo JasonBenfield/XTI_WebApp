@@ -30,7 +30,7 @@ namespace XTI_WebApp.Fakes
             services.AddScoped<AppFactory>();
             services.AddScoped<IAnonClient, FakeAnonClient>();
             services.AddScoped<IAppApiUser, XtiAppApiUser>();
-            services.AddScoped(sp =>
+            services.AddTransient(sp =>
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 var request = httpContextAccessor.HttpContext?.Request;
@@ -52,8 +52,8 @@ namespace XTI_WebApp.Fakes
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 var cache = sp.GetService<IMemoryCache>();
-                var sessionContext = sp.GetService<WebUserContext>();
-                return new CachedUserContext(httpContextAccessor, cache, sessionContext);
+                var userContext = sp.GetService<WebUserContext>();
+                return new CachedUserContext(httpContextAccessor, cache, userContext);
             });
             services.AddScoped<IAppEnvironmentContext, WebAppEnvironmentContext>();
             services.AddFakeTempLogServices();

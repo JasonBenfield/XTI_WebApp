@@ -8,13 +8,13 @@ namespace XTI_WebApp.Fakes
 
         public string SessionKey { get; private set; }
 
-        public DateTime SessionExpirationTime { get; private set; }
+        public DateTimeOffset SessionExpirationTime { get; private set; }
 
         public void Load()
         {
         }
 
-        public void Persist(string sessionKey, DateTime sessionExpirationTime, string requesterKey)
+        public void Persist(string sessionKey, DateTimeOffset sessionExpirationTime, string requesterKey)
         {
             SessionKey = sessionKey;
             SessionExpirationTime = sessionExpirationTime;

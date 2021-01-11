@@ -35,6 +35,11 @@ namespace XTI_WebAppClient
             {
                 url = $"{url}/{modifier}";
             }
+            object transformedModel = model;
+            if (model is Forms.Form form)
+            {
+                transformedModel = form.Export();
+            }
             var serialized = JsonSerializer.Serialize(model);
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(url, content);
@@ -52,12 +57,12 @@ namespace XTI_WebAppClient
                     var resultContainer = string.IsNullOrWhiteSpace(responseContent)
                         ? new ResultContainer<ErrorModel[]>() { Data = new ErrorModel[] { } }
                         : JsonSerializer.Deserialize<ResultContainer<ErrorModel[]>>(responseContent);
-                    throw new AppClientException(url, response.StatusCode, resultContainer.Data);
+                    throw new AppClientException(url, response.StatusCode, responseContent, resultContainer.Data);
                 }
             }
             catch (JsonException ex)
             {
-                throw new AppClientException(url, response.StatusCode, new ErrorModel[] { new ErrorModel { Message = ex.Message } });
+                throw new AppClientException(url, response.StatusCode, responseContent, new ErrorModel[] { new ErrorModel { Message = ex.Message } });
             }
             return result;
         }

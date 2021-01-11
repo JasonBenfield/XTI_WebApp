@@ -299,7 +299,7 @@ namespace XTI_WebApp.AspTests
             var evt = await getEvent(input);
             Assert.That(evt.Severity, Is.EqualTo(AppEventSeverity.Values.AccessDenied.Value), "Should log access denied");
             Assert.That(evt.Caption, Is.EqualTo("Access Denied"), "Should log access denied");
-            Assert.That(evt.Message, Is.EqualTo("Access denied to Fake/Current/Controller1/Action1"), "Should log access denied");
+            Assert.That(evt.Message, Is.EqualTo("Access denied to /Fake/Current/Controller1/Action1"), "Should log access denied");
             Assert.That(evt.Detail, Is.EqualTo(exception.StackTrace), "Should log access denied");
         }
 

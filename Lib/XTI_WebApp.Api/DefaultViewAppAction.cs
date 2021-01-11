@@ -3,12 +3,10 @@ using XTI_App.Api;
 
 namespace XTI_WebApp.Api
 {
-    public sealed class DefaultViewAppAction<TModel> : AppAction<TModel, AppActionViewResult>
+    public sealed class DefaultViewAppAction<TModel> : AppAction<TModel, WebViewResult>
     {
-        public Task<AppActionViewResult> Execute(TModel model)
-        {
-            var result = new AppActionViewResult("Index");
-            return Task.FromResult(result);
-        }
+        private readonly ViewAppAction<TModel> action = new ViewAppAction<TModel>("Index");
+
+        public Task<WebViewResult> Execute(TModel model) => action.Execute(model);
     }
 }

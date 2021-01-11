@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
+using XTI_Core;
 using XTI_WebApp.Api;
 
 namespace XTI_WebApp.TestFakes
@@ -9,11 +10,10 @@ namespace XTI_WebApp.TestFakes
     public sealed class FakeAppApi : WebAppApi
     {
 
-        public FakeAppApi(AppKey appKey, AppVersionKey versionKey, IAppApiUser user)
+        public FakeAppApi(IAppApiUser user)
             : base
             (
-                appKey,
-                versionKey,
+                FakeAppKey.AppKey,
                 user,
                 ResourceAccess.AllowAuthenticated()
                     .WithAllowed(FakeAppRoles.Instance.Admin)
@@ -138,6 +138,7 @@ namespace XTI_WebApp.TestFakes
         public int ID { get; set; }
         public string Name { get; set; }
         public DateTime BirthDate { get; set; }
+        public EmployeeType EmployeeType { get; set; }
     }
 
     public sealed class EmployeeAction : AppAction<int, Employee>

@@ -60,7 +60,7 @@ namespace XTI_WebApp.Extensions
 
         private static void expireAnonSession(IAnonClient anonClient)
         {
-            anonClient.Persist("", Timestamp.MinValue.Value, anonClient.RequesterKey);
+            anonClient.Persist("", DateTimeOffset.MinValue, anonClient.RequesterKey);
         }
 
         private async Task handleError(HttpContext context, TempLogSession sessionLog, Exception ex)
