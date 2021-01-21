@@ -3,12 +3,20 @@ using XTI_App.Api;
 
 namespace XTI_WebApp.Api
 {
-    public class WebAppApi : AppApi
+    public class WebAppApiWrapper : AppApiWrapper
     {
-        protected WebAppApi(AppKey appKey, IAppApiUser user, ResourceAccess access)
-            : base(appKey, user, access)
+        protected WebAppApiWrapper(AppApi source)
+            : base(source)
         {
-            User = AddGroup(u => new UserGroup(this, u));
+            User = new UserGroup
+            (
+                source.AddGroup
+                (
+                    nameof(User),
+                    ModifierCategoryName.Default,
+                    ResourceAccess.AllowAuthenticated()
+                )
+            );
         }
 
         public UserGroup User { get; }

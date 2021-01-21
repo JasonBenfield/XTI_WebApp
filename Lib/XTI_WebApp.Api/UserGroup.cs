@@ -1,5 +1,4 @@
-﻿using XTI_App;
-using XTI_App.Api;
+﻿using XTI_App.Api;
 
 namespace XTI_WebApp.Api
 {
@@ -7,21 +6,12 @@ namespace XTI_WebApp.Api
     {
         public string ReturnUrl { get; set; }
     }
-    public sealed class UserGroup : AppApiGroup
+    public sealed class UserGroup : AppApiGroupWrapper
     {
-        public UserGroup(AppApi api, IAppApiUser user)
-            : base
-            (
-                api,
-                new NameFromGroupClassName(nameof(UserGroup)).Value,
-                ModifierCategoryName.Default,
-                ResourceAccess.AllowAuthenticated(),
-                user,
-                (name, ra, u) => new WebAppApiActionCollection(name, ra, u)
-            )
+        public UserGroup(AppApiGroup source) : base(source)
         {
-            var actions = Actions<WebAppApiActionCollection>();
-            Index = actions.AddDefaultView<UserStartRequest>();
+            var actions = new WebAppApiActionFactory(source);
+            Index = source.AddAction(actions.DefaultView<UserStartRequest>());
         }
 
         public AppApiAction<UserStartRequest, WebViewResult> Index { get; }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
@@ -36,7 +36,8 @@ namespace XTI_WebApp.Api
             return cachedModCategory;
         }
 
-        private readonly Dictionary<string, IResource> cachedResourceLookup = new Dictionary<string, IResource>();
+        private readonly ConcurrentDictionary<string, CachedResource> cachedResourceLookup
+            = new ConcurrentDictionary<string, CachedResource>();
 
         public async Task<IResource> Resource(ResourceName name)
         {
@@ -46,7 +47,7 @@ namespace XTI_WebApp.Api
                 var resourceGroup = await app.ResourceGroup(Name());
                 var resource = await resourceGroup.Resource(name);
                 cachedResource = new CachedResource(resource);
-                cachedResourceLookup.Add(name.Value, cachedResource);
+                cachedResourceLookup.AddOrUpdate(name.Value, cachedResource, (key, r) => cachedResource);
             }
             return cachedResource;
         }

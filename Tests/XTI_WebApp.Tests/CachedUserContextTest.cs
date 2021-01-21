@@ -158,7 +158,7 @@ namespace XTI_WebApp.Tests
                     (hostContext, services) =>
                     {
                         services.AddFakesForXtiWebApp(hostContext.Configuration);
-                        services.AddSingleton(sp => FakeAppKey.AppKey);
+                        services.AddSingleton(sp => FakeInfo.AppKey);
                         services.AddScoped(sp => XtiPath.Parse("/Fake/Current/Employees/Index"));
                         services.AddScoped<FakeAppSetup>();
                     }

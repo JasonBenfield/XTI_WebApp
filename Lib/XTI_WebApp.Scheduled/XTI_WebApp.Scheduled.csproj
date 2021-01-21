@@ -8,8 +8,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
-    <PackageReference Include="XTI_App.Hosting" Version="1.1.4" />
-    <PackageReference Include="XTI_TempLog.Extensions" Version="1.2.5" />
+    <PackageReference Include="XTI_App.Hosting" Version="1.1.5-dev210118180105429" />
+    <PackageReference Include="XTI_TempLog.Extensions" Version="1.2.6-dev210120063531152" />
   </ItemGroup>
 
 </Project>
