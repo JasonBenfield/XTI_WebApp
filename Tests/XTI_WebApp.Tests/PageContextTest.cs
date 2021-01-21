@@ -76,7 +76,7 @@ namespace XTI_WebApp.Tests
             Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Production");
             var input = await setup();
             var pageContext = await execute(input);
-            var app = await input.Factory.Apps().App(FakeAppKey.AppKey);
+            var app = await input.Factory.Apps().App(FakeInfo.AppKey);
             var currentVersion = await app.CurrentVersion();
             Assert.That(pageContext?.CacheBust, Is.EqualTo(currentVersion.Key().DisplayText), "Should set cacheBust to current version");
         }
@@ -129,12 +129,12 @@ namespace XTI_WebApp.Tests
                     (hostContext, services) =>
                     {
                         services.AddFakesForXtiWebApp(hostContext.Configuration);
-                        services.AddSingleton(sp => FakeAppKey.AppKey);
+                        services.AddSingleton(sp => FakeInfo.AppKey);
                         services.AddSingleton
                         (
                             sp => new XtiPath
                             (
-                                FakeAppKey.AppKey.Name.DisplayText,
+                                FakeInfo.AppKey.Name.DisplayText,
                                 versionKey ?? AppVersionKey.Current.DisplayText,
                                 "",
                                 "",
@@ -150,7 +150,7 @@ namespace XTI_WebApp.Tests
             var clock = sp.GetService<FakeClock>();
             await new FakeAppSetup(factory, clock).Run();
             var input = new TestInput(sp);
-            await factory.Apps().App(FakeAppKey.AppKey);
+            await factory.Apps().App(FakeInfo.AppKey);
             await factory.Users().Add(new AppUserName("someone"), new FakeHashedPassword("Password"), clock.Now());
             return input;
         }

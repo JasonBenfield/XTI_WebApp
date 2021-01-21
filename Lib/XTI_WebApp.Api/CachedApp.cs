@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace XTI_WebApp.Api
 
         public Task<IAppVersion> CurrentVersion() => Version(AppVersionKey.Current);
 
-        private readonly Dictionary<string, IAppVersion> cachedVersionLookup = new Dictionary<string, IAppVersion>();
+        private readonly ConcurrentDictionary<string, CachedAppVersion> cachedVersionLookup = new ConcurrentDictionary<string, CachedAppVersion>();
 
         public async Task<IAppVersion> Version(AppVersionKey versionKey)
         {
@@ -33,7 +34,7 @@ namespace XTI_WebApp.Api
                 var app = await appFromContext();
                 var version = await app.Version(versionKey);
                 cachedVersion = new CachedAppVersion(version);
-                cachedVersionLookup.Add(versionKey.Value, cachedVersion);
+                cachedVersionLookup.AddOrUpdate(versionKey.Value, cachedVersion, (key, v) => cachedVersion);
             }
             return cachedVersion;
         }
@@ -57,7 +58,8 @@ namespace XTI_WebApp.Api
             return appContext.App();
         }
 
-        private readonly Dictionary<string, IResourceGroup> resourceGroupLookup = new Dictionary<string, IResourceGroup>();
+        private readonly ConcurrentDictionary<string, CachedResourceGroup> resourceGroupLookup
+            = new ConcurrentDictionary<string, CachedResourceGroup>();
 
         public async Task<IResourceGroup> ResourceGroup(ResourceGroupName name)
         {
@@ -66,7 +68,7 @@ namespace XTI_WebApp.Api
                 var app = await appFromContext();
                 var group = await app.ResourceGroup(name);
                 cachedResourceGroup = new CachedResourceGroup(httpContextAccessor, group);
-                resourceGroupLookup.Add(name.Value, cachedResourceGroup);
+                resourceGroupLookup.AddOrUpdate(name.Value, cachedResourceGroup, (key, rg) => cachedResourceGroup);
             }
             return cachedResourceGroup;
         }

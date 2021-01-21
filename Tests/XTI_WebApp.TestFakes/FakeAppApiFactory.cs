@@ -4,6 +4,6 @@ namespace XTI_WebApp.TestFakes
 {
     public sealed class FakeAppApiFactory : AppApiFactory
     {
-        protected override AppApi _Create(IAppApiUser user) => new FakeAppApi(user);
+        protected override IAppApi _Create(IAppApiUser user) => new FakeAppApi(user);
     }
 }

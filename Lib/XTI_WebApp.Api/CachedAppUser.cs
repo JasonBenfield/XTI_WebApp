@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,7 +40,8 @@ namespace XTI_WebApp.Api
             return cachedUserRoles;
         }
 
-        private readonly Dictionary<int, bool> isModCategoryAdminLookup = new Dictionary<int, bool>();
+        private readonly ConcurrentDictionary<int, bool> isModCategoryAdminLookup
+            = new ConcurrentDictionary<int, bool>();
 
         public async Task<bool> IsModCategoryAdmin(IModifierCategory modCategory)
         {
@@ -48,12 +50,12 @@ namespace XTI_WebApp.Api
                 var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
                 var user = await factory.Users().User(ID.Value);
                 cachedIsAdmin = await user.IsModCategoryAdmin(modCategory);
-                isModCategoryAdminLookup.Add(modCategory.ID.Value, cachedIsAdmin);
+                isModCategoryAdminLookup.AddOrUpdate(modCategory.ID.Value, cachedIsAdmin, (key, val) => cachedIsAdmin);
             }
             return cachedIsAdmin;
         }
 
-        private readonly Dictionary<string, bool> hasModifierLookup = new Dictionary<string, bool>();
+        private readonly ConcurrentDictionary<string, bool> hasModifierLookup = new ConcurrentDictionary<string, bool>();
 
         public async Task<bool> HasModifier(ModifierKey modKey)
         {
@@ -62,7 +64,7 @@ namespace XTI_WebApp.Api
                 var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
                 var user = await factory.Users().User(ID.Value);
                 cachedHasModifier = await user.HasModifier(modKey);
-                hasModifierLookup.Add(modKey.Value, cachedHasModifier);
+                hasModifierLookup.AddOrUpdate(modKey.Value, cachedHasModifier, (key, val) => cachedHasModifier);
             }
             return cachedHasModifier;
         }

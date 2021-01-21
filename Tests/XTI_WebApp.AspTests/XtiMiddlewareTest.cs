@@ -168,7 +168,7 @@ namespace XTI_WebApp.AspTests
         public async Task ShouldLogExplicitVersionWithRequest()
         {
             var input = await setup();
-            var app = await input.Factory.Apps().App(FakeAppKey.AppKey);
+            var app = await input.Factory.Apps().App(FakeInfo.AppKey);
             var explicitVersion = await app.StartNewPatch(input.Clock.Now());
             var uri = $"/Fake/{explicitVersion.Key().Value}/Controller1/Action1";
             await input.GetAsync(uri);
@@ -456,7 +456,7 @@ namespace XTI_WebApp.AspTests
                                         .Build();
                             });
                             services.AddFakesForXtiWebApp(context.Configuration);
-                            services.AddSingleton(sp => FakeAppKey.AppKey);
+                            services.AddSingleton(sp => FakeInfo.AppKey);
                             services.AddSingleton<AppFactory>();
                             services.AddSingleton<IAnonClient, FakeAnonClient>();
                             services.AddScoped<FakeAppSetup>();

@@ -18,7 +18,7 @@ namespace XTI_WebApp.Scheduled
             this.services = services;
         }
 
-        public AppApi CreateAppApi()
+        public IAppApi CreateAppApi()
         {
             var apiFactory = services.GetService<AppApiFactory>();
             return apiFactory.CreateForSuperUser();
