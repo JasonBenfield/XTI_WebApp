@@ -45,7 +45,7 @@ namespace XTI_WebApp.Tests
             setHttpContext(input);
             var app = await input.CachedAppContext.App();
             var appRoles = await app.Roles();
-            var expectedRoleNames = FakeAppRoles.Instance.Values();
+            var expectedRoleNames = new[] { FakeInfo.Roles.Admin, FakeInfo.Roles.Viewer };
             Assert.That(appRoles.Select(ar => ar.Name()), Is.EquivalentTo(expectedRoleNames), "Should retrieve app roles from source");
         }
 
@@ -59,7 +59,7 @@ namespace XTI_WebApp.Tests
             await input.FakeApp.AddRole(new AppRoleName("New Role"));
             var cachedApp = await input.CachedAppContext.App();
             var cachedAppRoles = await cachedApp.Roles();
-            var expectedRoleNames = FakeAppRoles.Instance.Values();
+            var expectedRoleNames = new[] { FakeInfo.Roles.Admin, FakeInfo.Roles.Viewer };
             Assert.That(cachedAppRoles.Select(ar => ar.Name()), Is.EquivalentTo(expectedRoleNames), "Should retrieve app roles from source");
         }
 
@@ -143,7 +143,7 @@ namespace XTI_WebApp.Tests
                     (hostContext, services) =>
                     {
                         services.AddFakesForXtiWebApp(hostContext.Configuration);
-                        services.AddSingleton(sp => FakeAppKey.AppKey);
+                        services.AddSingleton(sp => FakeInfo.AppKey);
                         services.AddScoped(sp => XtiPath.Parse("/Fake/Current/Employees/Index"));
                         services.AddScoped<FakeAppSetup>();
                     }

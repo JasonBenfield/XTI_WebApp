@@ -5,14 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MainDB.EF.InMemory" Version="1.9.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="5.0.1" />
+    <PackageReference Include="MainDB.EF.InMemory" Version="1.10.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="5.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="XTI_Secrets.Fakes" Version="1.7.4" />
-    <PackageReference Include="XTI_App.Fakes" Version="1.7.0" />
-    <PackageReference Include="XTI_Core.Fakes" Version="1.8.9" />
-    <PackageReference Include="XTI_TempLog.Fakes" Version="1.2.5" />
+    <PackageReference Include="XTI_App.Fakes" Version="1.7.1" />
+    <PackageReference Include="XTI_Core.Fakes" Version="1.8.11" />
+    <PackageReference Include="XTI_TempLog.Fakes" Version="1.2.6" />
   </ItemGroup>
 
   <ItemGroup>

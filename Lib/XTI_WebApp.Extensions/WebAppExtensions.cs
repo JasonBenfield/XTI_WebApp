@@ -1,5 +1,4 @@
 ﻿using MainDB.Extensions;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using XTI_App;
 using XTI_App.Api;
 using XTI_Core;
@@ -49,7 +47,7 @@ namespace XTI_WebApp.Extensions
                 return new AppDataFolder()
                     .WithHostEnvironment(hostEnv)
                     .WithSubFolder("WebApps")
-                    .WithSubFolder(appKey.Name.DisplayText);
+                    .WithSubFolder(appKey.Name.DisplayText.Replace(" ", ""));
             });
             services.AddScoped<CurrentSession>();
             services.AddScoped(sp =>
@@ -66,7 +64,7 @@ namespace XTI_WebApp.Extensions
         {
             services.AddScoped<IAnonClient>(sp =>
             {
-                var dataProtector = sp.GetDataProtector(new[] { $"XTI_Apps_Anon" });
+                var dataProtector = sp.GetDataProtector(new[] { "XTI_Apps_Anon" });
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 return new AnonClient(dataProtector, httpContextAccessor);
             });
@@ -112,22 +110,6 @@ namespace XTI_WebApp.Extensions
                 NoStore = false
             });
             options.ModelBinderProviders.Insert(0, new FormModelBinderProvider());
-        }
-
-        public static void UseDefaultResponseCaching(this IApplicationBuilder app)
-        {
-            app.Use(async (context, next) =>
-            {
-                context.Response.GetTypedHeaders().CacheControl =
-                    new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
-                    {
-                        Public = true,
-                        MaxAge = TimeSpan.FromDays(30)
-                    };
-                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =
-                    new string[] { "Accept-Encoding" };
-                await next();
-            });
         }
     }
 }
