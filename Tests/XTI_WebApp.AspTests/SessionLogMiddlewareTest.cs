@@ -28,7 +28,7 @@ using XTI_WebApp.TestFakes;
 namespace XTI_WebApp.AspTests
 {
 #pragma warning disable CS0162
-    public class XtiMiddlewareTest
+    public class SessionLogMiddlewareTest
     {
         [Test]
         public async Task ShouldCreateSession()

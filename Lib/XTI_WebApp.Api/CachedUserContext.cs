@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
@@ -22,7 +24,7 @@ namespace XTI_WebApp.Api
 
         public void RefreshUser(IAppUser user)
         {
-            cache.Set($"user_{user.ID.Value}", new CachedAppUser(httpContextAccessor, user));
+            cacheUser($"user_{user.ID.Value}", new CachedAppUser(httpContextAccessor, user));
             source.RefreshUser(user);
         }
 
@@ -35,9 +37,22 @@ namespace XTI_WebApp.Api
             {
                 var user = await source.User();
                 cachedUser = new CachedAppUser(httpContextAccessor, user);
-                cache.Set(userKey, cachedUser);
+                cacheUser(userKey, cachedUser);
             }
             return cachedUser;
+        }
+
+        private void cacheUser(string key, CachedAppUser user)
+        {
+            cache.Set
+            (
+                key,
+                user,
+                new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = new TimeSpan(1, 0, 0)
+                }
+            );
         }
 
         public Task<AppUser> UncachedUser()
