@@ -9,11 +9,11 @@ using XTI_TempLog;
 
 namespace XTI_WebApp.Extensions
 {
-    public sealed class XtiMiddleware
+    public sealed class SessionLogMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public XtiMiddleware(RequestDelegate next)
+        public SessionLogMiddleware(RequestDelegate next)
         {
             _next = next;
         }

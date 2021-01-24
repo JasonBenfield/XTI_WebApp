@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Threading.Tasks;
 using XTI_App;
 using XTI_App.Api;
@@ -25,7 +26,15 @@ namespace XTI_WebApp.Api
             {
                 var app = await source.App();
                 cachedApp = new CachedApp(httpContextAccessor, app);
-                cache.Set("xti_app", cachedApp);
+                cache.Set
+                (
+                    "xti_app",
+                    cachedApp,
+                    new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = new TimeSpan(4, 0, 0)
+                    }
+                );
             }
             return cachedApp;
         }
