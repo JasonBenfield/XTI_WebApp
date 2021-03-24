@@ -4,7 +4,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using XTI_App;
+using XTI_App.Abstractions;
+using XTI_App.Api;
 
 namespace XTI_WebApp.Api
 {
@@ -24,17 +25,17 @@ namespace XTI_WebApp.Api
 
         public AppUserName UserName() => userName;
 
-        private IEnumerable<IAppUserRole> cachedUserRoles;
+        private IEnumerable<IAppRole> cachedUserRoles;
 
-        public async Task<IEnumerable<IAppUserRole>> RolesForApp(IApp app)
+        public async Task<IEnumerable<IAppRole>> Roles(IApp app)
         {
             if (cachedUserRoles == null)
             {
-                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
-                var user = await factory.Users().User(ID.Value);
-                var userRoles = await ((IAppUser)user).RolesForApp(app);
+                var userContext = httpContextAccessor.HttpContext.RequestServices.GetService<IUserContext>();
+                var user = await userContext.User(ID.Value);
+                var userRoles = await user.Roles(app);
                 cachedUserRoles = userRoles
-                    .Select(ur => new CachedAppUserRole(ur))
+                    .Select(ur => new CachedAppRole(ur))
                     .ToArray();
             }
             return cachedUserRoles;
@@ -47,8 +48,8 @@ namespace XTI_WebApp.Api
         {
             if (!isModCategoryAdminLookup.TryGetValue(modCategory.ID.Value, out var cachedIsAdmin))
             {
-                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
-                var user = await factory.Users().User(ID.Value);
+                var userContext = httpContextAccessor.HttpContext.RequestServices.GetService<IUserContext>();
+                var user = await userContext.User(ID.Value);
                 cachedIsAdmin = await user.IsModCategoryAdmin(modCategory);
                 isModCategoryAdminLookup.AddOrUpdate(modCategory.ID.Value, cachedIsAdmin, (key, val) => cachedIsAdmin);
             }
@@ -61,8 +62,8 @@ namespace XTI_WebApp.Api
         {
             if (!hasModifierLookup.TryGetValue(modKey.Value, out var cachedHasModifier))
             {
-                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
-                var user = await factory.Users().User(ID.Value);
+                var userContext = httpContextAccessor.HttpContext.RequestServices.GetService<IUserContext>();
+                var user = await userContext.User(ID.Value);
                 cachedHasModifier = await user.HasModifier(modKey);
                 hasModifierLookup.AddOrUpdate(modKey.Value, cachedHasModifier, (key, val) => cachedHasModifier);
             }

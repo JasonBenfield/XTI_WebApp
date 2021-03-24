@@ -16,6 +16,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
 

@@ -10,11 +10,12 @@
     <PackageReference Include="nunit" Version="3.13.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
-    <PackageReference Include="XTI_Configuration.Extensions" Version="1.8.11" />
+    <PackageReference Include="XTI_Configuration.Extensions" Version="1.8.12" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Lib\XTI_WebApp.Api\XTI_WebApp.Api.csproj" />
+    <ProjectReference Include="..\..\Lib\XTI_WebApp.Extensions\XTI_WebApp.Extensions.csproj" />
     <ProjectReference Include="..\..\Lib\XTI_WebAppClient\XTI_WebAppClient.csproj" />
     <ProjectReference Include="..\XTI_WebApp.TestFakes\XTI_WebApp.TestFakes.csproj" />
   </ItemGroup>

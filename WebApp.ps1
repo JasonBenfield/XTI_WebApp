@@ -5,7 +5,7 @@ $script:webAppConfig = [PSCustomObject]@{
     RepoName = "XTI_WebApp"
     AppName = "XTI_WebApp"
     AppType = "Package"
-    ProjectDir = "C:\XTI\src\XTI_WebApp\Apps\XTI_WebApp"
+    ProjectDir = ""
 }
 
 function WebApp-New-XtiIssue {

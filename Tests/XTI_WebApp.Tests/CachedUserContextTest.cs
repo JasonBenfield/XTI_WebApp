@@ -1,6 +1,7 @@
 ﻿using MainDB.EF;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
@@ -9,11 +10,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_App.Api;
 using XTI_App.Fakes;
 using XTI_Configuration.Extensions;
 using XTI_Core;
 using XTI_WebApp.Api;
+using XTI_WebApp.Extensions;
 using XTI_WebApp.Fakes;
 using XTI_WebApp.TestFakes;
 
@@ -38,10 +41,8 @@ namespace XTI_WebApp.Tests
             setHttpContext(input);
             var originalUser = await input.CachedUserContext.User();
             var originalUserName = originalUser.UserName();
-            var userRecord = await input.MainDbContext.Users.FirstAsync(u => u.ID == input.User.ID.Value);
-            input.MainDbContext.Users.Update(userRecord);
-            userRecord.UserName = "changed.user";
-            await input.MainDbContext.SaveChangesAsync();
+            var userRecord = await input.MainDbContext.Users.Retrieve().FirstAsync(u => u.ID == input.User.ID.Value);
+            await input.MainDbContext.Users.Update(userRecord, r => r.UserName = "changed.user");
             var cachedUser = await input.CachedUserContext.User();
             Assert.That(cachedUser.UserName, Is.EqualTo(originalUserName), "Should retrieve user from cache");
         }
@@ -52,10 +53,8 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             setHttpContext(input);
             await input.CachedUserContext.User();
-            var userRecord = await input.MainDbContext.Users.FirstAsync(u => u.ID == input.User.ID.Value);
-            input.MainDbContext.Users.Update(userRecord);
-            userRecord.UserName = "changed.user";
-            await input.MainDbContext.SaveChangesAsync();
+            var userRecord = await input.MainDbContext.Users.Retrieve().FirstAsync(u => u.ID == input.User.ID.Value);
+            await input.MainDbContext.Users.Update(userRecord, r => r.UserName = "changed.user");
             var user = await input.AppFactory.Users().User(new AppUserName("changed.user"));
             input.CachedUserContext.RefreshUser(user);
             var cachedUser = await input.CachedUserContext.User();
@@ -68,9 +67,9 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             setHttpContext(input);
             var user = await input.CachedUserContext.User();
-            var userRoles = await user.RolesForApp(input.FakeApp);
+            var userRoles = await user.Roles(input.FakeApp);
             var viewerRole = await input.FakeApp.Role(FakeAppRoles.Instance.Viewer);
-            Assert.That(userRoles.Select(ur => ur.RoleID), Is.EquivalentTo(new[] { viewerRole.ID.Value }), "Should retrieve user roles from source");
+            Assert.That(userRoles.Select(ur => ur.ID), Is.EquivalentTo(new[] { viewerRole.ID }), "Should retrieve user roles from source");
         }
 
         [Test]
@@ -79,13 +78,13 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             setHttpContext(input);
             var user = await input.CachedUserContext.User();
-            var userRoles = await user.RolesForApp(input.FakeApp);
+            var userRoles = await user.Roles(input.FakeApp);
             var adminRole = await input.FakeApp.Role(FakeAppRoles.Instance.Admin);
             await input.User.AddRole(adminRole);
             var cachedUser = await input.CachedUserContext.User();
-            var cachedUserRoles = await cachedUser.RolesForApp(input.FakeApp);
+            var cachedUserRoles = await cachedUser.Roles(input.FakeApp);
             var viewerRole = await input.FakeApp.Role(FakeAppRoles.Instance.Viewer);
-            Assert.That(userRoles.Select(ur => ur.RoleID), Is.EquivalentTo(new[] { viewerRole.ID.Value }), "Should retrieve user roles from source");
+            Assert.That(userRoles.Select(ur => ur.ID), Is.EquivalentTo(new[] { viewerRole.ID }), "Should retrieve user roles from source");
         }
 
         [Test]
@@ -158,6 +157,13 @@ namespace XTI_WebApp.Tests
                     (hostContext, services) =>
                     {
                         services.AddFakesForXtiWebApp(hostContext.Configuration);
+                        services.AddScoped<IAppApiUser, XtiAppApiUser>(sp =>
+                        {
+                            var appContext = sp.GetService<IAppContext>();
+                            var userContext = sp.GetService<CachedUserContext>();
+                            var path = sp.GetService<XtiPath>();
+                            return new XtiAppApiUser(appContext, userContext, path);
+                        });
                         services.AddSingleton(sp => FakeInfo.AppKey);
                         services.AddScoped(sp => XtiPath.Parse("/Fake/Current/Employees/Index"));
                         services.AddScoped<FakeAppSetup>();
@@ -167,7 +173,7 @@ namespace XTI_WebApp.Tests
             var scope = host.Services.CreateScope();
             var sp = scope.ServiceProvider;
             var fakeSetup = sp.GetService<FakeAppSetup>();
-            await fakeSetup.Run();
+            await fakeSetup.Run(AppVersionKey.Current);
             var appFactory = sp.GetService<AppFactory>();
             var clock = sp.GetService<Clock>();
             var user = await appFactory.Users().Add
@@ -196,7 +202,7 @@ namespace XTI_WebApp.Tests
         {
             public TestInput(IServiceProvider sp, App fakeApp, AppUser user)
             {
-                CachedUserContext = (CachedUserContext)sp.GetService<IUserContext>();
+                CachedUserContext = sp.GetService<CachedUserContext>();
                 MainDbContext = sp.GetService<MainDbContext>();
                 FakeApp = fakeApp;
                 User = user;

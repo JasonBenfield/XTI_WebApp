@@ -3,6 +3,8 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Abstractions;
+using XTI_App.Api;
 using XTI_Core.Extensions;
 
 namespace XTI_WebApp
@@ -11,16 +13,16 @@ namespace XTI_WebApp
     {
         private readonly WebAppOptions options;
         private readonly IHostEnvironment hostEnvironment;
-        private readonly AppFactory appFactory;
+        private readonly IAppContext appContext;
         private readonly XtiPath xtiPath;
 
         private string value;
 
-        public CacheBust(IOptions<WebAppOptions> options, IHostEnvironment hostEnvironment, AppFactory appFactory, XtiPath xtiPath)
+        public CacheBust(IOptions<WebAppOptions> options, IHostEnvironment hostEnvironment, IAppContext appContext, XtiPath xtiPath)
         {
             this.options = options.Value;
             this.hostEnvironment = hostEnvironment;
-            this.appFactory = appFactory;
+            this.appContext = appContext;
             this.xtiPath = xtiPath;
         }
 
@@ -36,8 +38,8 @@ namespace XTI_WebApp
                     }
                     else if (xtiPath.IsCurrentVersion())
                     {
-                        var app = await appFactory.Apps().App(new AppKey(xtiPath.App, AppType.Values.WebApp));
-                        var version = await app.CurrentVersion();
+                        var app = await appContext.App();
+                        var version = await app.Version(AppVersionKey.Current);
                         value = version.Key().DisplayText;
                     }
                 }

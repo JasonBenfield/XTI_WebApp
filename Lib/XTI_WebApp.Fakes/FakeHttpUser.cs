@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
-using System.Security.Principal;
-using XTI_App;
+using XTI_App.Abstractions;
 
 namespace XTI_WebApp.Fakes
 {
@@ -8,7 +7,7 @@ namespace XTI_WebApp.Fakes
     {
         public ClaimsPrincipal Create() => new ClaimsPrincipal();
 
-        public ClaimsPrincipal Create(string sessionKey, AppUser user)
+        public ClaimsPrincipal Create(string sessionKey, IAppUser user)
         {
             var claims = new XtiClaimsCreator(sessionKey, user).Values();
             var identity = new ClaimsIdentity(claims, "Test");
