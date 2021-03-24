@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_Core;
 
 namespace XTI_WebApp.Extensions

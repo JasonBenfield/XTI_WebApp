@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using XTI_App;
+using XTI_App.Abstractions;
 
 namespace XTI_WebApp
 {

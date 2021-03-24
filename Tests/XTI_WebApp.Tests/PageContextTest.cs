@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_App.Api;
 using XTI_App.Fakes;
 using XTI_Core.Fakes;
@@ -51,10 +52,7 @@ namespace XTI_WebApp.Tests
         {
             var input = await setup();
             var user = await input.Factory.Users().User(new AppUserName("someone"));
-            input.HttpContextAccessor.HttpContext = new DefaultHttpContext
-            {
-                User = new FakeHttpUser().Create("", user)
-            };
+            input.UserContext.SetUser(user);
             var pageContext = await execute(input);
             Assert.That(pageContext.IsAuthenticated, Is.True, "Should be authenticated");
             Assert.That(pageContext.UserName, Is.EqualTo(user.UserName().Value), "Should set user name");
@@ -64,7 +62,6 @@ namespace XTI_WebApp.Tests
         public async Task ShouldSetUserNameToBlankForAnon()
         {
             var input = await setup();
-            input.HttpContextAccessor.HttpContext = new DefaultHttpContext();
             var pageContext = await execute(input);
             Assert.That(pageContext.IsAuthenticated, Is.False, "Should not be authenticated");
             Assert.That(pageContext.UserName, Is.EqualTo(""), "Should set user name to blank for anon");
@@ -148,7 +145,7 @@ namespace XTI_WebApp.Tests
             var sp = scope.ServiceProvider;
             var factory = sp.GetService<AppFactory>();
             var clock = sp.GetService<FakeClock>();
-            await new FakeAppSetup(factory, clock).Run();
+            await new FakeAppSetup(factory, clock).Run(AppVersionKey.Current);
             var input = new TestInput(sp);
             await factory.Apps().App(FakeInfo.AppKey);
             await factory.Users().Add(new AppUserName("someone"), new FakeHashedPassword("Password"), clock.Now());
@@ -161,13 +158,13 @@ namespace XTI_WebApp.Tests
             {
                 Factory = sp.GetService<AppFactory>();
                 AppContext = sp.GetService<IAppContext>();
-                HttpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 PageContext = (PageContext)sp.GetService<IPageContext>();
+                UserContext = (FakeUserContext)sp.GetService<IUserContext>();
             }
 
             public AppFactory Factory { get; }
             public IAppContext AppContext { get; }
-            public IHttpContextAccessor HttpContextAccessor { get; }
+            public FakeUserContext UserContext { get; }
             public PageContext PageContext { get; }
         }
     }

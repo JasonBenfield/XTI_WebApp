@@ -1,10 +1,11 @@
 ﻿using MainDB.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_App.Api;
+using XTI_App.EfApi;
 using XTI_App.Fakes;
 using XTI_Core;
 using XTI_Core.Fakes;
@@ -18,7 +19,7 @@ namespace XTI_WebApp.Fakes
     {
         public static void AddFakesForXtiWebApp(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAppDbContextForInMemory();
+            services.AddMainDbContextForInMemory();
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
             services.AddHttpContextAccessor();
@@ -29,33 +30,35 @@ namespace XTI_WebApp.Fakes
             services.AddSingleton<Clock, FakeClock>(sp => sp.GetService<FakeClock>());
             services.AddScoped<AppFactory>();
             services.AddScoped<IAnonClient, FakeAnonClient>();
-            services.AddScoped<IAppApiUser, XtiAppApiUser>();
+            services.AddTransient<IAppApiUser, XtiAppApiUser>();
             services.AddTransient(sp =>
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 var request = httpContextAccessor.HttpContext?.Request;
-                return XtiPath.Parse($"{request?.PathBase}{request?.Path}");
+                var pathString = $"{request?.PathBase}{request?.Path}";
+                if (string.IsNullOrWhiteSpace(pathString))
+                {
+                    var appKey = sp.GetService<AppKey>();
+                    pathString = $"{appKey.Name.DisplayText}/{AppVersionKey.Current.DisplayText}".Replace(" ", "");
+                }
+                return XtiPath.Parse(pathString);
             });
+            services.AddScoped(sp => sp.GetService<XtiPath>().Version);
             services.AddScoped<CacheBust>();
             services.AddScoped<IPageContext, PageContext>();
             services.AddScoped<IHashedPasswordFactory, FakeHashedPasswordFactory>();
-            services.AddScoped<DefaultAppContext>();
-            services.AddScoped<IAppContext>(sp =>
-            {
-                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
-                var cache = sp.GetService<IMemoryCache>();
-                var appContext = sp.GetService<DefaultAppContext>();
-                return new CachedAppContext(httpContextAccessor, cache, appContext);
-            });
-            services.AddScoped<WebUserContext>();
-            services.AddScoped<IUserContext>(sp =>
-            {
-                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
-                var cache = sp.GetService<IMemoryCache>();
-                var userContext = sp.GetService<WebUserContext>();
-                return new CachedUserContext(httpContextAccessor, cache, userContext);
-            });
+            services.AddScoped<ISourceAppContext, DefaultAppContext>();
+            services.AddScoped<IAppContext>(sp => sp.GetService<ISourceAppContext>());
+            services.AddScoped<IUserContext, FakeUserContext>();
+            services.AddScoped<CachedUserContext>();
             services.AddScoped<IAppEnvironmentContext, WebAppEnvironmentContext>();
+            services.AddScoped<CurrentSession>();
+            services.AddScoped(sp =>
+            {
+                var factory = sp.GetService<AppApiFactory>();
+                var user = sp.GetService<IAppApiUser>();
+                return factory.Create(user);
+            });
             services.AddFakeTempLogServices();
         }
     }

@@ -16,6 +16,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_App.Api;
 using XTI_Configuration.Extensions;
 using XTI_Core;
@@ -484,7 +485,7 @@ namespace XTI_WebApp.AspTests
                 .StartAsync();
             var factory = host.Services.GetService<AppFactory>();
             var clock = host.Services.GetService<Clock>();
-            await new FakeAppSetup(factory, clock).Run();
+            await new FakeAppSetup(factory, clock).Run(AppVersionKey.Current);
             return new TestInput(host);
         }
 

@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using XTI_App;
+using XTI_App.Abstractions;
 using XTI_App.Api;
 
 namespace XTI_WebApp.Api
 {
-    public class CachedUserContext : IUserContext
+    public sealed class CachedUserContext : IUserContext
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMemoryCache cache;
@@ -25,17 +23,21 @@ namespace XTI_WebApp.Api
         public void RefreshUser(IAppUser user)
         {
             cacheUser($"user_{user.ID.Value}", new CachedAppUser(httpContextAccessor, user));
-            source.RefreshUser(user);
         }
 
-        public async Task<IAppUser> User()
+        public Task<IAppUser> User()
         {
             var claims = new XtiClaims(httpContextAccessor);
             var userID = claims.UserID();
+            return User(userID);
+        }
+
+        public async Task<IAppUser> User(int userID)
+        {
             var userKey = $"user_{userID}";
             if (!cache.TryGetValue(userKey, out CachedAppUser cachedUser))
             {
-                var user = await source.User();
+                var user = await source.User(userID);
                 cachedUser = new CachedAppUser(httpContextAccessor, user);
                 cacheUser(userKey, cachedUser);
             }
@@ -54,14 +56,5 @@ namespace XTI_WebApp.Api
                 }
             );
         }
-
-        public Task<AppUser> UncachedUser()
-        {
-            var claims = new XtiClaims(httpContextAccessor);
-            var userID = claims.UserID();
-            var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
-            return factory.Users().User(userID);
-        }
-
     }
 }
