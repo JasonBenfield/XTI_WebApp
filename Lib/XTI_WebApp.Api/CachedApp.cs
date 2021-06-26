@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_App.Api;
+using XTI_App.EfApi;
 
 namespace XTI_WebApp.Api
 {
@@ -33,7 +35,7 @@ namespace XTI_WebApp.Api
             {
                 var app = await appFromContext();
                 var version = await app.Version(versionKey);
-                cachedVersion = new CachedAppVersion(version);
+                cachedVersion = new CachedAppVersion(httpContextAccessor, version);
                 cachedVersionLookup.AddOrUpdate(versionKey.Value, cachedVersion, (key, v) => cachedVersion);
             }
             return cachedVersion;
@@ -58,19 +60,5 @@ namespace XTI_WebApp.Api
             return appContext.App();
         }
 
-        private readonly ConcurrentDictionary<string, CachedResourceGroup> resourceGroupLookup
-            = new ConcurrentDictionary<string, CachedResourceGroup>();
-
-        public async Task<IResourceGroup> ResourceGroup(ResourceGroupName name)
-        {
-            if (!resourceGroupLookup.TryGetValue(name.Value, out var cachedResourceGroup))
-            {
-                var app = await appFromContext();
-                var group = await app.ResourceGroup(name);
-                cachedResourceGroup = new CachedResourceGroup(httpContextAccessor, group);
-                resourceGroupLookup.AddOrUpdate(name.Value, cachedResourceGroup, (key, rg) => cachedResourceGroup);
-            }
-            return cachedResourceGroup;
-        }
     }
 }

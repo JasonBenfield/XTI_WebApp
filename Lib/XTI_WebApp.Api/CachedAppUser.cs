@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Abstractions;
 
 namespace XTI_WebApp.Api
 {
@@ -24,21 +25,7 @@ namespace XTI_WebApp.Api
 
         public AppUserName UserName() => userName;
 
-        private IEnumerable<IAppUserRole> cachedUserRoles;
-
-        public async Task<IEnumerable<IAppUserRole>> RolesForApp(IApp app)
-        {
-            if (cachedUserRoles == null)
-            {
-                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
-                var user = await factory.Users().User(ID.Value);
-                var userRoles = await ((IAppUser)user).RolesForApp(app);
-                cachedUserRoles = userRoles
-                    .Select(ur => new CachedAppUserRole(ur))
-                    .ToArray();
-            }
-            return cachedUserRoles;
-        }
+        private IEnumerable<IAppRole> cachedUserRoles;
 
         private readonly ConcurrentDictionary<int, bool> isModCategoryAdminLookup
             = new ConcurrentDictionary<int, bool>();
@@ -67,6 +54,20 @@ namespace XTI_WebApp.Api
                 hasModifierLookup.AddOrUpdate(modKey.Value, cachedHasModifier, (key, val) => cachedHasModifier);
             }
             return cachedHasModifier;
+        }
+
+        public async Task<IEnumerable<IAppRole>> Roles(IApp app)
+        {
+            if (cachedUserRoles == null)
+            {
+                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
+                var user = await factory.Users().User(ID.Value);
+                var userRoles = await user.AssignedRoles(app);
+                cachedUserRoles = userRoles
+                    .Select(ur => new CachedAppRole(ur))
+                    .ToArray();
+            }
+            return cachedUserRoles;
         }
     }
 }

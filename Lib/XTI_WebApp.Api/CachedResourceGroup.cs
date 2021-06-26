@@ -2,8 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using XTI_App;
-using XTI_App.Api;
+using XTI_App.Abstractions;
 
 namespace XTI_WebApp.Api
 {
