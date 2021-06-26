@@ -4,8 +4,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using XTI_App;
 using XTI_App.Abstractions;
+using XTI_App.Api;
 
 namespace XTI_WebApp.Api
 {
@@ -27,6 +27,20 @@ namespace XTI_WebApp.Api
 
         private IEnumerable<IAppRole> cachedUserRoles;
 
+        public async Task<IEnumerable<IAppUserRole>> RolesForApp(IApp app)
+        {
+            if (cachedUserRoles == null)
+            {
+                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
+                var user = await factory.Users().User(ID.Value);
+                var userRoles = await ((IAppUser)user).RolesForApp(app);
+                cachedUserRoles = userRoles
+                    .Select(ur => new CachedAppUserRole(ur))
+                    .ToArray();
+            }
+            return cachedUserRoles;
+        }
+
         private readonly ConcurrentDictionary<int, bool> isModCategoryAdminLookup
             = new ConcurrentDictionary<int, bool>();
 
@@ -34,8 +48,8 @@ namespace XTI_WebApp.Api
         {
             if (!isModCategoryAdminLookup.TryGetValue(modCategory.ID.Value, out var cachedIsAdmin))
             {
-                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
-                var user = await factory.Users().User(ID.Value);
+                var userContext = httpContextAccessor.HttpContext.RequestServices.GetService<IUserContext>();
+                var user = await userContext.User(ID.Value);
                 cachedIsAdmin = await user.IsModCategoryAdmin(modCategory);
                 isModCategoryAdminLookup.AddOrUpdate(modCategory.ID.Value, cachedIsAdmin, (key, val) => cachedIsAdmin);
             }
@@ -48,8 +62,8 @@ namespace XTI_WebApp.Api
         {
             if (!hasModifierLookup.TryGetValue(modKey.Value, out var cachedHasModifier))
             {
-                var factory = httpContextAccessor.HttpContext.RequestServices.GetService<AppFactory>();
-                var user = await factory.Users().User(ID.Value);
+                var userContext = httpContextAccessor.HttpContext.RequestServices.GetService<IUserContext>();
+                var user = await userContext.User(ID.Value);
                 cachedHasModifier = await user.HasModifier(modKey);
                 hasModifierLookup.AddOrUpdate(modKey.Value, cachedHasModifier, (key, val) => cachedHasModifier);
             }

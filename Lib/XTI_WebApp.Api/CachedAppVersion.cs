@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using XTI_App.Abstractions;
-using XTI_App.EfApi;
-using Microsoft.Extensions.DependencyInjection;
+﻿using XTI_App;
 
 namespace XTI_WebApp.Api
 {
@@ -20,7 +15,6 @@ namespace XTI_WebApp.Api
         }
 
         public EntityID ID { get; }
-
         public AppVersionKey Key() => key;
 
         private readonly ConcurrentDictionary<string, CachedResourceGroup> resourceGroupLookup
@@ -41,8 +35,9 @@ namespace XTI_WebApp.Api
 
         private Task<IApp> appFromContext()
         {
-            var appContext = httpContextAccessor.HttpContext.RequestServices.GetService<DefaultAppContext>();
+            var appContext = httpContextAccessor.HttpContext.RequestServices.GetService<ISourceAppContext>();
             return appContext.App();
         }
+
     }
 }

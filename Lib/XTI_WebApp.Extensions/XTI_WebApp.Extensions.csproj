@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="XTI_Secrets.Extensions" Version="1.7.4" />
     <PackageReference Include="XTI_TempLog.Extensions" Version="1.2.6" />
-    <PackageReference Include="XTI_App.EfApi" Version="1.7.2" />
+    <PackageReference Include="XTI_App.EfApi" Version="1.7.2-dev210221072514829" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using XTI_App.Abstractions;
+using XTI_App.Api;
 
 namespace XTI_WebApp.Api
 {
@@ -27,8 +28,8 @@ namespace XTI_WebApp.Api
         {
             if (cachedModCategory == null)
             {
-                var app = await appFromContext();
-                var resourceGroup = await app.ResourceGroup(name);
+                var version = await versionFromContext();
+                var resourceGroup = await version.ResourceGroup(name);
                 var modCategory = await resourceGroup.ModCategory();
                 cachedModCategory = new CachedModifierCategory(modCategory);
             }
@@ -42,8 +43,8 @@ namespace XTI_WebApp.Api
         {
             if (!cachedResourceLookup.TryGetValue(name.Value, out var cachedResource))
             {
-                var app = await appFromContext();
-                var resourceGroup = await app.ResourceGroup(Name());
+                var version = await versionFromContext();
+                var resourceGroup = await version.ResourceGroup(Name());
                 var resource = await resourceGroup.Resource(name);
                 cachedResource = new CachedResource(resource);
                 cachedResourceLookup.AddOrUpdate(name.Value, cachedResource, (key, r) => cachedResource);
@@ -51,11 +52,11 @@ namespace XTI_WebApp.Api
             return cachedResource;
         }
 
-        private async Task<IApp> appFromContext()
+        private async Task<IAppVersion> versionFromContext()
         {
-            var appContext = httpContextAccessor.HttpContext.RequestServices.GetService<DefaultAppContext>();
-            var app = await appContext.App();
-            return app;
+            var appContext = httpContextAccessor.HttpContext.RequestServices.GetService<ISourceAppContext>();
+            var version = await appContext.Version();
+            return version;
         }
 
     }

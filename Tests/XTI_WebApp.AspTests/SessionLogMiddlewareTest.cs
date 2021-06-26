@@ -16,6 +16,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_App.Api;
 using XTI_Configuration.Extensions;
 using XTI_Core;
@@ -28,7 +29,7 @@ using XTI_WebApp.TestFakes;
 namespace XTI_WebApp.AspTests
 {
 #pragma warning disable CS0162
-    public class XtiMiddlewareTest
+    public class SessionLogMiddlewareTest
     {
         [Test]
         public async Task ShouldCreateSession()
@@ -484,7 +485,7 @@ namespace XTI_WebApp.AspTests
                 .StartAsync();
             var factory = host.Services.GetService<AppFactory>();
             var clock = host.Services.GetService<Clock>();
-            await new FakeAppSetup(factory, clock).Run();
+            await new FakeAppSetup(factory, clock).Run(AppVersionKey.Current);
             return new TestInput(host);
         }
 

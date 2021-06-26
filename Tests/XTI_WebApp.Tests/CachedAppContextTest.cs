@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
@@ -6,7 +7,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_App.Api;
+using XTI_App.EfApi;
 using XTI_Configuration.Extensions;
 using XTI_WebApp.Api;
 using XTI_WebApp.Fakes;
@@ -84,8 +87,9 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             setHttpContext(input);
             var app = await input.CachedAppContext.App();
+            var version = await app.Version(AppVersionKey.Current);
             var resourceGroupName = new ResourceGroupName("Employee");
-            var resourceGroup = await app.ResourceGroup(resourceGroupName);
+            var resourceGroup = await version.ResourceGroup(resourceGroupName);
             Assert.That(resourceGroup.Name(), Is.EqualTo(resourceGroupName), "Should retrieve resource group from source");
         }
 
@@ -95,7 +99,8 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             setHttpContext(input);
             var app = await input.CachedAppContext.App();
-            var resourceGroup = await app.ResourceGroup(new ResourceGroupName("Employee"));
+            var version = await app.Version(AppVersionKey.Current);
+            var resourceGroup = await version.ResourceGroup(new ResourceGroupName("Employee"));
             var modCategory = await resourceGroup.ModCategory();
             Assert.That(modCategory.Name(), Is.EqualTo(new ModifierCategoryName("Department")), "Should retrieve modifier category from source");
         }
@@ -106,9 +111,11 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             setHttpContext(input);
             var app = await input.CachedAppContext.App();
-            var resourceGroup = await app.ResourceGroup(new ResourceGroupName("Employee"));
+            var version = await app.Version(AppVersionKey.Current);
+            var resourceGroup = await version.ResourceGroup(new ResourceGroupName("Employee"));
             await resourceGroup.ModCategory();
-            var sourceResourceGroup = await input.FakeApp.ResourceGroup(new ResourceGroupName("Employee"));
+            var currentVersion = await input.FakeApp.CurrentVersion();
+            var sourceResourceGroup = await currentVersion.ResourceGroup(new ResourceGroupName("Employee"));
             var unknownApp = await input.AppFactory.Apps().App(AppKey.Unknown);
             var defaultModCategory = await unknownApp.ModCategory(ModifierCategoryName.Default);
             await sourceResourceGroup.SetModCategory(defaultModCategory);
@@ -122,7 +129,8 @@ namespace XTI_WebApp.Tests
             var input = await setup();
             setHttpContext(input);
             var app = await input.CachedAppContext.App();
-            var resourceGroup = await app.ResourceGroup(new ResourceGroupName("Employee"));
+            var version = await app.Version(AppVersionKey.Current);
+            var resourceGroup = await version.ResourceGroup(new ResourceGroupName("Employee"));
             var resource = await resourceGroup.Resource(new ResourceName("AddEmployee"));
             Assert.That(resource.Name(), Is.EqualTo(new ResourceName("AddEmployee")), "Should retrieve resource from source");
         }
@@ -143,6 +151,14 @@ namespace XTI_WebApp.Tests
                     (hostContext, services) =>
                     {
                         services.AddFakesForXtiWebApp(hostContext.Configuration);
+                        services.AddScoped<ISourceAppContext, DefaultAppContext>();
+                        services.AddScoped<IAppContext>(sp =>
+                        {
+                            var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                            var cache = sp.GetService<IMemoryCache>();
+                            var appContext = sp.GetService<ISourceAppContext>();
+                            return new CachedAppContext(httpContextAccessor, cache, appContext);
+                        });
                         services.AddSingleton(sp => FakeInfo.AppKey);
                         services.AddScoped(sp => XtiPath.Parse("/Fake/Current/Employees/Index"));
                         services.AddScoped<FakeAppSetup>();
@@ -152,7 +168,7 @@ namespace XTI_WebApp.Tests
             var scope = host.Services.CreateScope();
             var sp = scope.ServiceProvider;
             var fakeSetup = sp.GetService<FakeAppSetup>();
-            await fakeSetup.Run();
+            await fakeSetup.Run(AppVersionKey.Current);
             return new TestInput(sp, fakeSetup.App);
         }
 

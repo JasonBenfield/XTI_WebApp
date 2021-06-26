@@ -9,7 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_App.Api;
+using XTI_App.EfApi;
 using XTI_Core;
 using XTI_Secrets.Extensions;
 using XTI_TempLog;
@@ -35,11 +37,12 @@ namespace XTI_WebApp.Extensions
             services.Configure<WebAppOptions>(configuration.GetSection(WebAppOptions.WebApp));
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Jwt));
             services.AddXtiDataProtection();
-            services.AddAppDbContextForSqlServer(configuration);
+            services.AddMainDbContextForSqlServer(configuration);
             services.AddScoped<CacheBust>();
             services.AddScoped<IPageContext, PageContext>();
             services.AddSingleton<Clock, UtcClock>();
             services.AddScoped<AppFactory>();
+            services.AddScoped(sp => sp.GetService<XtiPath>().Version);
             services.AddSingleton(sp =>
             {
                 var hostEnv = sp.GetService<IHostEnvironment>();
@@ -74,23 +77,24 @@ namespace XTI_WebApp.Extensions
                 var request = httpContextAccessor.HttpContext.Request;
                 return XtiPath.Parse($"{request.PathBase}{request.Path}");
             });
+            services.AddScoped(sp => sp.GetService<XtiPath>().Version);
+            services.AddScoped<ISourceAppContext, DefaultAppContext>();
             services.AddScoped<IAppContext>(sp =>
             {
                 var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
                 var cache = sp.GetService<IMemoryCache>();
-                var appContext = sp.GetService<DefaultAppContext>();
+                var appContext = sp.GetService<ISourceAppContext>();
                 return new CachedAppContext(httpContextAccessor, cache, appContext);
             });
-            services.AddScoped<IAppApiUser, XtiAppApiUser>();
-            services.AddScoped<DefaultAppContext>();
-            services.AddScoped<IUserContext>(sp =>
+            services.AddScoped<IAppApiUser, XtiAppApiUser>(sp =>
             {
-                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
-                var cache = sp.GetService<IMemoryCache>();
-                var sessionContext = sp.GetService<WebUserContext>();
-                return new CachedUserContext(httpContextAccessor, cache, sessionContext);
+                var appContext = sp.GetService<IAppContext>();
+                var userContext = sp.GetService<CachedUserContext>();
+                var path = sp.GetService<XtiPath>();
+                return new XtiAppApiUser(appContext, userContext, path);
             });
-            services.AddScoped<WebUserContext>();
+            services.AddScoped<IUserContext, WebUserContext>();
+            services.AddScoped<CachedUserContext, CachedUserContext>();
             services.AddScoped<IAppEnvironmentContext, WebAppEnvironmentContext>();
         }
 

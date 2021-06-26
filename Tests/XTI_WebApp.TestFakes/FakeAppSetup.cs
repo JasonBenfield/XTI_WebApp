@@ -1,12 +1,14 @@
 ﻿using System.Threading.Tasks;
 using XTI_App;
+using XTI_App.Abstractions;
 using XTI_App.Api;
+using XTI_App.EfApi;
 using XTI_App.Fakes;
 using XTI_Core;
 
 namespace XTI_WebApp.TestFakes
 {
-    public sealed class FakeAppSetup
+    public sealed class FakeAppSetup : IAppSetup
     {
         private readonly AppFactory appFactory;
         private readonly Clock clock;
@@ -21,7 +23,7 @@ namespace XTI_WebApp.TestFakes
         public AppVersion CurrentVersion { get; private set; }
         public AppUser User { get; private set; }
 
-        public async Task Run()
+        public async Task Run(AppVersionKey versionKey)
         {
             var fakeApiFactory = new FakeAppApiFactory();
             var template = fakeApiFactory.CreateTemplate();
@@ -32,7 +34,7 @@ namespace XTI_WebApp.TestFakes
                 template,
                 ""
             );
-            await setup.Run();
+            await setup.Run(versionKey);
             App = await appFactory.Apps().App(template.AppKey);
             CurrentVersion = await App.CurrentVersion();
             var modCategory = await App.ModCategory(new ModifierCategoryName("Department"));

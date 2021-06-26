@@ -10,8 +10,8 @@
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="5.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="XTI_Secrets.Fakes" Version="1.7.4" />
-    <PackageReference Include="XTI_App.EfApi" Version="1.7.2" />
-    <PackageReference Include="XTI_App.Fakes" Version="1.7.2" />
+    <PackageReference Include="XTI_App.EfApi" Version="1.7.2-dev210221072514829" />
+    <PackageReference Include="XTI_App.Fakes" Version="1.7.2-dev210221072514829" />
     <PackageReference Include="XTI_Core.Fakes" Version="1.8.12" />
     <PackageReference Include="XTI_TempLog.Fakes" Version="1.2.6" />
   </ItemGroup>
